@@ -1,0 +1,644 @@
+#include <stdio.h>
+#include <string.h>
+
+#include "wf_char.h"
+
+void wipe_off_CRLF_inEnd(char *str)
+{
+#define CRLF_char(c)	( c == '\r' || c == '\n' )
+	int i=0, len=strlen(str);
+
+	for(i=len-1; i>=0; i--)
+	{
+		if( CRLF_char(str[i]) )
+			str[i] = '\0';
+	}
+}
+void wipe_off_blank(char *str_in, char *str_out, int out_size)
+{
+#define wipe_char(c)	( c == ' ' || c == '\t' )
+	int i=0, j=0, in_len=0;
+	
+	if(str_in == NULL || str_out == NULL || out_size == 0)
+		return;
+	in_len = strlen(str_in);
+	if(out_size < in_len)
+		return;
+
+	for(i=0; i<in_len; i++)
+	{
+		if( wipe_char(str_in[i]) )
+			continue;
+		else
+			str_out[j++] = str_in[i];
+	}
+	str_out[j] = '\0';
+}
+
+int str2mac(char *str, unsigned char *mac)
+{
+	unsigned int m[6];
+	int i;
+	if(strstr((char*)str, ":"))
+	{
+		sscanf((char*)str, "%02x:%02x:%02x:%02x:%02x:%02x", &m[0], &m[1], &m[2], &m[3], &m[4], &m[5]);
+	}
+	else if(strstr((char*)str, "-"))
+	{
+		sscanf((char*)str, "%02x-%02x-%02x-%02x-%02x-%02x", &m[0], &m[1], &m[2], &m[3], &m[4], &m[5]);
+	}
+	else if(strlen(str) == 12)
+	{
+		sscanf((char*)str, "%02x%02x%02x%02x%02x%02x", &m[0], &m[1], &m[2], &m[3], &m[4], &m[5]);
+	}
+	else
+		return -1;
+
+	for(i = 0; i < 6; i++)
+		mac[i] = (char)m[i];
+
+	return 0;
+}
+
+
+
+char *strupr_2(char *str)
+{
+	char *s = str;
+	while(*s != '\0')
+	{
+		if(*s >= 'a' && *s <= 'z')
+			*s -= 32;
+	}
+	return str;
+}
+
+char *strnset_2(char *str, char ch, unsigned n)
+{
+	int i;
+	if(strlen(str) < n)
+		return NULL;
+	for(i=0; i<n; i++)
+	{
+		str[i] = ch;
+	}
+	return str;
+}
+/*
+int chicmp(char c1, char c2)
+{
+	if( isAlphabet(c) )
+	{
+		if( (c1 + 32) != c2 && (c2 + 32) != c1 )
+			return 1;
+	}
+	else
+	{
+		if(c1 != c2)
+			return 1;
+	}
+
+	return 0;
+}
+*/
+int strnicmp_2(char *str1, char *str2, int len)
+{
+	int i=0, len1=strlen(str1), len2=strlen(str2);
+
+	if(len1 < len2 || len1 < len || len2 < len)
+		return 1;
+
+	for(i=0; i<len; i++)
+	{
+		if( isAlphabet(str2[i]) )
+		{
+			if( (str1[i] + 32) != str2[i] && (str2[i] + 32) != str1[i] )
+				return 1;
+		}
+		else
+		{
+			if( str1[i] != str2[i] )
+				return 1;
+		}
+	}
+
+	return 0;
+}
+
+int stricmp_2(char *str1, char *str2)
+{
+	int i, len;
+
+	len = strlen(str1);
+	if(len != strlen(str2))
+		return 1;
+	
+	for(i=0; i<len; i++)
+	{
+		if( isAlphabet(str2[i]) )
+		{
+			if( (str1[i] + 32) != str2[i] && (str2[i] + 32) != str1[i] )
+				return 1;
+		}
+		else
+		{
+			if( str1[i] != str2[i] )
+				return 1;
+		}
+	}
+
+	return 0;
+}
+
+char *strrev_2(char *s)
+{
+	int i, j;
+	char c;
+	for( i = 0, j = strlen(s)-1; i < j; ++i, --j )
+	{
+		c = s[i];
+		s[i] = s[j];
+		s[j] = c;
+	}
+	return s;
+}
+
+
+
+int parseURL(char *URL)
+{
+	if(URL == NULL)	return -1;
+	if( strncmp(URL,"http://",strlen("http://")) == 0 )	return URL_HTTP;	// http
+	else if( strncmp(URL,"ftp://",strlen("ftp://")) == 0 )	return URL_FTP;	// ftp
+	else	
+		return 0;	// other
+}
+void intToByte(unsigned int in,unsigned char *out)
+{
+	int i=0,int_tmp=in;
+	unsigned char *p=NULL;
+	/*低位在前*/
+	p = (unsigned char *)&int_tmp;
+	out[i++] = *p++;
+	out[i++] = *p++;
+	out[i++] = *p++;
+	out[i++] = *p++;
+}
+void byteToInt(unsigned char *in,unsigned int *out)
+{
+	unsigned int i=0,int_tmp=0;
+	unsigned char *p=NULL;
+	/*低位在前*/
+	p = (unsigned char *)&int_tmp;
+	*p++ = in[i++];
+	*p++ = in[i++];
+	*p++ = in[i++];
+	*p++ = in[i++];
+	*out = int_tmp;
+}
+/*ASC码转换为整型
+输入:
+asc_ptr: ASC 码字符串
+输出:
+out: 整型数
+返回值:
+>=0 : 有效ASC 码字符串的长度
+<0 : 出错
+*/
+int ascToInt( char *asc_ptr,int *out )
+{
+	int len=0,value=0,isMinus=0;
+	if( asc_ptr==NULL || out==NULL )	return -1;
+	if(*asc_ptr == '-')
+	{
+			++len;
+			isMinus = 1;
+			++asc_ptr;
+	}
+	while(*asc_ptr)
+	{
+		if (*asc_ptr >= '0' && *asc_ptr <= '9')
+		{
+			++len;
+			value = value * 10 + ( *asc_ptr - '0' );
+			++asc_ptr;
+		}
+		else
+			break;
+	}
+	if(isMinus)	value = value * (-1);
+	*out = value;
+	
+	return len;
+}
+
+/*ASC码转换为无符号整型
+输入:
+asc_ptr: ASC 码字符串
+输出:
+out: 整型数
+返回值:
+>=0 : 有效ASC 码字符串的长度
+<0 : 出错
+*/
+int ascToUInt( char *asc_ptr,unsigned int *out )
+{
+	int len=0;
+	unsigned int value=0;
+	if( asc_ptr==NULL || out==NULL )	return -1;
+	
+	while(*asc_ptr)
+	{
+		if (*asc_ptr >= '0' && *asc_ptr <= '9')
+		{
+			++len;
+			value = value * 10 + ( *asc_ptr - '0' );
+			++asc_ptr;
+		}
+		else
+			break;
+	}
+	*out = value;
+	
+	return len;
+}
+
+/*复制IP 字符串
+输入:
+str: 字符串
+输出:
+out: IP 字符串
+返回值:
+>=0 : 有效IP 字符串的长度
+<0 : 出错
+*/
+int copyIP(char *str,char *out)
+{
+	int len=0,num=0;
+	char *pout = out;
+	if(str==NULL || out==NULL)		return -1;
+
+	while(*str)
+	{
+		if (*str >= '0' && *str <= '9')
+		{
+			++len;
+			*pout = *str;
+			++str;++pout;
+		}
+		else if(*str == '.')
+		{
+			++num;
+			if(num>3)	break;
+			++len;
+			*pout = *str;
+			++str;++pout;
+		}
+		else
+			break;
+	}
+	if(num < 3)	return -1;
+	
+	return len;
+}
+/*复制数字符串
+输入:
+str: 字符串
+输出:
+out: 数字符串
+返回值:
+>=0 : 有效数字符串的长度
+<0 : 出错
+*/
+int copyNum(char *str,char *out)
+{
+	int len=0,num=0;
+	char *pout = out;
+	if(str==NULL || out==NULL)	return -1;
+
+	while(*str)
+	{
+		if (*str >= '0' && *str <= '9')
+		{
+			++len;
+			*pout = *str;
+			++str;++pout;
+		}
+		else
+			break;
+	}
+
+	return len;
+}
+
+
+
+int uInttobcd( char *ppDestination,unsigned int pLvar,int bcdlen )
+{
+	char strTmp1[20];
+	char format[20];
+	char    ch[8];
+
+	memset(format,'\0',20);
+	memset(ch,'\0',8);
+	memset(strTmp1,'\0',20);
+	memcpy(format,"%0",2);
+	sprintf(ch,"%d",bcdlen*2);
+	memcpy(&format[2],ch,strlen(ch));
+	memcpy(&format[2+strlen(ch)],"d",1);
+
+	sprintf(strTmp1,format,pLvar);
+
+	asc_to_bcd( (BYTE *)ppDestination, (BYTE *)strTmp1, bcdlen * 2 );
+
+	return bcdlen;
+}
+
+/*=======================================================================
+ 
+bcd_to_asc() - translate BCD string into ASCII string
+ <n> : ascii char number
+=======================================================================*/
+void abcd_to_asc( unsigned char *abyte )
+{
+	if ( *abyte<=9 )
+		*abyte = *abyte + '0';
+	else
+		*abyte = *abyte + 'A' - 10;
+}
+
+void bcd_to_asc( BYTE *asc_buf, BYTE *bcd_buf,int n )
+{
+	int i, j;
+	j = 0;
+	for ( i = 0; i < n / 2; i++) 
+	{
+		asc_buf[j] = (bcd_buf[i] & 0xf0) >> 4;
+		abcd_to_asc( &asc_buf[j] );
+		j ++;
+		asc_buf[j] = bcd_buf[i] & 0x0f;
+		abcd_to_asc( &asc_buf[j] );
+		j ++;
+	}
+	if ( n % 2 ) 
+	{
+		asc_buf[j] = (bcd_buf[i] & 0xf0) >> 4;
+		abcd_to_asc( &asc_buf[j] );
+	}
+}
+
+/*=======================================================================
+ 
+asc_to_bcd() - Translate ASCII string into BCD string
+ <n> : number of ascii character
+=======================================================================*/
+BYTE aasc_to_bcd( BYTE asc )
+{
+	BYTE bcd;
+
+	if ( (asc >= '0') && (asc <= '9') )
+		bcd = asc - '0';
+	else if ( (asc >= 'A') && (asc <= 'F') )
+		bcd = asc - 'A' + 10;
+	else if ( (asc >= 'a') && (asc <= 'f') )
+		bcd = asc - 'a' + 10;
+	else if(asc=='=')
+		bcd=0x0D;
+	else 
+	{
+		/* printf( "\f[Warning] : Bad HEX digid" ); */
+		bcd = 0;
+	}
+
+	return bcd;
+}
+
+void asc_to_bcd( BYTE *bcd_buf, BYTE *asc_buf,int n )
+{
+	int i, j;
+	j = 0;
+
+	for (i=0 ; i < (n + 1) / 2; i++) 
+	{
+		bcd_buf[i] = aasc_to_bcd( asc_buf[j++] );
+		bcd_buf[i] = ((j>=n) ? 0x00 : aasc_to_bcd( asc_buf[j++] ))
+				+ ( bcd_buf[i] << 4 );
+	}
+}
+
+/*========================================================================
+ 
+bcdtoi (char) - convert a bcd to unsigned int
+========================================================================*/
+
+unsigned int bcdtoi (BYTE bcd_value)
+{
+	return ( ((bcd_value >> 4) & 0x0f) * 10 + (bcd_value & 0x0f) );
+}
+
+/*============================================================================
+  bcdtol: translate <pares> of <bcd_ptr> chars to unsigned int
+============================================================================*/
+unsigned int bcdtouInt( BYTE *bcd_ptr,int pares )
+{
+	unsigned int value = 0;
+	if ( pares <= 0 )
+		return 0;
+	while ( pares-- > 0 )
+		value = value * 100 + bcdtoi( *bcd_ptr++);
+
+	return value;
+}
+
+/*============================================================================
+  asctol: translate <pares> of <asc_ptr> ascii chars to long
+============================================================================*/
+long asctol( BYTE *asc_ptr,int pares )
+{
+	long value = 0;
+	if ( pares <= 0 )
+		return - 1;
+	while ( pares-- > 0 )
+	{
+		if ( *asc_ptr >= '0' && *asc_ptr <= '9' )
+			value = value * 10 + ( *asc_ptr++ - '0' );
+		else
+			return - 1;
+	}
+	return value;
+}
+
+/*============================================================================
+  
+ltoasc: translate <long> to <num> of <asc_ptr> ascii chars
+============================================================================*/
+void ltoasc( char *ppDestination,long pLvar,int INumber )
+{
+	char format[80];
+	char    ch[8];
+
+	memset(format,'\0',80);
+	memset(format,'\0',8);
+	memcpy(format,"%0",2);
+	sprintf(ch,"%d",INumber);
+	ch[strlen(ch)]='\0';
+	memcpy(&format[2],ch,strlen(ch));
+	memcpy(&format[2+strlen(ch)],"ld",2);
+
+	sprintf( ppDestination, format, pLvar );
+}
+
+
+/*============================================================================
+  ltobcd: translate <long> to <num> of <bcd_ptr> bcd chars
+============================================================================*/
+int ltobcd( char *ppDestination,int pLvar,int bcdlen )
+{
+	char strTmp1[20];
+	char format[20];
+	char ch[8];
+
+	memset(format,'\0',20);
+	memset(ch,'\0',8);
+	memset(strTmp1,'\0',20);
+	memcpy(format,"%0",2);
+	sprintf(ch,"%d",bcdlen*2);
+	memcpy(&format[2],ch,strlen(ch));
+	memcpy(&format[2+strlen(ch)],"d",1);
+	sprintf(strTmp1,format,pLvar);
+
+	asc_to_bcd( (BYTE *)ppDestination, (BYTE *)strTmp1, bcdlen * 2 );
+
+	return bcdlen;
+}
+
+void l_to_decimal(long sou,char *tar)
+{
+	char tmp[20];
+	int  i,j;
+
+	memset(tmp, '\0', 15);
+	sprintf(tmp, "%ld", sou);
+	switch (strlen(tmp)) 
+	{
+		case 1:
+			strcpy(tar, "0.0");
+			strcat(tar, tmp);
+			break;
+		case 2:
+			strcpy(tar, "0.");
+			strcat(tar, tmp);
+			break;
+		default:
+			j = 0;
+			for (i=0;i<(int)strlen(tmp);i++) 
+			{
+				if (i == (int)strlen(tmp)-2) 
+				{
+					tar[i+j] = '.';
+					j++;
+				}
+				tar[i+j] = tmp[i];
+			}
+			tar[strlen(tmp)+1] = '\0';
+	}
+}
+
+void a_to_decimal(char *sou,char *tar)
+{
+	char tmp[15];
+	int  i,j;
+	
+	memset(tmp, '\0', 15);
+	strcpy(tmp, sou);
+	switch (strlen(tmp)) 
+	{
+		case 1:
+			strcpy(tar, "0.0");
+			strcat(tar, tmp);
+			break;
+		case 2:
+			strcpy(tar, "0.");
+			strcat(tar, tmp);
+			break;
+		default:
+			j = 0;
+			for (i=0;i<(int)strlen(tmp);i++) 
+			{
+				if (i == (int)strlen(tmp)-2) 
+				{
+					tar[i+j] = '.';
+					j++;
+				}
+				tar[i+j] = tmp[i];
+			}
+			tar[strlen(tmp)+1] = '\0';
+	}
+}
+void tohex(BYTE *str,BYTE *hexstr)
+{
+	int i;
+
+	for (i=0;i<8;i++) 
+	{
+		hexstr[2*i] = (str[i] >> 4) & 0x0f;
+		if(hexstr[2*i] < 10)
+			hexstr[2*i] += '0';
+		else
+			hexstr[2*i] = hexstr[2*i] - 10 + 'A';
+		hexstr[2*i+1] = str[i] & 0x0f;
+		if(hexstr[2*i + 1] < 10)
+			hexstr[2*i + 1] += '0';
+		else
+			hexstr[2*i + 1] = hexstr[2*i + 1] - 10 + 'A';
+	}
+	hexstr[16] = '\0';
+}
+
+void ascadd(char* string,char* secondString,int len)
+{
+	int i=1,j;
+	int upflag=0;
+
+	while(i<=len)
+	{
+		j=len-i;
+		string[j]=string[j]+(char)upflag+(secondString[j]-'0');
+		if (string[j]>'9')
+		{
+			upflag = 1;
+			string[j]=string[j]-10;
+		}
+		else
+			upflag=0;
+		i++;
+	}
+}
+void ascdec(char* string,char* secondString,int len)
+{
+	int i=1,j;
+	int upflag=0;
+
+	while(i<=len)
+	{
+		j=len-i;
+		string[j]=string[j]-(char)upflag-(secondString[j]-'0');
+		if (string[j]<'0')
+		{
+			upflag = 1;
+			string[j]=string[j]+10;
+		}
+		else
+			upflag=0;
+		i++;
+	}
+}
+
+#if 0
+void main()
+{
+	char str[100] = "abcdefg";
+	printf("%s \n", strrev(str));
+}
+#endif
+

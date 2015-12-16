@@ -38,6 +38,16 @@
 
 
 
+
+
+
+extern void alarm_start(unsigned int seconds, void (*func)(int));
+
+
+extern void alarm_again(unsigned int seconds);
+
+extern void alarm_cancel();
+
 extern int wf_get_selfexe_path(char *path, int len);
 
 extern long wf_getsys_uptime(unsigned long *up_time);

@@ -80,9 +80,21 @@ int test_jmp()
 
 
 
+void alarm_start(unsigned int seconds, void (*func)(int))
+{
+	signal(SIGALRM, func);
+	alarm(seconds);
+}
 
+void alarm_again(unsigned int seconds)
+{
+	alarm(seconds);
+}
 
-
+void alarm_cancel()
+{
+	alarm(0);
+}
 
 int wf_get_selfexe_path(char *path, int len)
 {

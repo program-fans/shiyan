@@ -17,6 +17,7 @@
 #include "wf_tree.h"				// no include 
 #include "wf_param.h"				// include "linux_list.h"
 #include "strnormalize.h"			// no include 
+#include "md5.h"					// include <inttypes.h>  <basetsd.h>
 
 //#include "pal_time.h"
 //#include "libpx_thread.h"

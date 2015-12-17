@@ -1,7 +1,27 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include "wf_char.h"
+
+char *time2str(time_t tv, char *out)
+{
+	time_t t = tv;
+	char *dst = out;
+	struct tm *local_t;
+	static char time_str[64]={'\0'};
+
+	local_t=localtime(&t);
+
+	if( !dst )
+		dst = time_str;
+
+	sprintf( dst, "%02d-%02d-%02d %d:%d:%d", 
+		local_t->tm_year, local_t->tm_mon+1,local_t->tm_mday,
+		local_t->tm_hour,local_t->tm_min,local_t->tm_sec);
+
+	return dst;
+}
 
 void wipe_off_CRLF_inEnd(char *str)
 {

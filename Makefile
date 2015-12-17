@@ -18,6 +18,7 @@ pack:
 		[ "$$?" != "0" ] && exit "$$?"; \
 	done; \
 	zip -qr wolf_shiyan.zip ./
+	echo OK: wolf_shiyan.zip
 
 clean:
 	for d in $(app_list); do \

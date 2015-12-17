@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "libwf.h"
 
@@ -105,6 +106,11 @@ void bubble_sort()
 	printf("\n");
 }
 // ------------------------------------------------------------
+void char_test()
+{
+	printf("%s \n", time2str_pformat(time(NULL), NULL, "<now: %Y/%M/%D  ## %h:%m:%s >", 64));
+	printf("%s \n", timenow2str(NULL));
+}
 void test()
 {
 	int i=0;
@@ -117,7 +123,8 @@ void test()
 
 void main()
 {
-	test();
+	//test();
+	char_test();
 	//wf_sock_test();
 }
 

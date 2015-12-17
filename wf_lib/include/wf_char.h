@@ -1,7 +1,20 @@
 #ifndef WF_CHAR_H_
 #define WF_CHAR_H_
 
-extern char *time2str(time_t tv, char *out);
+
+
+
+
+
+
+
+// 0 <= max <= 128
+extern int time2str_format(long tv, char *out, char *fmt, int max);
+// 0 <= max <= 128
+extern char *time2str_pformat(long tv, char *out, char *fmt, int max);
+extern char *time2str(long tv, char *out);
+extern char *timenow2str(char *out);
+
 extern void wipe_off_CRLF_inEnd(char *str);
 extern void wipe_off_blank(char *str_in, char *str_out, int out_size);
 

@@ -4,7 +4,7 @@
 
 #include "wf_char.h"
 
-char *time2str(time_t tv, char *out)
+char *time2str(long tv, char *out)
 {
 	time_t t = tv;
 	char *dst = out;
@@ -16,11 +16,93 @@ char *time2str(time_t tv, char *out)
 	if( !dst )
 		dst = time_str;
 
-	sprintf( dst, "%02d-%02d-%02d %d:%d:%d", 
-		local_t->tm_year, local_t->tm_mon+1,local_t->tm_mday,
+	sprintf( dst, "%04d-%02d-%02d %2d:%2d:%2d", 
+		local_t->tm_year+1900, local_t->tm_mon+1,local_t->tm_mday,
 		local_t->tm_hour,local_t->tm_min,local_t->tm_sec);
 
 	return dst;
+}
+
+char *timenow2str(char *out)
+{
+	return time2str(time(NULL), out);
+}
+
+static char *time2str_f(time_t tv, char *out, char *fmt, int max, int *n)
+{
+	time_t t = tv;
+	char *dst = out, *pfmt=fmt, *start=NULL;
+	struct tm *local_t;
+	static char time_str[128+1]={'\0'};
+	int len=0, i=0, count=0, max_size=max;
+
+	local_t=localtime(&t);
+
+	if( !dst )
+		dst = time_str;
+	start = dst;
+	if(max_size <= 0 || max_size > 128)
+		max_size = 128;
+		
+	if(fmt)
+	{
+		while(*pfmt != '\0')
+		{
+			if(*pfmt != '%'){
+				*dst++ = *pfmt;
+				++count;
+			}
+			else{
+				len = 1;
+				++pfmt;
+				if( *pfmt == 'Y' )
+					len = sprintf(dst, "%04d", local_t->tm_year+1900);
+				else if( *pfmt == 'M' )
+					len = sprintf(dst, "%02d", local_t->tm_mon+1);
+				else if( *pfmt == 'D' )
+					len = sprintf(dst, "%02d", local_t->tm_mday);
+				else if( *pfmt == 'h' )
+					len = sprintf(dst, "%02d", local_t->tm_hour);
+				else if( *pfmt == 'm' )
+					len = sprintf(dst, "%02d", local_t->tm_min);
+				else if( *pfmt == 's' )
+					len = sprintf(dst, "%02d", local_t->tm_sec);
+				else
+					*dst = *--pfmt;
+				dst += len;
+				count += len;
+			}
+			
+			if(count >= max_size)
+				break;
+			++pfmt;
+		}
+		*dst = '\0';
+		len = dst - start;
+	}
+	else
+	{
+		len = sprintf( dst, "%04d-%02d-%02d %2d:%2d:%2d", 
+			local_t->tm_year+1900, local_t->tm_mon+1,local_t->tm_mday,
+			local_t->tm_hour,local_t->tm_min,local_t->tm_sec);
+	}
+
+	if(n)
+		*n = len;
+	return start;
+}
+
+int time2str_format(long tv, char *out, char *fmt, int max)
+{
+	int len=0;
+	time2str_f(tv, out, fmt, max, &len);
+
+	return len;
+}
+
+char *time2str_pformat(long tv, char *out, char *fmt, int max)
+{
+	return time2str_f(tv, out, fmt, max, NULL);
 }
 
 void wipe_off_CRLF_inEnd(char *str)

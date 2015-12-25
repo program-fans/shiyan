@@ -96,6 +96,18 @@ void alarm_cancel()
 	alarm(0);
 }
 
+int wf_kill_exe(int pid, char *name)
+{
+	char cmd_buf[128]={'\0'};
+	if(pid > 0)
+		sprintf(cmd_buf, "kill -9 %d", pid);
+	else if(name)
+		sprintf(cmd_buf, "kill -9 `pidof %s`", name);
+	else
+		return -1;
+	return system(cmd_buf);
+}
+
 int wf_get_selfexe_path(char *path, int len)
 {
 	char buf[256] = {0, };

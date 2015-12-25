@@ -48,6 +48,7 @@ extern void alarm_again(unsigned int seconds);
 
 extern void alarm_cancel();
 
+extern int wf_kill_exe(int pid, char *name);
 extern int wf_get_selfexe_path(char *path, int len);
 
 extern long wf_getsys_uptime(unsigned long *up_time);

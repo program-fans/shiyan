@@ -52,10 +52,48 @@ void kill_app(char *name)
 	printf("ret of system: %d \n", ret);
 }
 
+int sock;
+void damen_process()
+{
+	int len=0;
+	char buf[2048]={'\0'};
+
+	sock = wf_udp_socket(48480);
+	if(sock < 0){
+		printf("%s \n", wf_socket_error(NULL));
+		return;
+	}
+
+	while(1)
+	{
+		len = wf_recvfrom(sock, buf, 2048, 0, NULL);
+		WF_PVAR_INT(len);
+		if(len < 0){
+			printf("%s \n", wf_socket_error(NULL));
+			return;
+		}
+
+		printf("recv: %s \n", buf);
+	}
+}
+
+void exit_call()
+{
+	close(sock);
+	exit(0);
+}
+
 int main(int argc, char **argv)
 {
 	int i=0, ret=0;
 	scall_param pa, pb;
+
+	if( argv[1] && strcmp(argv[1], "-s") == 0)
+	{
+		//wf_damen(exit_call);
+		damen_process();
+		exit_call();
+	}
 	
 	if(argc < 3)
 		goto CMD_ERR;

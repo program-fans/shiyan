@@ -359,6 +359,8 @@ int wf_send(int sock, unsigned char *buf, int total_len, int flag)
 		else
 			return -1;
 	}
+	if(!i)
+		return len;
 
 	return i;
 }
@@ -403,6 +405,8 @@ int wf_sendto(int sock, unsigned char *buf, int total_len, int flag, void *addr_
 		else
 			return -1;
 	}
+	if(!i)
+		return len;
 
 	return i;
 }
@@ -421,7 +425,7 @@ int wf_sendto_ip(int sock, unsigned char *buf, int total_len, int flag, char *to
 
 int wf_recvfrom(int sock, unsigned char *buf, int total_len, int flag, void *addr_from)
 {
-	int len=0, i=0, next=total_len;
+	int len=0;
 	int sockaddr_len = sizeof(struct sockaddr_in);
 	struct sockaddr_in addr;
 	struct sockaddr *paddr = (struct sockaddr *)addr_from;
@@ -431,15 +435,12 @@ int wf_recvfrom(int sock, unsigned char *buf, int total_len, int flag, void *add
 		memset(&addr, 0, sizeof(addr));
 		paddr = (struct sockaddr *)&addr;
 	}
-	
-	while(next > 0 && (len=recvfrom(sock, buf+i, next, flag, paddr, &sockaddr_len)) != next)
+
+	while(1)
 	{
-		if(len>0)
-		{
-			i += len;
-			next -= len;
-		}
-		else if(len == 0)
+		len = recvfrom(sock, buf, total_len, flag, paddr, &sockaddr_len);
+
+		if(len >= 0)
 			break;
 		else if(errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
 			continue;
@@ -447,7 +448,7 @@ int wf_recvfrom(int sock, unsigned char *buf, int total_len, int flag, void *add
 			return -1;
 	}
 
-	return i;
+	return len;
 }
 
 int wf_recvfrom_ip(int sock, unsigned char *buf, int total_len, int flag, char *from_ip, int *from_port)

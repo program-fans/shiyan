@@ -75,6 +75,29 @@ void wf_sock_test()
 		printf("have client connect \n");
 	}
 }
+void wf_p_app_test()
+{
+	int sock;
+	int ret;
+	char buf[1024]={'\0'};
+
+	sock = wf_udp_socket(0);
+	if(sock < 0){
+		printf("%s \n", wf_socket_error(NULL));
+		return;
+	}
+
+	ret = wf_sendto_ip(sock, "test local", strlen("test local"), 0, "192.168.0.1", 48480);
+	WF_PVAR_INT(ret);
+	if(ret < 0){
+		printf("%s \n", wf_socket_error(NULL));
+		return;
+	}
+
+	wf_recvfrom(sock, buf, 1024, 0, NULL);
+
+	printf("recv: %s \n", buf);
+}
 // ------------------------------------------------------------
 void bubble_sort()
 {
@@ -124,8 +147,10 @@ void test()
 void main()
 {
 	//test();
-	char_test();
+	//char_test();
 	//wf_sock_test();
+
+	wf_p_app_test();
 }
 
 

@@ -52,6 +52,12 @@ void kill_app(char *name)
 	printf("ret of system: %d \n", ret);
 }
 
+int w_ipc_sock;
+int ipc_call(int msg, unsigned long pa, unsigned long pb, unsigned long pc, unsigned long pd)
+{
+	return 2333;
+}
+
 int sock;
 void damen_process()
 {
@@ -79,7 +85,10 @@ void damen_process()
 
 void exit_call()
 {
-	close(sock);
+	if(w_ipc_sock > 0)
+		ipc_server_close("/home/wolf_ipc", w_ipc_sock);
+	if(sock)
+		close(sock);
 	exit(0);
 }
 
@@ -90,8 +99,16 @@ int main(int argc, char **argv)
 
 	if( argv[1] && strcmp(argv[1], "-s") == 0)
 	{
+		wf_registe_exit_signal(exit_call);
 		//wf_damen(exit_call);
 		damen_process();
+		exit_call();
+	}
+
+	if( argv[1] && strcmp(argv[1], "--ipc") == 0)
+	{
+		w_ipc_sock = ipc_server_init("/home/wolf_ipc", ipc_call);
+		ipc_server_accept(w_ipc_sock);
 		exit_call();
 	}
 	

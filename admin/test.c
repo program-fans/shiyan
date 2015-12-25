@@ -129,6 +129,13 @@ void bubble_sort()
 	printf("\n");
 }
 // ------------------------------------------------------------
+void ipc_test()
+{
+	int ret;
+	
+	ret = ipc_client_call("/home/wolf_ipc", 0, 0);
+	WF_PVAR_INT(ret);
+}
 void char_test()
 {
 	printf("%s \n", time2str_pformat(time(NULL), NULL, "<now: %Y/%M/%D  ## %h:%m:%s >", 64));
@@ -150,7 +157,8 @@ void main()
 	//char_test();
 	//wf_sock_test();
 
-	wf_p_app_test();
+	//wf_p_app_test();
+	ipc_test();
 }
 
 

@@ -16,7 +16,7 @@ char *time2str(long tv, char *out)
 	if( !dst )
 		dst = time_str;
 
-	sprintf( dst, "%04d-%02d-%02d %2d:%2d:%2d", 
+	sprintf( dst, "%04d-%02d-%02d %02d:%02d:%02d", 
 		local_t->tm_year+1900, local_t->tm_mon+1,local_t->tm_mday,
 		local_t->tm_hour,local_t->tm_min,local_t->tm_sec);
 
@@ -82,7 +82,7 @@ static char *time2str_f(time_t tv, char *out, char *fmt, int max, int *n)
 	}
 	else
 	{
-		len = sprintf( dst, "%04d-%02d-%02d %2d:%2d:%2d", 
+		len = sprintf( dst, "%04d-%02d-%02d %02d:%02d:%02d", 
 			local_t->tm_year+1900, local_t->tm_mon+1,local_t->tm_mday,
 			local_t->tm_hour,local_t->tm_min,local_t->tm_sec);
 	}

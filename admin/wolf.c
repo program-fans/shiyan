@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <netinet/in.h>
 
 #include "libwf.h"
 
@@ -63,6 +64,7 @@ void damen_process()
 {
 	int len=0;
 	char buf[2048]={'\0'};
+	struct sockaddr_in addr_from;
 
 	sock = wf_udp_socket(48480);
 	if(sock < 0){
@@ -72,7 +74,7 @@ void damen_process()
 
 	while(1)
 	{
-		len = wf_recvfrom(sock, buf, 2048, 0, NULL);
+		len = wf_recvfrom(sock, buf, 2048, 0, &addr_from);
 		WF_PVAR_INT(len);
 		if(len < 0){
 			printf("%s \n", wf_socket_error(NULL));
@@ -80,14 +82,16 @@ void damen_process()
 		}
 
 		printf("recv: %s \n", buf);
+
+		wf_sendto(sock, "test OK", strlen("test OK"), 0, &addr_from);
 	}
 }
 
-void exit_call()
+void exit_call(int a)
 {
 	if(w_ipc_sock > 0)
 		ipc_server_close("/home/wolf_ipc", w_ipc_sock);
-	if(sock)
+	if(sock > 0)
 		close(sock);
 	exit(0);
 }
@@ -97,19 +101,18 @@ int main(int argc, char **argv)
 	int i=0, ret=0;
 	scall_param pa, pb;
 
+	wf_registe_exit_signal(exit_call);
 	if( argv[1] && strcmp(argv[1], "-s") == 0)
 	{
-		wf_registe_exit_signal(exit_call);
-		//wf_damen(exit_call);
 		damen_process();
-		exit_call();
+		exit_call(0);
 	}
 
 	if( argv[1] && strcmp(argv[1], "--ipc") == 0)
 	{
 		w_ipc_sock = ipc_server_init("/home/wolf_ipc", ipc_call);
 		ipc_server_accept(w_ipc_sock);
-		exit_call();
+		exit_call(0);
 	}
 	
 	if(argc < 3)

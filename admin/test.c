@@ -75,11 +75,12 @@ void wf_sock_test()
 		printf("have client connect \n");
 	}
 }
-void wf_p_app_test()
+void wf_p_app_test(int argc, char **argv)
 {
 	int sock;
 	int ret;
 	char buf[1024]={'\0'};
+	char ip[16]={'\0'};
 
 	sock = wf_udp_socket(0);
 	if(sock < 0){
@@ -87,7 +88,11 @@ void wf_p_app_test()
 		return;
 	}
 
-	ret = wf_sendto_ip(sock, "test local", strlen("test local"), 0, "192.168.0.1", 48480);
+	if(argv[1])
+		sprintf(ip, "%s", argv[1]);
+	else
+		sprintf(ip, "%s", "192.168.0.1");
+	ret = wf_sendto_ip(sock, "test local", strlen("test local"), 0, ip, 48480);
 	WF_PVAR_INT(ret);
 	if(ret < 0){
 		printf("%s \n", wf_socket_error(NULL));
@@ -151,14 +156,14 @@ void test()
 	WF_PVAR_INT(i);
 }
 
-void main()
+void main(int argc, char **argv)
 {
 	//test();
 	//char_test();
 	//wf_sock_test();
 
-	//wf_p_app_test();
-	ipc_test();
+	wf_p_app_test(argc, argv);
+	//ipc_test();
 }
 
 

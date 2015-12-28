@@ -160,7 +160,7 @@ void wf_registe_exit_signal(__sighandler_t exit_call)
 }
 
 // void (*exit_call)(void)
-void wf_damen(__sighandler_t exit_call)
+void wf_demon(__sighandler_t exit_call)
 {
 	if(fork()!= 0)
 		exit(1);

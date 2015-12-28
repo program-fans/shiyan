@@ -387,6 +387,7 @@ int wf_recv(int sock, unsigned char *buf, int total_len, int flag)
 	return i;
 }
 
+// struct sockaddr_in *addr_to
 int wf_sendto(int sock, unsigned char *buf, int total_len, int flag, void *addr_to)
 {
 	int len=0, i=0, next=total_len;
@@ -423,6 +424,7 @@ int wf_sendto_ip(int sock, unsigned char *buf, int total_len, int flag, char *to
 	return wf_sendto(sock, buf, total_len, flag, &addr_to);
 }
 
+// struct sockaddr_in *addr_from
 int wf_recvfrom(int sock, unsigned char *buf, int total_len, int flag, void *addr_from)
 {
 	int len=0;

@@ -1,6 +1,10 @@
 #ifndef WF_MISC_H_
 #define WF_MISC_H_
 
+#ifndef ARRAY_NUM
+#define ARRAY_NUM(arg)	sizeof(arg)/sizeof(arg[0])
+#endif
+
 #ifndef WF_PVAR
 #define WF_PVAR(var, fmt)		printf(#var" = "fmt" \n", var)
 #define WF_PVAR_INT(var)		WF_PVAR(var, "%d")
@@ -59,7 +63,7 @@ extern long wf_getsys_uptime(unsigned long *up_time);
 #include <signal.h>
 extern void wf_registe_exit_signal(__sighandler_t exit_call);
 // void (*exit_call)(void)
-extern void wf_damen(__sighandler_t exit_call);
+extern void wf_demon(__sighandler_t exit_call);
 
 extern int getSysCmd_output(char *cmd,char *output, unsigned int size);
 extern void wf_check_exit(int semkey, char *name);

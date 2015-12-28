@@ -149,7 +149,7 @@ int main(int argc, char **argv)
 	if( turn_init() < 0)
 		exit_error("init failed");
 
-	wf_damen(turn_exit_system);
+	wf_demon(turn_exit_system);
 
 	while(1)
 	{

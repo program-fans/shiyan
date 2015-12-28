@@ -138,7 +138,7 @@ int main(int argc, char **argv)
 
 	put_data();
 
-	wf_damen(arp_exit_system);
+	wf_demon(arp_exit_system);
 
 	while(1)
 	{

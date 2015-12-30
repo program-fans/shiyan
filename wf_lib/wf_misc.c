@@ -188,6 +188,19 @@ int getSysCmd_output(char *cmd,char *output, unsigned int size)
 	return chars_read;
 }
 
+int exe_exist_check(char *name)
+{
+	char buf[32]={'\0'}, cmd[256];
+
+	if(!name)
+		return 0;
+	
+	sprintf(cmd, "pidof %s |wc -w", name);
+	getSysCmd_output(cmd, buf, sizeof(buf) - 1);
+
+	return atoi(buf);
+}
+
 void wf_check_exit(int semkey, char *name)
 {
 	char buf[32], cmd[256];

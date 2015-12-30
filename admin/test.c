@@ -82,7 +82,7 @@ void wf_p_app_test(int argc, char **argv)
 	char buf[1024]={'\0'};
 	char ip[16]={'\0'};
 
-	sock = wf_udp_socket(0);
+	sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if(sock < 0){
 		printf("%s \n", wf_socket_error(NULL));
 		return;

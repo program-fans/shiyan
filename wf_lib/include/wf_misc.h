@@ -66,6 +66,7 @@ extern void wf_registe_exit_signal(__sighandler_t exit_call);
 extern void wf_demon(__sighandler_t exit_call);
 
 extern int getSysCmd_output(char *cmd,char *output, unsigned int size);
+extern int exe_exist_check(char *name);
 extern void wf_check_exit(int semkey, char *name);
 
 

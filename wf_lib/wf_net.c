@@ -390,26 +390,21 @@ int wf_recv(int sock, unsigned char *buf, int total_len, int flag)
 // struct sockaddr_in *addr_to
 int wf_sendto(int sock, unsigned char *buf, int total_len, int flag, void *addr_to)
 {
-	int len=0, i=0, next=total_len;
+	int len=0;
 	
-	while(next > 0 && (len=sendto(sock, buf+i, next, flag, (struct sockaddr *)addr_to,sizeof(struct sockaddr))) != next)
+	while(1)
 	{
-		if(len>0)
-		{
-			i += len;
-			next -= len;
-		}
-		else if(len == 0)
+		len = sendto(sock, buf, total_len, flag, (struct sockaddr *)addr_to,sizeof(struct sockaddr));
+
+		if(len >= 0)
 			break;
 		else if(errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
 			continue;
 		else
 			return -1;
 	}
-	if(!i)
-		return len;
-
-	return i;
+	
+	return len;
 }
 
 int wf_sendto_ip(int sock, unsigned char *buf, int total_len, int flag, char *to_ip, int to_port)

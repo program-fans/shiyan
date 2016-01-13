@@ -3,10 +3,14 @@ CC=gcc
 LIB=../wf_lib/include/ -lwf -lpthread
 INCLUDE=../wf_lib/include/
 
-all:wolf test
+all:wolf wftool test
 
 wolf:wolf.c
 	$(CC) wolf.c -I$(INCLUDE) -L$(LIB) -o wolf
+
+wftool:wftool.c
+	$(CC) wftool.c -I$(INCLUDE) -L$(LIB) -o wftool
+	cp -f wftool /usr/sbin/
 
 test:test.c
 	$(CC) test.c -I$(INCLUDE) -L$(LIB) -o test

@@ -465,6 +465,70 @@ int wf_recvfrom_ip(int sock, unsigned char *buf, int total_len, int flag, char *
 	return ret;
 }
 
+int udp_send(void *to_addr, int hport, unsigned char *buf, int len)
+{
+	int sock, ret;
+
+	if( !to_addr || hport < 0 || !buf || len <= 0 )
+		return -1;
+
+	sock = wf_udp_socket(hport);
+	if(sock < 0)
+		return sock;
+
+	ret = wf_sendto(sock, buf, len, 0, to_addr);
+	close(sock);
+	return ret;
+}
+
+int udp_send_ip(char *ip, int hport, int dport, unsigned char *buf, int len)
+{
+	int sock, ret;
+
+	if( !ip || hport < 0 || dport <=0 || dport >= 65535 || !buf || len <= 0 )
+		return -1;
+
+	sock = wf_udp_socket(hport);
+	if(sock < 0)
+		return sock;
+
+	ret = wf_sendto_ip(sock, buf, len, 0, ip, dport);
+	close(sock);
+	return ret;
+}
+
+int udp_recv(int hport, unsigned char *buf, int size, void *addr_from)
+{
+	int sock, ret;
+
+	if( hport < 0 || !buf || size <= 0 )
+		return -1;
+
+	sock = wf_udp_socket(hport);
+	if(sock < 0)
+		return sock;
+
+	ret = wf_recvfrom(sock, buf, size, 0, addr_from);
+	close(sock);
+	return ret;
+}
+
+int udp_recv_ip(int hport, unsigned char *buf, int size, char *ip, int *sport)
+{
+	int sock, ret;
+
+	if( hport < 0 || !buf || size <= 0 )
+		return -1;
+
+	sock = wf_udp_socket(hport);
+	if(sock < 0)
+		return sock;
+
+	ret = wf_recvfrom_ip(sock, buf, size, 0, ip, sport);
+	close(sock);
+	return ret;
+}
+
 #if 0
 void test()
 {

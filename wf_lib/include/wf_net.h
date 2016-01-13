@@ -58,5 +58,13 @@ extern int wf_recvfrom(int sock, unsigned char *buf, int total_len, int flag, vo
 
 extern int wf_recvfrom_ip(int sock, unsigned char *buf, int total_len, int flag, char *from_ip, int *from_port);
 
+extern int udp_send(void *to_addr, int hport, unsigned char *buf, int len);
+
+extern int udp_send_ip(char *ip, int hport, int dport, unsigned char *buf, int len);
+
+extern int udp_recv(int hport, unsigned char *buf, int size, void *addr_from);
+
+extern int udp_recv_ip(int hport, unsigned char *buf, int size, char *ip, int *sport);
+
 #endif
 

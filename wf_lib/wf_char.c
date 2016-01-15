@@ -114,6 +114,8 @@ void wipe_off_CRLF_inEnd(char *str)
 	{
 		if( CRLF_char(str[i]) )
 			str[i] = '\0';
+		else
+			break;
 	}
 }
 void wipe_off_blank(char *str_in, char *str_out, int out_size)

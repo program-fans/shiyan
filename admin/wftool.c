@@ -1,7 +1,16 @@
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <errno.h>
+
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+
+#include <fcntl.h>
+#include <ctype.h>
 
 #include "libwf.h"
 
@@ -11,10 +20,44 @@ void wftool_usage()
 		"wftool ntorn [oldfile] [newfile] \n"
 		"wftool rnton [oldfile] [newfile] \n"
 		"wftool udp [send][recv][listen] [--ip] [--hport] [--dport] [--msg] [--pkt] \n"
+		"wftool gethost [url] [url] [...] \n"
 		);
 }
 
+int pipe_fd[2];
+
 char asc_buf[4096] = {'\0'};
+
+int init_pipe()
+{
+	int fl;
+	
+	if( pipe(pipe_fd)<0 )
+		return -1;
+
+	fl = fcntl(pipe_fd[0], F_GETFL, 0);
+	if( fl == -1 )
+		return -1;
+	fcntl(pipe_fd[0], F_SETFL, fl |O_NONBLOCK);
+
+	fl = fcntl(pipe_fd[1], F_GETFL, 0);
+	if( fl == -1 )
+		return -1;
+	fcntl(pipe_fd[1], F_SETFL, fl |O_NONBLOCK);
+
+	if( dup2(pipe_fd[0], STDIN_FILENO) < 0 )
+		return -2;
+
+	return 0;
+}
+
+void close_pipe()
+{
+	close(pipe_fd[0]);
+	close(pipe_fd[1]);
+}
+
+
 int cmd_ntorn(int argc, char **argv)
 {
 	FILE *fp_old, *fp_new;
@@ -217,6 +260,63 @@ void cmd_udp(int argc, char **argv)
 
 }
 
+int cmd_gethost(int argc, char **argv)
+{
+	int i = 1;
+	char *arg;
+	char *ptr, **pptr;
+	struct hostent *hptr;
+	char str[32];
+	int ok_cnt=0, fail_cnt=0, all_cnt=0;
+	
+	while(1)
+	{
+		if(argv[2])
+			arg = argv[++i];
+		else
+			arg = fgets(asc_buf, sizeof(asc_buf), stdin);
+		if( !arg )
+			break;
+		wipe_off_CRLF_inEnd(arg);
+		++all_cnt;
+		
+		if((hptr = gethostbyname(arg)) == NULL)
+		{
+			++fail_cnt;
+			printf("error url: %s \n", arg);
+			continue;
+		}
+
+		++ok_cnt;
+		printf("url[%d]: %s \n", all_cnt, arg);
+		printf("host: %s \n", hptr->h_name);
+		
+		for(pptr = hptr->h_aliases; *pptr != NULL; pptr++)
+			printf("\talias: %s \n", *pptr);
+
+		switch(hptr->h_addrtype)
+		{
+			case AF_INET:
+			case AF_INET6:
+				pptr = hptr->h_addr_list;
+				inet_ntop(hptr->h_addrtype, hptr->h_addr, str, sizeof(str));
+				printf("\tfirst ip: %s \n", str);
+				for(; *pptr != NULL; pptr++){
+					inet_ntop(hptr->h_addrtype, *pptr, str, sizeof(str));
+					printf("\tip: %s \n", str);
+				}
+				break;
+			default:
+				printf("\terror ip: unknown address type \n");
+				break;
+		}
+	}
+
+	printf("stat: ok  %d   fail  %d \n", ok_cnt, fail_cnt);
+
+	return 0;
+}
+
 
 int main(int argc, char **argv)
 {
@@ -232,6 +332,8 @@ int main(int argc, char **argv)
 			ret = cmd_rnton(argc, argv);
 		else if( strcmp(argv[1], "udp") == 0 )
 			cmd_udp(argc, argv);
+		else if( strcmp(argv[1], "gethost") == 0 )
+			ret = cmd_gethost(argc, argv);
 		else
 			wftool_usage();
 	}

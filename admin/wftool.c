@@ -21,8 +21,15 @@ void wftool_usage()
 		"wftool rnton [oldfile] [newfile] \n"
 		"wftool udp [send][recv][listen] [--ip] [--hport] [--dport] [--msg] [--pkt] \n"
 		"wftool gethost [url] [url] [...] \n"
+		"wftool asc [-d] [-x] [-X] [-c] [-s] [--all] \n"
 		);
 }
+
+#define dprintf(fmt, ...)	do { \
+	if(debug)	printf(fmt, ##__VA_ARGS__);\
+} while (0)
+
+int debug = 0;
 
 int pipe_fd[2];
 
@@ -63,6 +70,11 @@ int cmd_ntorn(int argc, char **argv)
 	FILE *fp_old, *fp_new;
 	int len=0, i=1, tmp_len=0, line=0;
 
+	if(strcmp(argv[++i], "--debug") == 0)
+		debug = 1;
+	else
+		--i;
+	
 	fp_old = fopen(argv[++i], "r");
 	if(fp_old == NULL)
 	{
@@ -80,18 +92,23 @@ int cmd_ntorn(int argc, char **argv)
 	{
 		++line;
 		tmp_len = strlen(asc_buf);
-		//printf("readline: %d len: %d [%d %d] \n", line, tmp_len, buf[tmp_len-2], buf[tmp_len-1]);
+		if( tmp_len >= 3 )
+			dprintf("readline: %d len: %d [%d %d %d] \n", line, tmp_len, asc_buf[tmp_len-3], asc_buf[tmp_len-2], asc_buf[tmp_len-1]);
+		else if( tmp_len >= 2 )
+			dprintf("readline: %d len: %d [%d %d] \n", line, tmp_len, asc_buf[tmp_len-2], asc_buf[tmp_len-1]);
+		else
+			dprintf("readline: %d len: %d [%d] \n", line, tmp_len, asc_buf[tmp_len-1]);
 		if( asc_buf[tmp_len-1] == '\n' && asc_buf[tmp_len-2] != '\r' )
 		{
 			asc_buf[tmp_len-1] = '\r';
 			asc_buf[tmp_len] = '\n';
 			asc_buf[tmp_len+1] = '\0';
-			//printf("writeline: %d len: %d \n", line, strlen(buf));
+			dprintf("writeline: %d len: %d \n", line, strlen(asc_buf));
 			fputs(asc_buf, fp_new);
 		}
 		else
 		{
-			//printf("writeline: %d len: %d \n", line, strlen(buf)    );
+			dprintf("writeline: %d len: %d \n", line, strlen(asc_buf)    );
 			fputs(asc_buf, fp_new);
 		}
 		memset(asc_buf, 0, sizeof(asc_buf));
@@ -109,6 +126,11 @@ int cmd_rnton(int argc, char **argv)
 	FILE *fp_old, *fp_new;
 	int len=0, i=1, tmp_len=0, line=0;
 
+	if(strcmp(argv[++i], "--debug") == 0)
+		debug = 1;
+	else
+		--i;
+
 	fp_old = fopen(argv[++i], "r");
 	if(fp_old == NULL)
 	{
@@ -126,17 +148,22 @@ int cmd_rnton(int argc, char **argv)
 	{
 		++line;
 		tmp_len = strlen(asc_buf);
-		//printf("readline: %d len: %d [%d %d] \n", line, tmp_len, buf[tmp_len-2], buf[tmp_len-1]);
+		if( tmp_len >= 3 )
+			dprintf("readline: %d len: %d [%d %d %d] \n", line, tmp_len, asc_buf[tmp_len-3], asc_buf[tmp_len-2], asc_buf[tmp_len-1]);
+		else if( tmp_len >= 2 )
+			dprintf("readline: %d len: %d [%d %d] \n", line, tmp_len, asc_buf[tmp_len-2], asc_buf[tmp_len-1]);
+		else
+			dprintf("readline: %d len: %d [%d] \n", line, tmp_len, asc_buf[tmp_len-1]);
 		if( asc_buf[tmp_len-1] == '\n' && asc_buf[tmp_len-2] == '\r' )
 		{
 			asc_buf[tmp_len-2] = '\n';
 			asc_buf[tmp_len-1] = '\0';
-			//printf("writeline: %d len: %d \n", line, strlen(buf));
+			dprintf("writeline: %d len: %d \n", line, strlen(asc_buf));
 			fputs(asc_buf, fp_new);
 		}
 		else
 		{
-			//printf("writeline: %d len: %d \n", line, strlen(buf)    );
+			dprintf("writeline: %d len: %d \n", line, strlen(asc_buf)    );
 			fputs(asc_buf, fp_new);
 		}
 		memset(asc_buf, 0, sizeof(asc_buf));
@@ -317,6 +344,113 @@ int cmd_gethost(int argc, char **argv)
 	return 0;
 }
 
+char asc_note[33][128] = {
+	"NUL(null)",
+	"SOH(start of headline)",
+	"STX (start of text)",
+	"ETX (end of text)",
+	"EOT (end of transmission)",
+	"ENQ (enquiry)",
+	"ACK (acknowledge)",
+	"BEL (bell)",
+	"BS (backspace)",
+	"HT (horizontal tab)",
+	"LF (NL line feed, new line)",
+	"VT (vertical tab)",
+	"FF (NP form feed, new page)",
+	"CR (carriage return)",
+	"SO (shift out)",
+	"SI (shift in)",
+	"DLE (data link escape)",
+	"DC1 (device control 1)",
+	"DC2 (device control 2)",
+	"DC3 (device control 3)",
+	"DC4 (device control 4)",
+	"NAK (negative acknowledge)",
+	"SYN (synchronous idle)",
+	"ETB (end of trans. block)",
+	"CAN (cancel)",
+	"EM (end of medium)",
+	"SUB (substitute)",
+	"ESC (escape)",
+	"FS (file separator)",
+	"GS (group separator)",
+	"RS (record separator)",
+	"US (unit separator)",
+	"(space)"
+};
+char asc127_note[128]="DEL(delete)";
+int cmd_asc(int argc, char **argv)
+{
+	int i=1, j=0;
+	int asc_d=0;
+	char *asc_s = asc_buf;
+	int s_index = -1;
+	int all = 0;
+
+	while(argv[++i])
+	{
+		if( strcmp(argv[i], "-d") == 0 && argv[++i]){
+			sscanf(argv[i], "%d", &asc_d);
+			asc_s[++s_index] = (char)asc_d;
+		}
+		else if( strcmp(argv[i], "-X") == 0 && argv[++i]){
+			sscanf(argv[i], "%X", &asc_d);
+			asc_s[++s_index] = (char)asc_d;
+		}
+		else if( strcmp(argv[i], "-x") == 0 && argv[++i]){
+			sscanf(argv[i], "%x", &asc_d);
+			asc_s[++s_index] = (char)asc_d;
+		}
+		else if( strcmp(argv[i], "-c") == 0 && argv[++i])
+			sscanf(argv[i], "%c", &asc_s[++s_index]);
+		else if( strcmp(argv[i], "-s") == 0 && argv[++i]){
+			sscanf(argv[i], "%s", &asc_s[++s_index]);
+			j = strlen(&asc_s[s_index])-1;
+			s_index = j>0 ? s_index + j : s_index;
+		}
+		else if( strcmp(argv[i], "--all") == 0 )
+			all = 1;
+		else{
+			printf("invalid param: %s \n", argv[i]);
+			return -1;
+		}
+	}
+
+	printf("dec\thex\tchar\tnote \n");
+
+	if(s_index >= 0)
+	{
+		for(j=0; j<=s_index; j++){
+			if(asc_s[j] < 0 || asc_s[j] > 127){
+				printf("invaild asc \n");
+				continue;
+			}
+			if(asc_s[j] >=0 && asc_s[j] <= 32)
+				printf("%d\t0x%02X\t\t%s \n", (int)asc_s[j], asc_s[j], asc_note[(int)asc_s[j]]);
+			else if( asc_s[j] == 127 )
+				printf("%d\t0x%02X\t\t%s \n", (int)asc_s[j], asc_s[j], asc127_note);
+			else
+				printf("%d\t0x%02X\t%c \n", (int)asc_s[j], asc_s[j], asc_s[j]);
+		}
+	}
+
+	if(all)
+	{
+		printf("----------------------------------------\n");
+		for(j=0; j<=127; j++){
+			if(j >=0 && j <= 32)
+				printf("%d\t0x%02X\t\t%s \n", j, j, asc_note[j]);
+			else if( j == 127 )
+				printf("%d\t0x%02X\t\t%s \n", j, j, asc127_note);
+			else
+				printf("%d\t0x%02X\t%c \n", j, j, (char)j);
+		}
+		printf("----------------------------------------\n");
+	}
+
+	return 0;
+}
 
 int main(int argc, char **argv)
 {
@@ -334,6 +468,8 @@ int main(int argc, char **argv)
 			cmd_udp(argc, argv);
 		else if( strcmp(argv[1], "gethost") == 0 )
 			ret = cmd_gethost(argc, argv);
+		else if( strcmp(argv[1], "asc") == 0 )
+			ret = cmd_asc(argc, argv);
 		else
 			wftool_usage();
 	}

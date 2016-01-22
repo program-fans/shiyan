@@ -35,7 +35,8 @@
 typedef enum http_resp_header_state_tag
 {
   http_resp_header_start = 0,
-  http_resp_reading_header
+  http_resp_reading_header,
+  http_resp_header_end
 } http_resp_header_state;
 
 typedef enum http_resp_body_state_tag
@@ -56,6 +57,8 @@ typedef struct http_resp_tag
   http_hdr_list                       *headers;
   char                                *body;
   int                                  body_len;
+    char                                *tmpbody;
+  int                                  tmpbody_len;
   int                                  content_length;
   int                                  flushed_length;
   http_resp_header_state               header_state;

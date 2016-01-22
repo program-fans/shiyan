@@ -6,6 +6,20 @@
 #include <sys/socket.h>
 
 #include "libwf.h"
+#include "ghttp.h"
+
+enum{
+	OFF_GDB,
+	GDB_test,
+	GDB_char,
+	GDB_ipc,
+	GDB_slist,
+	GDB_httpget
+};
+
+int gdb_ctrl = OFF_GDB;
+
+static unsigned char globel_buf[4096] = {0};
 
 void slist_test()
 {
@@ -56,85 +70,7 @@ struct test_t
 		printf("%d ", pos->a);
 	printf("\n");
 }
-void wf_sock_test()
-{
-	int sock;
-	int client_sock;
 
-	sock = wf_listen_socket(80, 1);
-	if(sock < 0)
-	{
-		printf("wf_listen_socket error \n");
-		exit(0);
-	}
-
-	while(1)
-	{
-		client_sock = wf_accept(sock, NULL, NULL);
-		if( client_sock < 0)
-			continue;
-		printf("have client connect \n");
-	}
-}
-void wf_p_app_test(int argc, char **argv)
-{
-	int sock;
-	int ret;
-	char buf[1024]={'\0'};
-	char ip[16]={'\0'};
-
-	sock = socket(AF_INET, SOCK_DGRAM, 0);
-	if(sock < 0){
-		printf("%s \n", wf_socket_error(NULL));
-		return;
-	}
-
-	if(argv[1])
-		sprintf(ip, "%s", argv[1]);
-	else
-		sprintf(ip, "%s", "192.168.0.1");
-	ret = wf_sendto_ip(sock, "test local", strlen("test local"), 0, ip, 48480);
-	WF_PVAR_INT(ret);
-	if(ret < 0){
-		printf("%s \n", wf_socket_error(NULL));
-		return;
-	}
-
-	wf_recvfrom(sock, buf, 1024, 0, NULL);
-
-	printf("recv: %s \n", buf);
-}
-// ------------------------------------------------------------
-void bubble_sort()
-{
-#define TOTAL	10
-	int a[TOTAL] = {56, 84, 5, 854, 24, 0, 5, 45, 0, 48};
-	int i, j, k;
-	int start = 2, end=9;	// start index ~ end index
-	
-	for(i=start+1; i<end; i++)
-	{
-		for(j=start; j<end+1+start-i; j++)
-		{
-			if(a[j] > a[j+1])
-			{
-				//printf("%d <-> %d \n", j, j+1);
-				k = a[j];
-				a[j] = a[j+1];
-				a[j+1] = k;
-			}
-		}
-	}
-
-	for(i=0; i<TOTAL; i++)
-		printf("%d ", a[i]);
-	printf("\n");
-
-	for(i=start; i<end+1; i++)
-		printf("%d ", a[i]);
-	printf("\n");
-}
-// ------------------------------------------------------------
 void ipc_test()
 {
 	int ret;
@@ -149,22 +85,196 @@ void char_test()
 }
 void test()
 {
-	int i=0;
-	char s[128] = "dsagsdga";
-	strrev(s);
+	#define TOTAL	10
+	int a[12] = {56, 84, 5, 854, 24, 0, 5, 45, 0, 48, 486, 42};
+	int i, j, k;
 
-	//printf("i"" = ""%d"" \n", i);
-	WF_PVAR_INT(i);
+	for(i=0; i<TOTAL; i++)
+		printf("%d\t", i);
+	printf("\n");
+	for(i=0; i<TOTAL; i++)
+		printf("%d\t", a[i]);
+	printf("\n");
+	
+	bubble_sort_int(a, 0, 9);
+
+	for(i=0; i<TOTAL; i++)
+		printf("%d\t", a[i]);
+	printf("\n");
 }
 
-void main(int argc, char **argv)
+int ghttp_get_file(char *path, char *url)
 {
-	//test();
-	//char_test();
-	//wf_sock_test();
+	ghttp_request *request = NULL;
+	FILE * pFile=NULL;
+	char *buf=NULL, *file_name = NULL;
+	int ret = 0;
 
-	wf_p_app_test(argc, argv);
-	//ipc_test();
+	ghttp_status req_status;
+	int bytes_read=0,recvbytes=0;
+	int status_code=0;
+	char *redirect = NULL;
+
+	request = ghttp_request_new();
+	if( ghttp_set_uri(request, url) < 0 ){
+			printf("invalid url: %s \n", url);
+       		ret = -1;
+			goto END;
+	}
+	file_name = ghttp_get_resource_name(request);
+	if(path)
+		pFile = fopen ( path , "wb" );
+	else if(file_name)
+		pFile = fopen ( file_name , "wb" );
+	else
+		pFile = fopen ( "httpget.html" , "wb" );
+	if(pFile == NULL){
+		printf("error: %s \n", wf_std_error(NULL));
+		ret = -2;
+		goto END;
+	}
+	if( ghttp_set_type(request, ghttp_type_get) < 0 ){
+    		ret = -3;
+		goto END;
+	}
+	if (ghttp_set_sync(request, ghttp_async) < 0){
+		ret = -3;
+		goto END;
+	}
+	if( ghttp_prepare(request) < 0 ){
+		ret = -3;
+		goto END;
+	}
+
+	do
+	{
+		req_status = ghttp_process(request);
+		if( req_status == ghttp_error ){
+			printf("%s \n", ghttp_get_error(request));
+			ret = -4;
+			goto END;
+		}
+		if (req_status != ghttp_error ) 
+		{
+			if( req_status == ghttp_done )
+			{
+				status_code = ghttp_status_code(request);
+				if(status_code != 200){
+					fclose(pFile);
+					pFile = NULL;
+					break;
+				}
+			}
+			
+			ghttp_flush_response_buffer(request);
+			if(ghttp_get_body_len(request) > 0)
+			{
+				buf = ghttp_get_body(request);
+				bytes_read = ghttp_get_body_len(request);
+				recvbytes += bytes_read;
+				if(buf)
+					fwrite(buf,bytes_read,1,pFile);
+			}
+		}
+	}while (req_status == ghttp_not_done);
+
+	ret = status_code;
+	switch(status_code)
+	{
+	case 200:
+	default:
+		break;
+	case 302:
+		buf = (char *)ghttp_get_header(request, "Location");
+		if(buf){
+			redirect = (char *)malloc(strlen(buf)+1);
+			if(redirect == NULL){
+				ret = -1;
+				goto END;
+			}
+			strcpy(redirect, buf);
+		}
+		break;
+	}
+	
+END:
+	ghttp_clean(request);
+	ghttp_request_destroy(request);
+    	if(pFile)
+		fclose(pFile);
+	if(redirect){
+		printf("redirect: %s \n", redirect);
+		ret = ghttp_get_file(path, redirect);
+		free(redirect);
+	}
+	
+	return ret;
+}
+
+int test_httpget(int argc, char **argv)
+{
+	int i=1;
+	char *path=NULL, *url = NULL;
+	int ret=0;
+	printf("----------- test httpget ----------\n");
+
+	while(argv[++i])
+	{
+		if( strcmp(argv[i], "-O") == 0 && argv[++i])
+			path = argv[i];
+		else{
+			url = argv[i];
+			break;
+		}
+	}
+
+	if(gdb_ctrl == GDB_httpget)
+		ret = ghttp_get_file("httpget_gdb.html", "http://www.baidu.com");
+	else
+		ret = ghttp_get_file(path, url);
+	if(ret < 0)
+		printf("failed get [%d] \n", ret);
+	else if(ret == 0 || ret == 200)
+		printf("get done [%d] \n", ret);
+	else
+		printf("code: %d \n", ret);
+
+	return ret;
+}
+
+int main(int argc, char **argv)
+{
+	int ret=0;
+
+	switch(gdb_ctrl)
+	{
+	case GDB_httpget:
+		ret = test_httpget(argc, argv);
+		return ret;
+		break;
+	case OFF_GDB:
+	default:
+		break;
+	}
+
+	if(argc >= 2)
+	{
+		if( strcmp(argv[1], "char") == 0 )
+			char_test();
+		else if( strcmp(argv[1], "ipc") == 0 )
+			ipc_test();
+		else if( strcmp(argv[1], "slist") == 0 )
+			slist_test();
+		else if( strcmp(argv[1], "httpget") == 0 )
+			ret = test_httpget(argc, argv);
+		else
+			test();
+	}
+	else{
+		test();
+	}
+
+	return ret;
 }
 
 

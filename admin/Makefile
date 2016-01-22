@@ -1,7 +1,10 @@
 
 CC=gcc
 LIB=../wf_lib/include/ -lwf -lpthread
+GLIB=../ghttp_lib/include/ -lghttp
+
 INCLUDE=../wf_lib/include/
+GINCLUDE=../ghttp_lib/include/
 
 all:wolf wftool test
 
@@ -13,7 +16,7 @@ wftool:wftool.c
 	cp -f wftool /usr/sbin/
 
 test:test.c
-	$(CC) test.c -I$(INCLUDE) -L$(LIB) -o test
+	$(CC) -g test.c -I$(INCLUDE) -I$(GINCLUDE) -L$(LIB) -L$(GLIB) -o test
 
 pack:
 	rm -f *.o

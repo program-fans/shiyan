@@ -110,18 +110,18 @@ http_trans_conn *http_trans_conn_new(void)
 	return l_return;
 }
 
-void
-http_trans_conn_destroy(http_trans_conn *a_conn)
-{
-  /* destroy the connection structure. */
-  if (a_conn == NULL)
-    return;
-  if (a_conn->io_buf)
-    free(a_conn->io_buf);
-  if (a_conn->sock != -1)
-    close(a_conn->sock);
-  free(a_conn);
-  return;
+void http_trans_conn_destroy(http_trans_conn *a_conn)
+{	
+	/* destroy the connection structure. */
+	if (a_conn == NULL)
+		return;
+	ghttpDebug("[conn_destroy] current io_buf_len: %d \n", a_conn->io_buf_len);
+	if (a_conn->io_buf)
+		free(a_conn->io_buf);
+	if (a_conn->sock != -1)
+		close(a_conn->sock);
+	free(a_conn);
+	return;
 }
 
 const char *
@@ -159,6 +159,8 @@ int http_trans_read_into_buf(http_trans_conn *a_conn)
 	int l_read = 0;
 	int l_bytes_to_read = 0;
 
+	ghttpDebug("io_buf_io_left=%d, io_buf_io_done=%d, io_buf_len=%d, io_buf_alloc=%d \n",
+		a_conn->io_buf_io_left, a_conn->io_buf_io_done, a_conn->io_buf_len, a_conn->io_buf_alloc);
 	/* set the length if this is the first time */
 	if (a_conn->io_buf_io_left == 0)
 	{
@@ -179,9 +181,10 @@ int http_trans_read_into_buf(http_trans_conn *a_conn)
 	/* read in some data */
 	ghttpDebug("read sock... \n");
 	a_conn->last_read = l_read = read(a_conn->sock, &a_conn->io_buf[a_conn->io_buf_alloc], l_bytes_to_read);
-	ghttpDebug("read sock end \n");
+	ghttpDebug("read sock end [%d] \n", a_conn->last_read);
 	if (l_read < 0)
 	{
+		a_conn->errstr = strerror(errno);
 		if (errno == EINTR)
 			l_read = 0;
 		else
@@ -193,10 +196,13 @@ int http_trans_read_into_buf(http_trans_conn *a_conn)
 	a_conn->io_buf_io_left -= l_read;
 	a_conn->io_buf_io_done += l_read;
 	a_conn->io_buf_alloc += l_read;
+
+	ghttpDebug("io_buf_io_left=%d, io_buf_io_done=%d, io_buf_len=%d, io_buf_alloc=%d \n",
+		a_conn->io_buf_io_left, a_conn->io_buf_io_done, a_conn->io_buf_len, a_conn->io_buf_alloc);
 	/* generate the result */
 	if (a_conn->io_buf_io_left == 0)
 		return HTTP_TRANS_DONE;
-	
+
 	return HTTP_TRANS_NOT_DONE;
 }
 
@@ -230,6 +236,7 @@ int http_trans_write_buf(http_trans_conn *a_conn)
 
 void http_trans_buf_reset(http_trans_conn *a_conn)
 {
+	ghttpDebug("[io_buf_reset] current io_buf_len: %d \n", a_conn->io_buf_len);
 	if (a_conn->io_buf)
 		free(a_conn->io_buf);
 	a_conn->io_buf = malloc(a_conn->io_buf_chunksize);
@@ -240,20 +247,20 @@ void http_trans_buf_reset(http_trans_conn *a_conn)
 	a_conn->io_buf_io_left = 0;
 }
 
-void
-http_trans_buf_clip(http_trans_conn *a_conn, char *a_clip_to)
+void http_trans_buf_clip(http_trans_conn *a_conn, char *a_clip_to)
 {
-  int l_bytes = 0;
+	int l_bytes = 0;
   
-  /* get the number of bytes to clip off of the front */
-  l_bytes = a_clip_to - a_conn->io_buf;
-  if (l_bytes > 0)
-    {
-      memmove(a_conn->io_buf, a_clip_to, a_conn->io_buf_alloc - l_bytes);
-      a_conn->io_buf_alloc -= l_bytes;
-    }
-  a_conn->io_buf_io_done = 0;
-  a_conn->io_buf_io_left = 0;
+	/* get the number of bytes to clip off of the front */
+	l_bytes = a_clip_to - a_conn->io_buf;
+	if (l_bytes > 0)
+	{
+		memmove(a_conn->io_buf, a_clip_to, a_conn->io_buf_alloc - l_bytes);
+		a_conn->io_buf_alloc -= l_bytes;
+	}
+	a_conn->io_buf_io_done = 0;
+	a_conn->io_buf_io_left = 0;
+	ghttpDebug("clip: io_buf_alloc=%d, io_buf_io_done = 0, io_buf_io_left = 0 \n", a_conn->io_buf_alloc);
 }
 
 char *

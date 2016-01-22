@@ -27,18 +27,23 @@
 #define HTTP_TRANS_NOT_DONE       1
 #define HTTP_TRANS_DONE           2
 
-#define HTTP_TRANS_SYNC           0
-#define HTTP_TRANS_ASYNC          1
+#define HTTP_TRANS_SYNC           0		// Õ¨≤Ω
+#define HTTP_TRANS_ASYNC          1		// “Ï≤Ω
 
 /*2015.10.14  Add by wolf-lone*/
-#if 0
+#define GHTTP_DEBUG		0
+#if GHTTP_DEBUG
 #include <stdio.h>
-#define ghttpDebug(fmt, ...)	printf("ghttp> "fmt, ##__VA_ARGS__)
+#define ghttpDebug(fmt, ...)	printf("[%s-%d] "fmt, __FILE__, __LINE__, ##__VA_ARGS__)
 #else
 #define ghttpDebug(fmt, ...)
 #endif
 
 #define GHTTP_ERROR_TRANS			"http trans error"
+#define GHTTP_ERROR_TRANS_SEND			"http trans error: send"
+#define GHTTP_ERROR_TRANS_READ_HEAD			"http trans error: read head"
+#define GHTTP_ERROR_TRANS_READ_BODY			"http trans error: read body"
+#define GHTTP_ERROR_TRANS_CHUNK_LENGTH		"http trans error: invalid chunk length number"
 
 #endif /* GHTTP_GLOBAL_H */
 

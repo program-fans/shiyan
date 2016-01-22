@@ -58,6 +58,8 @@ typedef struct http_trans_conn_tag {
 					    read in and out be? */
   int                  last_read;         /* the size of the last read */
   int                  chunk_len;         /* length of a chunk. */
+  int                  chunk_unread_len;	/*length of unread chunk*/
+  int                  io_buf_flush_en;		/*the flush enable of io_buf.*/
   char                *errstr;            /* a hint as to an error */
 } http_trans_conn;
 

@@ -42,8 +42,8 @@
 
 
 
-
-
+extern void bubble_sort_char(char *str, int start_index, int end_index);
+extern void bubble_sort_int(int *num, int start_index, int end_index);
 
 extern void alarm_start(unsigned int seconds, void (*func)(int));
 
@@ -89,30 +89,23 @@ extern char *wf_std_error(int *errcode);
 
 #ifndef WF_ERROR
 #define WF_ERROR
-enum WF_ERROR_VALUE
-{
-	WF_SUCCESS,
+
+#define WF_SUCCESS					0
 // 1 ~ 10
-	WF_FAILED,
-	WF_ERROR_PARAM,
-	WF_ERROR_MALLOC,
-	WF_ERROR_SOURCE_LACK,					// 资源缺乏
-	WF_ERROR_SPACE_LACK,						// 空间缺乏，程序设计上所限定的空间
+#define WF_FAILED					-1
+#define WF_ERROR_PARAM			-2
+#define WF_ERROR_MALLOC			-3
+#define WF_ERROR_SOURCE_LACK		-4			// 资源缺乏
+#define WF_ERROR_SPACE_LACK		-5			// 空间缺乏，程序设计上所限定的空间
 												// 区别于WF_ERROR_MALLOC
-	WF_ERROR_OPEN,
-	WF_ERROR_CLOSE,
-	WF_ERROR_READ,
-	WF_ERROR_WRITE,
-	WF_ERROR_UNKNOW,
+#define WF_ERROR_OPEN				-6
+#define WF_ERROR_CLOSE				-7
+#define WF_ERROR_READ				-8
+#define WF_ERROR_WRITE				-9
+#define WF_ERROR_UNKNOW			-10
 // 11 ~ 20	
-	WF_ERROR_NUM_MAX
-};
 
-#define wf_return(ret)		return (~ret + 1)			// 取ret 的相反数
-
-extern char wf_error[WF_ERROR_NUM_MAX][128];
-
-#define get_wf_error_str(ret)		wf_error[~ret + 1]
+extern char *get_wf_error_str(int ret);
 
 #endif
 // -------------------------------------------------------------------

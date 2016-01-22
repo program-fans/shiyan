@@ -9,7 +9,8 @@
 
 #include "wf_misc.h"
 
-char wf_error[WF_ERROR_NUM_MAX][128]={
+#define WF_ERROR_NUM_MAX		(~WF_ERROR_UNKNOW+2)
+static char wf_error[WF_ERROR_NUM_MAX][128]={
 	"success",
 // 1 ~ 10
 	"failed",
@@ -25,17 +26,17 @@ char wf_error[WF_ERROR_NUM_MAX][128]={
 // 11 ~ 20
 };
 
+char *get_wf_error_str(int ret)
+{
+	return wf_error[~ret+1];
+}
+
 char *wf_std_error(int *errcode)
 {
 	if(errcode)
 		*errcode = errno;
 	return strerror(errno);
 }
-
-
-
-
-
 
 #if 0
 /*
@@ -76,8 +77,42 @@ int test_jmp()
 
 
 
-
-
+void bubble_sort_char(char *str, int start_index, int end_index)
+{
+	int i, j;
+	char k;
+	
+	for(i=start_index+1; i<end_index; i++)
+	{
+		for(j=start_index; j<end_index+1+start_index-i; j++)
+		{
+			if(str[j] > str[j+1])
+			{
+				k = str[j];
+				str[j] = str[j+1];
+				str[j+1] = k;
+			}
+		}
+	}
+}
+void bubble_sort_int(int *num, int start_index, int end_index)
+{
+	int i, j;
+	int k;
+	
+	for(i=start_index+1; i<end_index; i++)
+	{
+		for(j=start_index; j<end_index+1+start_index-i; j++)
+		{
+			if(num[j] > num[j+1])
+			{
+				k = num[j];
+				num[j] = num[j+1];
+				num[j+1] = k;
+			}
+		}
+	}
+}
 
 
 void alarm_start(unsigned int seconds, void (*func)(int))

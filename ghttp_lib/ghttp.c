@@ -358,12 +358,14 @@ ghttp_status ghttp_process(ghttp_request *a_request)
 {
 	int l_rv = 0;
 
+	ghttpDebug("=======proc: %d \n", a_request->proc);
 	if (a_request->proc == ghttp_proc_none)
 		a_request->proc = ghttp_proc_request;
 	if (a_request->proc == ghttp_proc_request)
 	{
 		if (a_request->connected == 0)
 		{
+			ghttpDebug("connect ... \n");
 			if (http_trans_connect(a_request->conn) < 0)
 			{
 				if (a_request->conn->error_type == http_trans_err_type_errno)
@@ -374,11 +376,12 @@ ghttp_status ghttp_process(ghttp_request *a_request)
 			}
 			a_request->connected = 1;
 		}
-		
+
+		ghttpDebug("send request ... \n");
 		l_rv = http_req_send(a_request->req, a_request->conn);
 		if (l_rv == HTTP_TRANS_ERR)
 		{
-			a_request->errstr = GHTTP_ERROR_TRANS;
+			a_request->errstr = a_request->conn->errstr ? a_request->conn->errstr : GHTTP_ERROR_TRANS_SEND;
 			return ghttp_error;
 		}
 		if (l_rv == HTTP_TRANS_NOT_DONE)
@@ -393,10 +396,11 @@ ghttp_status ghttp_process(ghttp_request *a_request)
 	
 	if (a_request->proc == ghttp_proc_response_hdrs)
 	{
+		ghttpDebug("read headers ... \n");
 		l_rv = http_resp_read_headers(a_request->resp, a_request->conn);
 		if (l_rv == HTTP_TRANS_ERR)
 		{
-			a_request->errstr = GHTTP_ERROR_TRANS;
+			a_request->errstr = a_request->conn->errstr ? a_request->conn->errstr : GHTTP_ERROR_TRANS_READ_HEAD;
 			return ghttp_error;
 		}
 		if (l_rv == HTTP_TRANS_NOT_DONE)
@@ -411,10 +415,11 @@ ghttp_status ghttp_process(ghttp_request *a_request)
 	
 	if (a_request->proc == ghttp_proc_response)
 	{
+		ghttpDebug("read body ... \n");
 		l_rv = http_resp_read_body(a_request->resp, a_request->req, a_request->conn);
 		if (l_rv == HTTP_TRANS_ERR)
 		{
-			a_request->errstr = GHTTP_ERROR_TRANS;
+			a_request->errstr = a_request->conn->errstr ? a_request->conn->errstr : GHTTP_ERROR_TRANS_READ_BODY;
 			/* make sure that the connected flag is fixed and stuff */
 			if (a_request->conn->sock == -1)
 				a_request->connected = 0;
@@ -475,10 +480,10 @@ ghttp_get_status(ghttp_request *a_request)
   return l_return;
 }
 
-void
-ghttp_flush_response_buffer(ghttp_request *a_request)
+void ghttp_flush_response_buffer(ghttp_request *a_request)
 {
-  http_resp_flush(a_request->resp, a_request->conn);
+	if( a_request->proc == ghttp_proc_response || a_request->proc == ghttp_proc_none)
+		http_resp_flush(a_request->resp, a_request->conn);
 }
 
 int

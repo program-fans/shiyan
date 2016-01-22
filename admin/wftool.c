@@ -19,7 +19,7 @@ void wftool_usage()
 	fprintf(stderr, "wftool usage: \n"
 		"wftool ntorn [oldfile] [newfile] \n"
 		"wftool rnton [oldfile] [newfile] \n"
-		"wftool udp [send][recv][listen] [--ip] [--hport] [--dport] [--msg] [--pkt] \n"
+		"wftool udp [send][recv][listen] [--ip] [--hport] [--dport] [--msg] [--pkt] [--resp-pkt] \n"
 		"wftool gethost [url] [url] [...] \n"
 		"wftool asc [-d] [-x] [-X] [-c] [-s] [--all] \n"
 		);
@@ -32,9 +32,6 @@ void wftool_usage()
 int debug = 0;
 
 int pipe_fd[2];
-
-char asc_buf[4096] = {'\0'};
-
 int init_pipe()
 {
 	int fl;
@@ -57,12 +54,14 @@ int init_pipe()
 
 	return 0;
 }
-
 void close_pipe()
 {
 	close(pipe_fd[0]);
 	close(pipe_fd[1]);
 }
+
+
+char asc_buf[4096] = {'\0'};
 
 
 int cmd_ntorn(int argc, char **argv)
@@ -176,14 +175,39 @@ int cmd_rnton(int argc, char **argv)
 	return 0;
 }
 
+int udp_check_recv(int hport)
+{
+	if(hport <= 0 || hport > 65000){
+		printf("invalid hport or not set: %d \n", hport);
+		return 0;
+	}
+	return 1;
+}
+int udp_check_send(char *ip, int dport, int hport)
+{
+	if(!ip_check(ip)){
+		printf("invalid ip or not set: %s \n", ip);
+		return 0;
+	}
+	if(dport <= 0 || dport > 65000){
+		printf("invalid dport or not set: %d \n", dport);
+		return 0;
+	}
+	if(hport < 0 || hport > 65000){
+		printf("invalid hport: %d \n", hport);
+		return 0;
+	}
+	return 1;
+}
 void cmd_udp(int argc, char **argv)
 {
 	int i=1, ret=0;
 	int hport = 0, dport = 0, sport = 0, send = 1;
 	int pkt = 1;
-	int action = 0;	// 0: send; 1: recv; 2: listen
+	int action = 0;	// 0: send; 1: recv; 2: listen; 3: send-listen
 	char ip[16] = {'\0'};
 	char msg[1024] = {'\0'};
+	int resp_pkt = 0;
 
 	++i;
 	if( strcmp(argv[i], "send") == 0 )
@@ -210,6 +234,13 @@ void cmd_udp(int argc, char **argv)
 			if(pkt<=0)
 				pkt = 1;
 		}
+		else if( strcmp(argv[i], "--resp-pkt") == 0 && argv[++i]){
+			resp_pkt = atoi(argv[i]);
+			if(resp_pkt<=0)
+				resp_pkt = 0;
+			if(resp_pkt && action == 0)
+				action = 3;
+		}
 		else{
 			printf("invalid param: %s \n", argv[i]);
 			return;
@@ -220,14 +251,8 @@ void cmd_udp(int argc, char **argv)
 	{
 	default:
 	case 0:		// send
-		if(!ip_check(ip)){
-			printf("invalid ip or not set: %s \n", ip);
+		if( !udp_check_send(ip, dport, hport) )
 			return;
-		}
-		if(dport <= 0 || dport > 65000){
-			printf("invalid dport or not set: %d \n", dport);
-			return;
-		}
 		ret = udp_send_ip(ip, hport, dport, (unsigned char *)msg, strlen(msg));
 		if(ret > 0)
 			printf("send OK: %d bytes \n", ret);
@@ -235,10 +260,8 @@ void cmd_udp(int argc, char **argv)
 			printf("error: %s \n", wf_socket_error(NULL));
 		break;
 	case 1:		// recv
-		if(hport <= 0 || hport > 65000){
-			printf("invalid hport: %d  or not set \n", hport);
+		if( !udp_check_recv(hport) )
 			return;
-		}
 		ret = udp_recv_ip(hport, (unsigned char *)msg, sizeof(msg), ip, &sport);
 		if(ret > 0){
 			printf("recv OK: %d bytes from %s:%d \n", ret, ip, sport);
@@ -248,19 +271,36 @@ void cmd_udp(int argc, char **argv)
 			printf("error: %s \n", wf_socket_error(NULL));
 		break;
 	case 2:		// listen
+	case 3:		// send-listen
 		{
 			int sock, pkt_cnt = 0, host_cnt = 0;
 			unsigned long bytes_cnt = 0;
 			char old_ip[16] = {'\0'};
-			
-			if(hport <= 0 || hport > 65000){
-				printf("invalid hport: %d  or not set \n", hport);
-				return;
+
+			if(action == 2){
+				if( !udp_check_recv(hport) )
+					return;
 			}
+			else if(action == 3){
+				if( !udp_check_send(ip, dport, hport) )
+					return;
+			}
+			
 			sock = wf_udp_socket(hport);
 			if(sock < 0){
 				printf("error: %s \n", wf_socket_error(NULL));
 				return;
+			}
+
+			if(action == 3){
+				ret = wf_sendto_ip(sock, (unsigned char *)msg, strlen(msg), 0,ip, dport);
+				if(ret > 0)
+					printf("send OK: %d bytes \n", ret);
+				else
+					printf("error: %s \n", wf_socket_error(NULL));
+				memset(ip, 0, sizeof(ip));
+				memset(msg, 0, sizeof(msg));
+				printf("-------------------------------------\n");
 			}
 
 			while(pkt)
@@ -451,6 +491,8 @@ int cmd_asc(int argc, char **argv)
 
 	return 0;
 }
+
+
 
 int main(int argc, char **argv)
 {

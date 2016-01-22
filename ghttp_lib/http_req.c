@@ -26,46 +26,47 @@
 #include "http_global.h"
 
 const char *
-http_req_type_char[] = {
-  "GET",
-  "OPTIONS",
-  "HEAD",
-  "POST",
-  "PUT",
-  "DELETE",
-  "TRACE",
-  "CONNECT",
-  "PROPFIND",
-  "PROPPATCH",
-  "MKCOL",
-  "COPY",
-  "MOVE",
-  "LOCK",
-  "UNLOCK",
-  NULL
+http_req_type_char[] =
+{
+	"GET",
+	"OPTIONS",
+	"HEAD",
+	"POST",
+	"PUT",
+	"DELETE",
+	"TRACE",
+	"CONNECT",
+	"PROPFIND",
+	"PROPPATCH",
+	"MKCOL",
+	"COPY",
+	"MOVE",
+	"LOCK",
+	"UNLOCK",
+	NULL
 };
 
 http_req *
 http_req_new(void)
 {
-  http_req *l_return = NULL;
-  
-  l_return = (http_req *)malloc(sizeof(http_req));
-  memset(l_return, 0, sizeof(http_req));
-  /* default to 1.1 */
-  l_return->http_ver = 1.1;
-  l_return->headers = http_hdr_list_new();
-  return l_return;
+	http_req *l_return = NULL;
+
+	l_return = (http_req *)malloc(sizeof(http_req));
+	memset(l_return, 0, sizeof(http_req));
+	/* default to 1.1 */
+	l_return->http_ver = 1.1;
+	l_return->headers = http_hdr_list_new();
+	return l_return;
 }
 
 void
 http_req_destroy(http_req *a_req)
 {
-  if (!a_req)
-    return;
-  if (a_req->headers)
-    http_hdr_list_destroy(a_req->headers);
-  free(a_req);
+	if (!a_req)
+		return;
+	if (a_req->headers)
+		http_hdr_list_destroy(a_req->headers);
+	free(a_req);
 }
 
 int http_req_prepare(http_req *a_req)
@@ -80,7 +81,7 @@ int http_req_prepare(http_req *a_req)
 	http_hdr_set_value(a_req->headers, http_hdr_Host, a_req->host);
 	/* check to see if we have an entity body */
 	if ((a_req->type == http_req_type_post) || (a_req->type == http_req_type_put) ||
-		(a_req->type == http_req_type_trace))
+	        (a_req->type == http_req_type_trace))
 	{
 		sprintf(l_buf, "%d", a_req->body_len);
 		http_hdr_set_value(a_req->headers, http_hdr_Content_Length, l_buf);
@@ -118,12 +119,12 @@ int http_req_send(http_req *a_req, http_trans_conn *a_conn)
 	if (a_conn->proxy_host)
 	{
 		l_request_len = sprintf(l_request, "%s %s HTTP/%01.1f\r\n", http_req_type_char[a_req->type],
-						a_req->full_uri, a_req->http_ver);
+		                        a_req->full_uri, a_req->http_ver);
 	}
 	else
 	{
 		l_request_len = sprintf(l_request, "%s %s HTTP/%01.1f\r\n", http_req_type_char[a_req->type],
-						a_req->resource, a_req->http_ver);
+		                        a_req->resource, a_req->http_ver);
 	}
 	/* set the request in the connection buffer */
 	http_trans_append_data_to_buf(a_conn, l_request, l_request_len);
@@ -132,17 +133,18 @@ int http_req_send(http_req *a_req, http_trans_conn *a_conn)
 	l_request = NULL;
 	/* set the state */
 	a_req->state = http_req_state_sending_request;
-	
+
 http_req_state_sending_request_jump:
 	/* send the request */
-	do 
+	do
 	{
 		l_rv = http_trans_write_buf(a_conn);
 		if ((a_conn->sync == HTTP_TRANS_ASYNC) && (l_rv == HTTP_TRANS_NOT_DONE))
 			return HTTP_TRANS_NOT_DONE;
 		if ((l_rv == HTTP_TRANS_DONE) && (a_conn->last_read == 0))
 			return HTTP_TRANS_ERR;
-	} while (l_rv == HTTP_TRANS_NOT_DONE);
+	}
+	while (l_rv == HTTP_TRANS_NOT_DONE);
 	/* reset the buffer */
 	http_trans_buf_reset(a_conn);
 	/* set up all of the headers */
@@ -173,7 +175,7 @@ http_req_state_sending_request_jump:
 	l_headers_len += 2;
 	/* set the state */
 	a_req->state = http_req_state_sending_headers;
-	
+
 http_req_state_sending_headers_jump:
 	/* blast that out to the network */
 	do
@@ -183,7 +185,8 @@ http_req_state_sending_headers_jump:
 			return HTTP_TRANS_NOT_DONE;
 		if ((l_rv == HTTP_TRANS_DONE) && (a_conn->last_read == 0))
 			return HTTP_TRANS_ERR;
-	} while (l_rv == HTTP_TRANS_NOT_DONE);
+	}
+	while (l_rv == HTTP_TRANS_NOT_DONE);
 	/* reset the buffer */
 	http_trans_buf_reset(a_conn);
 	l_content = http_hdr_get_value(a_req->headers, http_hdr_Content_Length);
@@ -192,16 +195,17 @@ http_req_state_sending_headers_jump:
 		/* append the information to the buffer */
 		http_trans_append_data_to_buf(a_conn, a_req->body, a_req->body_len);
 		a_req->state = http_req_state_sending_body;
-		
+
 http_req_state_sending_body_jump:
-		do 
+		do
 		{
 			l_rv = http_trans_write_buf(a_conn);
 			if ((a_conn->sync == HTTP_TRANS_ASYNC) && (l_rv == HTTP_TRANS_NOT_DONE))
 				return HTTP_TRANS_NOT_DONE;
 			if ((l_rv == HTTP_TRANS_DONE) && (a_conn->last_read == 0))
 				return HTTP_TRANS_ERR;
-		} while (l_rv == HTTP_TRANS_NOT_DONE);
+		}
+		while (l_rv == HTTP_TRANS_NOT_DONE);
 		/* reset the buffer */
 		http_trans_buf_reset(a_conn);
 	}

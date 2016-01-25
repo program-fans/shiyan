@@ -359,6 +359,8 @@ ghttp_status ghttp_process(ghttp_request *a_request)
 	int l_rv = 0;
 
 	ghttpDebug("=======proc: %d \n", a_request->proc);
+	if(a_request->proc == ghttp_proc_done)
+		return ghttp_done;
 	if (a_request->proc == ghttp_proc_none)
 		a_request->proc = ghttp_proc_request;
 	if (a_request->proc == ghttp_proc_request)
@@ -432,7 +434,7 @@ ghttp_status ghttp_process(ghttp_request *a_request)
 			/* make sure that the connected flag is fixed and stuff */
 			if (a_request->conn->sock == -1)
 				a_request->connected = 0;
-			a_request->proc = ghttp_proc_none;
+			a_request->proc = ghttp_proc_done;
 			return ghttp_done;
 		}
 	}
@@ -776,12 +778,22 @@ ghttp_set_proxy_authinfo(ghttp_request *a_request,
   return 0;
 }
 
+char *ghttp_get_host(ghttp_request *a_request)
+{
+	if(a_request && a_request->uri && a_request->uri->host)
+		return a_request->uri->host;
+	else
+		return NULL;
+}
+
 char *ghttp_get_resource_name(ghttp_request *a_request)
 {
 	char *ptr = NULL;
 	
 	if(a_request && a_request->uri && a_request->uri->resource)
 	{
+		if( strcmp(a_request->uri->resource, "/") == 0 )
+			return NULL;
 		ptr = strrchr(a_request->uri->resource, '/');
 		if(ptr)
 			return ++ptr;
@@ -790,5 +802,10 @@ char *ghttp_get_resource_name(ghttp_request *a_request)
 	}
 	else
 		return NULL;
+}
+
+ghttp_proc ghttp_get_proc(ghttp_request *a_request)
+{
+	return a_request ? a_request->proc : ghttp_proc_none;
 }
 

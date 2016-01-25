@@ -76,6 +76,8 @@ http_resp_destroy(http_resp *a_resp)
 		http_hdr_list_destroy(a_resp->headers);
 	if (a_resp->body)
 		free(a_resp->body);
+	if (a_resp->tmpbody)
+		free(a_resp->tmpbody);
 	free(a_resp);
 	return;
 }

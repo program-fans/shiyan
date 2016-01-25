@@ -68,7 +68,8 @@ typedef enum ghttp_proc_tag
   ghttp_proc_none = 0,
   ghttp_proc_request,
   ghttp_proc_response_hdrs,
-  ghttp_proc_response
+  ghttp_proc_response,
+  ghttp_proc_done
 } ghttp_proc;
 
 typedef struct ghttp_current_status_tag
@@ -256,9 +257,12 @@ ghttp_set_proxy_authinfo(ghttp_request *a_request,
 			 const char *a_pass);
 
 
+char *ghttp_get_host(ghttp_request *a_request);
 
 /*Get the file name of resource */
 char *ghttp_get_resource_name(ghttp_request *a_request);
+
+ghttp_proc ghttp_get_proc(ghttp_request *a_request);
 
 
 #ifdef __cplusplus

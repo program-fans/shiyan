@@ -88,6 +88,7 @@ void test()
 	#define TOTAL	10
 	int a[12] = {56, 84, 5, 854, 24, 0, 5, 45, 0, 48, 486, 42};
 	int i, j, k;
+	printf("--------------- test ------------\n");
 
 	for(i=0; i<TOTAL; i++)
 		printf("%d\t", i);
@@ -107,13 +108,15 @@ int ghttp_get_file(char *path, char *url)
 {
 	ghttp_request *request = NULL;
 	FILE * pFile=NULL;
-	char *buf=NULL, *file_name = NULL;
+	char *buf=NULL;
 	int ret = 0;
 
 	ghttp_status req_status;
+	ghttp_proc req_proc;
 	int bytes_read=0,recvbytes=0;
 	int status_code=0;
 	char *redirect = NULL;
+	char *tmp_pchar = NULL;
 
 	request = ghttp_request_new();
 	if( ghttp_set_uri(request, url) < 0 ){
@@ -121,18 +124,19 @@ int ghttp_get_file(char *path, char *url)
        		ret = -1;
 			goto END;
 	}
-	file_name = ghttp_get_resource_name(request);
-	if(path)
-		pFile = fopen ( path , "wb" );
-	else if(file_name)
-		pFile = fopen ( file_name , "wb" );
-	else
-		pFile = fopen ( "httpget.html" , "wb" );
+	
+	if(!path)
+		path = ghttp_get_resource_name(request);
+	if(!path)
+		path = "httpget.html";
+	
+	pFile = fopen ( path , "wb" );
 	if(pFile == NULL){
-		printf("error: %s \n", wf_std_error(NULL));
+		printf("error: %s [%s]\n", wf_std_error(NULL), path);
 		ret = -2;
 		goto END;
 	}
+	printf("host: %s \n", ghttp_get_host(request));
 	if( ghttp_set_type(request, ghttp_type_get) < 0 ){
     		ret = -3;
 		goto END;
@@ -165,18 +169,45 @@ int ghttp_get_file(char *path, char *url)
 					break;
 				}
 			}
-			
-			ghttp_flush_response_buffer(request);
-			if(ghttp_get_body_len(request) > 0)
+
+			req_proc = ghttp_get_proc(request);
+			if( req_proc == ghttp_proc_response || req_proc == ghttp_proc_done )
 			{
-				buf = ghttp_get_body(request);
-				bytes_read = ghttp_get_body_len(request);
-				recvbytes += bytes_read;
-				if(buf)
-					fwrite(buf,bytes_read,1,pFile);
+				if( !tmp_pchar )
+				{
+					default_cursor();
+					tmp_pchar = ghttp_get_header(request, "Content-Length");
+					printf("Content-Length: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = ghttp_get_header(request, "Transfer-Encoding");
+					printf("Transfer-Encoding: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = ghttp_get_header(request, "Content-Encoding");
+					printf("Content-Encoding: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = 1;
+					
+					hide_cursor();
+					printf("recvbytes: ");
+					setBlueWhite();
+					save_cursor();
+				}
+			
+				ghttp_flush_response_buffer(request);
+				if(ghttp_get_body_len(request) > 0)
+				{
+					buf = ghttp_get_body(request);
+					bytes_read = ghttp_get_body_len(request);
+					recvbytes += bytes_read;
+					if(buf)
+						fwrite(buf,bytes_read,1,pFile);
+				}
+
+				recover_cursor();
+				printf("%d", recvbytes);
+				fflush(stdout);
 			}
 		}
 	}while (req_status == ghttp_not_done);
+	default_cursor();
+	show_cursor();
 
 	ret = status_code;
 	switch(status_code)

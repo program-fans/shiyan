@@ -3,7 +3,6 @@ app_list += ghttp_lib
 app_list += sock_raw
 app_list += admin
 app_list += arp
-app_list += cgi_test
 
 all:
 	for d in $(app_list); do \

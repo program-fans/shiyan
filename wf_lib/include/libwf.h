@@ -3,7 +3,6 @@
 
 #include "ac_timer.h"				// no include 
 #include "cJSON.h"					// no include 
-#include "cJSON_Direct.h"			// no include 
 #include "linux_list.h"				// no include 
 #include "wf_bit.h"					// no include 
 #include "wf_char.h"				// no include 

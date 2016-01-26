@@ -21,7 +21,7 @@ void wftool_usage()
 		"wftool rnton [oldfile] [newfile] \n"
 		"wftool udp [send][recv][listen] [--ip] [--hport] [--dport] [--msg] [--pkt] [--resp-pkt] \n"
 		"wftool gethost [url] [url] [...] \n"
-		"wftool asc [-d] [-x] [-X] [-c] [-s] [--all] \n"
+		"wftool asc [-d] [-x] [-X] [-c] [-s] [--all] [--stage] \n"
 		);
 }
 
@@ -426,7 +426,7 @@ int cmd_asc(int argc, char **argv)
 	int asc_d=0;
 	char *asc_s = asc_buf;
 	int s_index = -1;
-	int all = 0;
+	int stage = 0, start = 0, end = 127;
 
 	while(argv[++i])
 	{
@@ -450,7 +450,21 @@ int cmd_asc(int argc, char **argv)
 			s_index = j>0 ? s_index + j : s_index;
 		}
 		else if( strcmp(argv[i], "--all") == 0 )
-			all = 1;
+			stage = 1;
+		else if( strcmp(argv[i], "--stage") == 0 && argv[++i]){
+			if( strstr(argv[i], "-") )
+				sscanf(argv[i], "%d-%d", &start, &end);
+			else if( strstr(argv[i], ":") )
+				sscanf(argv[i], "%d:%d", &start, &end);
+			if(start < 0)	start = 0;
+			if(end > 127)	end = 127;
+			if(start > end){
+				stage = start;
+				start = end;
+				end = stage;
+			}
+			stage = 1;
+		}
 		else{
 			printf("invalid param: %s \n", argv[i]);
 			return -1;
@@ -475,10 +489,10 @@ int cmd_asc(int argc, char **argv)
 		}
 	}
 
-	if(all)
+	if(stage)
 	{
 		printf("----------------------------------------\n");
-		for(j=0; j<=127; j++){
+		for(j=start; j<=end; j++){
 			if(j >=0 && j <= 32)
 				printf("%d\t0x%02X\t\t%s \n", j, j, asc_note[j]);
 			else if( j == 127 )

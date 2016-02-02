@@ -153,7 +153,7 @@ int threadpool_add_job(struct threadpool* pool, int (*callback_function)(void *a
     //assert(callback_function != NULL);
     //assert(arg != NULL);
     struct timeval now;
-    if(pool == NULL || callback_function==NULL || arg==NULL)	return -1;
+    if(pool == NULL || callback_function==NULL)	return -1;
 
     pthread_mutex_lock(&(pool->mutex));
     while ((pool->wait_list.num == pool->queue_max_num) && !(pool->queue_close || pool->pool_close))

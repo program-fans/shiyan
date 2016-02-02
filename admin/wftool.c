@@ -62,7 +62,7 @@ void close_pipe()
 
 
 char asc_buf[4096] = {'\0'};
-
+struct threadpool* thread_pool = NULL;
 
 int cmd_ntorn(int argc, char **argv)
 {
@@ -327,60 +327,156 @@ void cmd_udp(int argc, char **argv)
 
 }
 
+struct gethost_job
+{
+	char *name;
+	int id;
+};
+struct gethost_stat
+{
+	int ok_cnt, fail_cnt, valid_cnt, all_cnt;
+	long start, end;
+	pthread_mutex_t lock; 
+};
+struct gethost_stat cmd_gethost_stat;
+int cmd_gethost_job(void *arg)
+{
+	int ret=0;
+	struct hostent *hptr;
+	char *ptr, **pptr;
+	char str[32];
+	struct gethost_job *name = (struct gethost_job *)arg;
+
+	if((hptr = gethostbyname(name->name)) == NULL)
+	{
+		pthread_mutex_lock(&(cmd_gethost_stat.lock));
+		++cmd_gethost_stat.fail_cnt;
+		pthread_mutex_unlock(&(cmd_gethost_stat.lock));
+		printf("error url[%d]: %s \n", name->id, name->name);
+		ret = -1;
+		goto JOG_END;
+	}
+
+	pthread_mutex_lock(&(cmd_gethost_stat.lock));
+	++cmd_gethost_stat.ok_cnt;
+	pthread_mutex_unlock(&(cmd_gethost_stat.lock));
+	
+	printf("url[%d]: %s \n", name->id, name->name);
+	printf("host: %s \n", hptr->h_name);
+	
+	for(pptr = hptr->h_aliases; *pptr != NULL; pptr++)
+		printf("\talias: %s \n", *pptr);
+
+	switch(hptr->h_addrtype)
+	{
+		case AF_INET:
+		case AF_INET6:
+			pptr = hptr->h_addr_list;
+			inet_ntop(hptr->h_addrtype, hptr->h_addr, str, sizeof(str));
+			printf("\tfirst ip: %s \n", str);
+			for(; *pptr != NULL; pptr++){
+				inet_ntop(hptr->h_addrtype, *pptr, str, sizeof(str));
+				printf("\tip: %s \n", str);
+			}
+			break;
+		default:
+			printf("\terror ip: unknown address type \n");
+			break;
+	}
+
+JOG_END:
+	free(name->name);
+	free(name);
+	return ret;
+}
+
+void cmd_gethost_result()
+{
+	cmd_gethost_stat.end = wf_getsys_uptime(NULL);
+	
+	printf("[stat] all: %d  valid: %d  ok: %d  fail: %d   [time: %ld s]\n", 
+		cmd_gethost_stat.all_cnt, cmd_gethost_stat.valid_cnt,
+		cmd_gethost_stat.ok_cnt, cmd_gethost_stat.fail_cnt,
+		cmd_gethost_stat.end-cmd_gethost_stat.start);
+	
+	if(cmd_gethost_stat.valid_cnt == cmd_gethost_stat.ok_cnt + cmd_gethost_stat.fail_cnt)
+		printf("[stat] finish \n");
+	else
+		printf("[stat] not finish \n");
+}
+
+void cmd_gethost_exit()
+{
+	threadpool_destroy(thread_pool);
+	cmd_gethost_result();
+	exit(0);
+}
+
 int cmd_gethost(int argc, char **argv)
 {
 	int i = 1;
 	char *arg;
-	char *ptr, **pptr;
-	struct hostent *hptr;
-	char str[32];
-	int ok_cnt=0, fail_cnt=0, all_cnt=0;
 	
+	struct gethost_job *pjob = NULL;
+
+	if ( pthread_mutex_init(&(cmd_gethost_stat.lock), NULL) ){
+		printf("error: mutex init \n");
+		return -1;
+	}
+	if( NULL == (thread_pool = threadpool_init(15, 100)) ){
+		printf("error: thread pool init \n");
+		return -2;
+	}
+
+	wf_registe_exit_signal(cmd_gethost_exit);
+	cmd_gethost_stat.start = wf_getsys_uptime(NULL);
 	while(1)
 	{
 		if(argv[2])
 			arg = argv[++i];
-		else
+		else{
+			memset(asc_buf, 0, sizeof(asc_buf));
 			arg = fgets(asc_buf, sizeof(asc_buf), stdin);
+		}
 		if( !arg )
 			break;
+		++cmd_gethost_stat.all_cnt;
 		wipe_off_CRLF_inEnd(arg);
-		++all_cnt;
-		
-		if((hptr = gethostbyname(arg)) == NULL)
-		{
-			++fail_cnt;
-			printf("error url: %s \n", arg);
+		if(0 == strlen(arg))
 			continue;
-		}
+		++cmd_gethost_stat.valid_cnt;
 
-		++ok_cnt;
-		printf("url[%d]: %s \n", all_cnt, arg);
-		printf("host: %s \n", hptr->h_name);
+		pjob = (struct gethost_job *)malloc(sizeof(struct gethost_job));
+		if(pjob){
+			pjob->id = cmd_gethost_stat.all_cnt;
+			pjob->name = strdup(arg);
+			if(!pjob->name){
+				free(pjob);
+				goto fail_done;
+			}
+		}
+		else{
+			goto fail_done;
+		}
 		
-		for(pptr = hptr->h_aliases; *pptr != NULL; pptr++)
-			printf("\talias: %s \n", *pptr);
+		
+		if( threadpool_add_job(thread_pool, cmd_gethost_job, pjob, NULL) < 0)
+			goto fail_done;
+		else
+			continue;
 
-		switch(hptr->h_addrtype)
-		{
-			case AF_INET:
-			case AF_INET6:
-				pptr = hptr->h_addr_list;
-				inet_ntop(hptr->h_addrtype, hptr->h_addr, str, sizeof(str));
-				printf("\tfirst ip: %s \n", str);
-				for(; *pptr != NULL; pptr++){
-					inet_ntop(hptr->h_addrtype, *pptr, str, sizeof(str));
-					printf("\tip: %s \n", str);
-				}
-				break;
-			default:
-				printf("\terror ip: unknown address type \n");
-				break;
-		}
+	fail_done:
+		pthread_mutex_lock(&(cmd_gethost_stat.lock));
+		++cmd_gethost_stat.fail_cnt;
+		pthread_mutex_unlock(&(cmd_gethost_stat.lock));
+		continue;
 	}
+	printf(">>>>>>>>>>>>>>>>>>>>>>> add job num: %d \n", cmd_gethost_stat.all_cnt);
 
-	printf("stat: ok  %d   fail  %d \n", ok_cnt, fail_cnt);
-
+	while(cmd_gethost_stat.valid_cnt != cmd_gethost_stat.ok_cnt + cmd_gethost_stat.fail_cnt)	sleep(1);
+	threadpool_destroy(thread_pool);
+	cmd_gethost_result();
+	
 	return 0;
 }
 
@@ -445,7 +541,7 @@ int cmd_asc(int argc, char **argv)
 		else if( strcmp(argv[i], "-c") == 0 && argv[++i])
 			sscanf(argv[i], "%c", &asc_s[++s_index]);
 		else if( strcmp(argv[i], "-s") == 0 && argv[++i]){
-			sscanf(argv[i], "%s", &asc_s[++s_index]);
+			strcpy(&asc_s[++s_index], argv[i]);
 			j = strlen(&asc_s[s_index])-1;
 			s_index = j>0 ? s_index + j : s_index;
 		}

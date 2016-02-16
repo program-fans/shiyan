@@ -731,8 +731,6 @@ void peek_level_udp(unsigned char *buf, int len, struct conntrack_tuple *tuple)
 	else
 		free_conn_tuple(tuple);
 
-	
-
 	conn->last_time = get_system_uptime(NULL);
 	peek_level_5(buf + sizeof(struct udphdr), len - sizeof(struct udphdr), conn);
 	return;
@@ -752,17 +750,11 @@ void peek_level_3(unsigned char *buf, int len)
 	iph = (struct iphdr *)buf;
 	hlen = (int)(iph->ihl * 4);
 	
-	
+	tuple = new_conn_tuple(iph);
 	if( iph->protocol == IPPROTO_TCP )
-	{
-		tuple = new_conn_tuple(iph);
 		peek_level_tcp(buf + hlen, len - hlen, tuple);
-	}
 	else if( iph->protocol == IPPROTO_UDP )
-	{
-		tuple = new_conn_tuple(iph);
 		peek_level_udp(buf + hlen, len - hlen, tuple);
-	}
 }
 
 void peek_level_2(unsigned char *buf, int len)

@@ -480,44 +480,44 @@ int cmd_gethost(int argc, char **argv)
 	return 0;
 }
 
-char asc_note[33][128] = {
-	"NUL(null)",
-	"SOH(start of headline)",
-	"STX (start of text)",
-	"ETX (end of text)",
-	"EOT (end of transmission)",
-	"ENQ (enquiry)",
-	"ACK (acknowledge)",
-	"BEL (bell)",
-	"BS (backspace)",
-	"HT (horizontal tab)",
-	"LF (NL line feed, new line)",
-	"VT (vertical tab)",
-	"FF (NP form feed, new page)",
-	"CR (carriage return)",
-	"SO (shift out)",
-	"SI (shift in)",
-	"DLE (data link escape)",
-	"DC1 (device control 1)",
-	"DC2 (device control 2)",
-	"DC3 (device control 3)",
-	"DC4 (device control 4)",
-	"NAK (negative acknowledge)",
-	"SYN (synchronous idle)",
-	"ETB (end of trans. block)",
-	"CAN (cancel)",
-	"EM (end of medium)",
-	"SUB (substitute)",
-	"ESC (escape)",
-	"FS (file separator)",
-	"GS (group separator)",
-	"RS (record separator)",
-	"US (unit separator)",
-	"(space)"
-};
-char asc127_note[128]="DEL(delete)";
 int cmd_asc(int argc, char **argv)
 {
+	char asc_note[33][128] = {
+		"NUL(null)",
+		"SOH(start of headline)",
+		"STX (start of text)",
+		"ETX (end of text)",
+		"EOT (end of transmission)",
+		"ENQ (enquiry)",
+		"ACK (acknowledge)",
+		"BEL (bell)",
+		"BS (backspace)",
+		"HT (horizontal tab)",
+		"LF (NL line feed, new line)",
+		"VT (vertical tab)",
+		"FF (NP form feed, new page)",
+		"CR (carriage return)",
+		"SO (shift out)",
+		"SI (shift in)",
+		"DLE (data link escape)",
+		"DC1 (device control 1)",
+		"DC2 (device control 2)",
+		"DC3 (device control 3)",
+		"DC4 (device control 4)",
+		"NAK (negative acknowledge)",
+		"SYN (synchronous idle)",
+		"ETB (end of trans. block)",
+		"CAN (cancel)",
+		"EM (end of medium)",
+		"SUB (substitute)",
+		"ESC (escape)",
+		"FS (file separator)",
+		"GS (group separator)",
+		"RS (record separator)",
+		"US (unit separator)",
+		"(space)"
+	};
+	char asc127_note[128]="DEL(delete)";
 	int i=1, j=0;
 	int asc_d=0;
 	char *asc_s = asc_buf;

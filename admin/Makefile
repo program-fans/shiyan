@@ -1,6 +1,6 @@
 
 CC=gcc
-LIB=../wf_lib/include/ -lwf -lpthread
+LIB=../wf_lib/include/ -lwf -lpthread -lm
 GLIB=../ghttp_lib/include/ -lghttp
 
 INCLUDE=../wf_lib/include/

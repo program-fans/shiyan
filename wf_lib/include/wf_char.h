@@ -5,7 +5,7 @@
 
 
 
-
+extern int str_asc_num(char *str, int size);
 
 
 // 0 <= max <= 128

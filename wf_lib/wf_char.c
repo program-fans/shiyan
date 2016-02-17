@@ -4,6 +4,19 @@
 
 #include "wf_char.h"
 
+int str_asc_num(char *str, int size)
+{
+	int i=0, n=0;
+
+	for(i=0; i<size; i++)
+	{
+		if( str[i] >= 1 && str[i] <= 127 )
+			++n;
+	}
+
+	return n;
+}
+
 char *time2str(long tv, char *out)
 {
 	time_t t = tv;

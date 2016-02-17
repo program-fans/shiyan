@@ -42,6 +42,12 @@
 
 
 
+
+
+
+extern int close_fd_self();
+#define close_fd_parent()	close_fd_self()
+
 extern void bubble_sort_char(char *str, int start_index, int end_index);
 extern void bubble_sort_int(int *num, int start_index, int end_index);
 

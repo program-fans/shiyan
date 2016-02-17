@@ -80,8 +80,17 @@ void ipc_test()
 }
 void char_test()
 {
+#define SWITCH_NUM  1
+
+#if SWITCH_NUM == 0
 	printf("%s \n", time2str_pformat(time(NULL), NULL, "<now: %Y/%M/%D  ## %h:%m:%s >", 64));
 	printf("%s \n", timenow2str(NULL));
+#elif SWITCH_NUM == 1
+	char buf[1024]="edqrae[g-reahreÉÙ´ò¸ö¹»346222223 45\n";
+	int len = strlen(buf);
+
+	printf("len: %d    asc: %d  \n", len, str_asc_num(buf, len));
+#endif
 }
 void test()
 {
@@ -182,7 +191,7 @@ int ghttp_get_file(char *path, char *url)
 					printf("Transfer-Encoding: %s \n", tmp_pchar ? tmp_pchar : "null");
 					tmp_pchar = ghttp_get_header(request, "Content-Encoding");
 					printf("Content-Encoding: %s \n", tmp_pchar ? tmp_pchar : "null");
-					tmp_pchar = 1;
+					tmp_pchar = (char *)1;
 					
 					hide_cursor();
 					printf("recvbytes: ");
@@ -273,6 +282,37 @@ int test_httpget(int argc, char **argv)
 	return ret;
 }
 
+int json_test(int argc, char **argv)
+{
+	cJSON *data;
+	int fmt = 0;
+	printf("----------- test json ----------\n");
+
+	if(argc < 5){
+		printf("test json in-file out-file fmt-code \n");
+		return -1;
+	}
+
+	fmt = atoi(argv[4]);
+	if(fmt < 0)
+		fmt = 1;
+
+	data = json_load_file(argv[2]);
+	if(!data){
+		printf("load %s failed \n", argv[2]);
+		return -1;
+	}
+	printf("load %s OK \n", argv[2]);
+	if( json_dump_file(data, argv[3], fmt) < 0 ){
+		printf("dump %s failed \n", argv[3]);
+		return -1;
+	}
+	printf("dump %s OK \n", argv[3]);
+
+	free(data);
+	return 0;
+}
+
 int main(int argc, char **argv)
 {
 	int ret=0;
@@ -298,6 +338,8 @@ int main(int argc, char **argv)
 			slist_test();
 		else if( strcmp(argv[1], "httpget") == 0 )
 			ret = test_httpget(argc, argv);
+		else if( strcmp(argv[1], "json") == 0 )
+			ret = json_test(argc, argv);
 		else
 			test();
 	}

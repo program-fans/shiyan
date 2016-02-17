@@ -1,0 +1,2811 @@
+/*******************************  string.xml *******************************************/
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources>
+    <!-- 系统级字符串 -->
+    <string name="app_name">悟家</string>
+    <string name="app_version">v1.3</string>
+    <!-- 通用字符串 -->
+    <string name="common_upgrade">升级</string>
+    <string name="common_edit">编辑</string>
+    <string name="common_save">保存</string>
+    <string name="common_complete">完成</string>
+    <string name="common_add">添加</string>
+    <string name="common_switch">切换</string>
+    <string name="common_cancle">取消</string>
+    <string name="common_ok">确定</string>
+    <string name="common_yes">是</string>
+    <string name="common_no">否</string>
+    <string name="common_have_problem">登录遇到问题？</string>
+    <string name="common_latelyrecord">知道了</string>
+    <string name="common_wait">请稍候</string>
+    <string name="common_fail">抱歉，操作失败</string>
+    <string name="common_success">操作成功</string>
+    <string name="common_look">查看</string>
+    <string name="common_nocontent">暂无XX，请添加</string>
+    <string name="common_changewifi_failed">切换失败</string>
+    <string name="common_del_dev_sure">是否删除该设备？</string>
+    <string name="common_del_dev">删除</string>
+    <string name="common_load_data">加载中，请稍候\.\.\.</string>
+    <string name="common_other_link">关联其他</string>
+    <string name="common_prompt">提示</string>
+    <string name="common_next">下一步</string>
+    <string name="common_product">暂不支持</string>
+    <string name="common_null_name">名称不能为空</string>
+    <string name="common_name_too_long">名称太长</string>
+    <string name="common_err">抱歉，程序出错啦</string>
+    <string name="common_err_getdata">抱歉，获取数据异常，请重试</string>
+    <string name="common_null">无</string>
+    <string name="in_english">English</string>
+    <string name="in_ch_cn">简体中文</string>
+    <string name="switch_account">切换账号</string>
+    <string name="removeItem">Remove</string>
+    <string name="common_err_unknow">抱歉，出现未知错误</string>
+    <string name="err_app">很抱歉，程序出现异常，即将退出</string>
+    <string name="common_err_invlid_param">无效参数</string>
+    <string name="common_replace_char">X</string>
+    <string name="common_replace_char_y">Y</string>
+    <string name="common_time_unit_min">分钟</string>
+    <string name="common_dev_busy">设备忙，请稍后</string>
+    <string name="common_content_empty">点击添加</string>
+    <string name="common_not_support_dev_type">请登陆爱粉云平台进行管理</string>
+    <string name="common_click_exit">再按一次，退出程序</string>
+    <string name="common_timer">定时器</string>
+    <string name="common_getdata_fail">获取数据失败</string>
+    <string name="common_dev_not_support">当前设备版本不支持，请升级设备</string>
+    <!-- 系统设备字符串 -->
+    <string name="sys_dev">设备</string>
+    <string name="sys_clone_dev">激活中\.\.\.</string>
+    <string name="sys_dev_sn">序列号&#160;</string>
+    <string name="sys_dev_nickname">名称&#160;</string>
+    <string name="sys_dev_state_online">在线</string>
+    <string name="sys_dev_state_offline">离线</string>
+    <string name="sys_dev_state_logining">登录中\.\.\.</string>
+    <string name="sys_dev_state">状态&#160;</string>
+    <string name="sys_dev_logining">登录中，请稍候\.\.\.</string>
+    <string name="sys_dev_deling">删除中\.\.\.</string>
+    <string name="sys_dev_offline">设备离线</string>
+    <string name="sys_dev_exit_info">真的要退出吗？</string>
+    <string name="sys_dev_exit_ok">退出</string>
+    <string name="sys_dev_already_off">已关闭</string>
+    <string name="sys_dev_already_on">已开启</string>
+    <string name="sys_dev_bind_online">绑定在线</string>
+    <string name="sys_dev_bind_offline">绑定离线</string>
+    <string name="sys_dev_unbind">未绑定</string>
+    <string name="sys_dev_binding">绑定中\.\.\.</string>
+    <string name="sys_dev_info">查看设备信息</string>
+    <string name="sys_dev_mod_bind_pwd">修改绑定密码</string>
+    <string name="sys_dev_mod_name">修改设备名称</string>
+    <string name="sys_dev_mod_area">修改设备区域</string>
+    <string name="sys_area_no_dev">该区域无任何设备</string>
+    <string name="sys_dev_action_bind">绑定</string>
+    <string name="sys_dev_action_unbind">解绑定</string>
+    <string name="sys_dev_no_003record">不支持定时录像</string>
+    <string name="sys_dev_reroot">远程重启</string>
+    <string name="sys_dev_reroot_ok">开始远程重启设备\.\.\.</string>
+    <string name="sys_dev_restore_ok">开始远程恢复出厂\.\.\.</string>
+    <string name="sys_dev_reroot_fail">抱歉，远程重启设备失败</string>
+    <string name="sys_dev_err_sn">无效序列号</string>
+    <string name="sys_dev_err_nikname">无效的名称</string>
+    <string name="sys_dev_err_phone">无效的手机号</string>
+    <string name="sys_dev_err_pwd">密码错误</string>
+    <string name="sys_dev_bind_full">绑定手机达到上限</string>
+    <string name="sys_dev_bindness">需要申请绑定手机</string>
+    <string name="sys_dev_off_line">设备未连接到服务器</string>
+    <string name="sys_dev_net_err">网络异常</string>
+    <string name="sys_dev_server_busy">网络异常</string>
+    <string name="sys_net_err">手机网络不可用</string>
+    <string name="sys_login_err">登录过程中遇到错误，请重试</string>
+    <string name="rs_err_err">抱歉，操作失败</string>
+    <string name="rs_err_init">操作失败尚未初始化</string>
+    <string name="rs_err_not_supprt">抱歉，操作失败，尚不支持该操作</string>
+    <string name="rs_err_not_login">抱歉，操作失败，您尚未登录</string>
+    <string name="rs_err_not_found">抱歉，操作失败，未找到</string>
+    <string name="rs_err_inva_licens">抱歉，操作失败，无效授权文件</string>
+    <string name="sys_err_qrcode">请扫描二维码添加此设备</string>
+    <!-- 设置 -->
+    <string name="sys_settings_title">设置</string>
+    <string name="sys_settings_skin">系统换肤</string>
+    <string name="sys_settings_diy">习惯定制</string>
+    <string name="sys_settings_add">系统添加权限关闭</string>
+    <string name="sys_settings_v3_led_off">悟空指示灯</string>
+    <string name="sys_settings_v3_led_on">悟空指示灯</string>
+    <string name="sys_settings_nickname">修改名称</string>
+    <string name="sys_settings_name_ok">名称修改成功</string>
+    <string name="sys_settings_name_fail">名称修改失败（可能被占用）</string>
+    <string name="sys_settings_nickname_ok">昵称修改成功</string>
+    <string name="sys_settings_nickname_fail">昵称修改失败（可能被占用）</string>
+    <string name="sys_settings_barcode_ok">条形码修改成功</string>
+    <string name="sys_settings_barcode_fail">条形码修改失败</string>
+    <string name="sys_settings_pwd">修改密码</string>
+    <string name="sys_settings_pwd1">修改登录密码</string>
+    <string name="sys_settings_pwd_ok">密码修改成功</string>
+    <string name="sys_settings_pwd_fail">密码修改失败</string>
+    <string name="sys_settings_about">关于我们</string>
+    <string name="sys_settings_config">设置</string>
+    <string name="sys_settings_faq">常见问题</string>
+    <string name="sys_settings_feedback">意见反馈</string>
+    <string name="sys_settings_upgrade">版本更新</string>
+    <string name="sys_settings_nickname_desp">名称</string>
+    <string name="sys_settings_pwd_desp">新密码</string>
+    <string name="sys_settings_eq_sort">设置电器排序方式</string>
+    <string name="sys_settings_eq_sort_by_area">按区域排序</string>
+    <string name="sys_settings_eq_sort_by_type">按类型排序</string>
+    <string name="sys_settings_temp_unit">摄氏度-华氏度</string>
+    <string name="sys_settings_temp_unit_set">温度单位</string>
+    <string name="sys_settings_temp_unit_centi">摄氏度</string>
+    <string name="sys_settings_temp_unit_fah">华氏度</string>
+    
+    <!-- moremenu -->    
+    <string name="more_menu_faq_url">http://www.galaxywind.com/pages/APPFAQ/FAQ.html?language=chinese#q</string>
+    <string name="more_menu_faq_url_root">http://www.galaxywind.com/pages/APPFAQ/FAQ.html?language=chinese</string>
+    <string name="more_menu_faq">常见问题</string>
+    <string name="more_menu_feedback">意见反馈</string>
+    <string name="more_menu_upgrade">设备升级</string>
+    <string name="more_menu_about">关于我们</string>
+    <string name="more_menu_quit">退出登录</string>
+    <string name="more_menu_phone">手机帐号</string>
+    <string name="more_menu_sys_settings">系统设置</string>
+    <string name="more_menu_reboot">远程重启</string>
+    <string name="more_menu_back">我的悟家</string>
+    <string name="more_menu_match">类型匹配</string>
+    <string name="more_menu_phone_pwd">登录密码</string>
+    <string name="more_menu_lang_cn">中文</string>
+    <string name="more_menu_lang_en">English</string>
+    <!-- 从设备 -->
+    <string name="slave_title">主从设备</string>
+    <string name="slave_master_dev">主设备</string>
+    <string name="slave_input_name">设备名称</string>
+    <string name="sys_dev_mod_bind_pwd_title">请输入新绑定密码</string>
+    <string name="slave_input_bindpwd">请输入设备绑定密码</string>
+    <string name="slave_no_slave">没有从设备哦</string>
+    <string name="slave_type"></string>
+    <string name="slave_001">智能遥控</string>
+    <string name="slave_003">摄像头</string>
+    <string name="slave_006">智能主机</string>
+    <string name="slave_007">智能主机</string>
+    <string name="slave_008">智能排插</string>
+    <string name="slave_807">智能主机</string>
+    <string name="slave_808">悟空</string>
+    <string name="slave_ia">智能家电</string>
+    <string name="slave_101">悟能</string>
+    <string name="slave_tmc_jnb">温控器</string>
+    <string name="slave_tmc_yl">温控器</string>
+    <string name="slave_pdc_jcx">配电箱</string>
+    <string name="slave_htc_hp">华天成热泵</string>
+    <string name="slave_chiffo">前锋</string>
+    
+    <string name="slave_unkown_type">未知类型设备</string>
+    <string name="unkown_type_state">不支持该类型的设备</string>
+    <string name="slave_lan_scan">搜索到的设备</string>
+    <string name="slave_in_scan">新设备扫描中……</string>
+    <string name="slave_scan_dev">扫描到新设备&#160;</string>
+    <string name="slave_change_name_ok">修改设备名称成功</string>
+    <string name="slave_change_name_failed">修改设备名称失败</string>
+    <string name="slave_binding_err_pwd">绑定密码错误</string>
+    <string name="slave_binding_err_other">被XX绑定</string>
+    <string name="slave_reboot_sure">即将重启设备，确定？</string>
+    <string name="slave_restore_sure">设备恢复出厂后当前所有配置都会丢失，需要重新一键配置，确定？</string>
+    <string name="slave_resetwifi_sure">即将重置设备Wi-Fi，确定？</string>
+    <string name="slave_reboot_cancel">取消</string>
+    <string name="slave_reboot_reboot">重启</string>
+    
+    <!-- 扫描信息 -->
+    <string name="scan_water_pump">华天成热泵</string>
+    <!-- 一键配置 -->
+    <string name="quik_one">第一步  环境准备</string>
+    <string name="quik_configer">Wi-Fi一键配置</string>
+    <string name="quik_configer_pre">准备环境</string>
+    <string name="quik_add_suc">摄像头离线</string>
+    <string name="quik_cancle">取消配置</string>
+    <string name="quik_confige_fail">Wi-Fi一键配置失败，请重试</string>
+    <string name="quik_two">第二步  Wi-Fi一键配置准备</string>
+    <string name="quik_ssid">SSID</string>
+    <string name="quik_begin_config">开始Wi-Fi一键配置</string>
+    <string name="quik_pwd">密码</string>
+    <string name="quik_configing">正在配置</string>
+    <string name="quik_config_begin">开始配置</string>
+    <string name="quik_config_null_ssid">SSID不能为空</string>
+    <string name="quik_config_comp">Wi-Fi一键配置完成</string>
+    <string name="quik_config_completed">配置完成</string>
+    <string name="quik_config_suc">Wi-Fi一键配置成功</string>
+    <string name="quik_config_no_voice">没有语音提示，怎么办？</string>
+    <string name="quik_config_no_voice_cont">通电3分钟后若未提示“等待Wi-Fi一键配置”， 请长按摄像机底部Reset按钮5秒后松开， 此时设备会语音提示“恢复出厂”， 此时再次等待3分钟即可</string>
+    <string name="quik_no_wifi">手机未连接Wi-Fi，请连接后重试</string>
+    <string name="quik_succes">配置成功后，摄像头会语音提示“Wi-Fi 一键配置成功”</string>
+    <string name="quik_add_config_tip">是否进行Wi-Fi一键配置？</string>
+    <string name="quik_config_step_tip">将摄像头放置到家用路由器的Wi-Fi范围之内，手机连接家里的Wi-Fi并能上网</string>
+    <string name="quik_config_step_tip2">摄像机插上电源，启动三分钟内会给出语音提示：“等待Wi-Fi一键配置”，此时点击下一步。</string>
+    <!-- 设备信息 -->
+    <string name="intelcenter_title">信息 </string>
+    <string name="intelcenter_sys_info">系统信息</string>
+    <string name="intelcenter_sys_sn">序列号</string>
+    <string name="intelcenter_cpu_info">CPU使用率</string>
+    <string name="intelcenter_ram_info">内存使用率</string>
+    <string name="intelcenter_detail_info">详细信息</string>
+    <string name="intelcenter_wireless_net">无线网络</string>
+    <string name="intelcenter_net_interface_info">网口信息</string>
+    <string name="intelcenter_interface_name">接口名</string>
+    <string name="intelcenter_outside_port">外网口</string>
+    <string name="intelcenter_inside_port">内网口</string>
+    <string name="intelcenter_user_info">内网主机信息</string>
+    <string name="intelcenter_computer_name">计算机名</string>
+    <string name="intelcenter_ip_addr">IP地址</string>
+    <string name="intelcenter_mac_addr">MAC地址</string>
+    <string name="intelcenter_connect_stat">连接状态</string>
+    <string name="intelcenter_connect_stat_on">已连接</string>
+    <string name="intelcenter_connect_stat_off">已断开</string>
+    <string name="intelcenter_bytes_packetrecept">收包字节数</string>
+    <string name="intelcenter_bytes_packetsend">发包字节数</string>
+    <string name="intelcenter_access_way">接入方式</string>
+    <string name="intelcenter_access_way_wire">有线接入</string>
+    <string name="intelcenter_access_way_wireless">无线接入</string>
+    <string name="intelcenter_access_way_wireless_password">密码&#160;</string>
+    <string name="intelcenter_sofe_version">固件版本</string>
+    <string name="intelcenter_hard_version">硬件版本</string>
+    <string name="intelcenter_upgrade_version">升级包版本</string>
+    <string name="intelcenter_online_time">设备已运行</string>
+    <string name="intelcenter_connect_time">已连接服务器</string>
+    <string name="intelcenter_wan_time">WAN口已连接</string>
+    <string name="intelcenter_computer_noname">匿名计算机</string>
+    <!-- 环境 -->
+    <string name="env_alarm_desp">家里烟雾探测器触发，请尽快确认  2014\-3\-11</string>
+    <string name="env_info_city">城市 &#160; </string>
+    <string name="env_info_temperature">温度 &#160;</string>
+    <string name="env_info_air">空气质量 &#160; </string>
+    <string name="env_info">天气环境详情</string>
+    <string name="env_no_weather_info">未查询到天气信息</string>
+    <string name="env_snow">雪</string>
+    <string name="env_thunder">雷</string>
+    <string name="env_rain">雨</string>
+    <string name="env_cloudy">阴</string>
+    <string name="env_sunshine_cloudy">云</string>
+    <string name="env_sunshine">晴</string>
+    <string name="env_fog">雾</string>
+    <string name="env_aqi">空气质量（AQI）&#160;&#160;</string>
+    <string name="env_humidity">湿度 &#160;&#160;</string>
+    <string name="env_pm25">PM 2.5&#160;&#160;</string>
+    <string name="env_aqi_light">轻度污染</string>
+    <string name="env_aqi_center">中度污染</string>
+    <string name="env_aqi_hight">严重污染</string>
+    <string name="env_aqi_dark">重度污染</string>
+    <string name="env_aqi_better">良</string>
+    <string name="env_aqi_good">优</string>
+    <string name="env_humidity_dry">干燥</string>
+    <string name="env_humidity_confutable">舒适</string>
+    <string name="env_humidity_hum">湿润</string>
+    <string name="env_location">设置城市</string>
+    <string name="env_up_time">更新于</string>
+    <!-- 更多 -->
+    <string name="more_timer_manage">定时录像</string>
+    <string name="more_area_manage">区域管理</string>
+    <string name="more_notify_manage">小区公告</string>
+    <string name="more_bind_phone">绑定手机</string>
+    <string name="more_plug_manage">系统插座控制</string>
+    <string name="more_curtain_manage">系统窗帘控制</string>
+    <string name="more_secrety">隐私保护</string>
+    <!-- 绑定手机 -->
+    <string name="bind_p_allow">批准</string>
+    <string name="bind_p_reject">拒绝</string>
+    <string name="bind_dec_infor">描述信息</string>
+    <string name="bind_phone">绑定手机</string>
+    <string name="bind_my_phone">绑定本手机</string>
+    <string name="bind_disable">绑定功能未开启</string>
+    <string name="bind_apply">申请</string>
+    <string name="unbind_phone">本手机未绑定</string>
+    <string name="binding_phone">本手机已绑定</string>
+    <string name="apply_bind">申请绑定</string>
+    <string name="apply_dec">备注信息</string>
+    <string name="delete_tip">可以在设备web管理界面删除已绑定手机</string>
+    <string name="bind_phone_authority_tip">未绑定手机不具有修改权限</string>
+    <string name="phone_name_tip">名称</string>
+    <string name="bind_set">绑定设置</string>
+    <string name="bind_resave_tip">收到XX条手机</string>
+    <string name="bind_phone_apply">绑定申请</string>
+    <string name="bind_list">已绑定列表</string>
+    <string name="bind_send">绑定申请已发出</string>
+    <string name="bind_wait_respons">等待已绑定手机处理后，重新登陆即可获得权限</string>
+    <string name="bind_done">绑定申请已被处理</string>
+    <string name="bind_decs">描述 &#160;</string>
+    <string name="bind_apply_time">时间&#160;</string>
+    <string name="bind_apply_mode">型号&#160;</string>
+    <string name="bind_apply_name">名称&#160;</string>
+    <string name="bind_apply_op">绑定操作</string>
+    <string name="phone_number">手机号码&#160;</string>
+    <string name="bind_succe">绑定成功</string>
+    <string name="allow_login">允许普通用户登录</string>
+    <string name="bind_phone_dec">绑定手机功能已开启！为保护您的隐私，未绑定手机将不能登录设备。选择“允许普通用户登录”后，未绑定手机可以登录，但是不具有任何修改权限。</string>
+    <string name="unbind_phone_dec">绑定手机功能已开启，您的手机不具有修改配置的权限，可向已绑定手机申请绑定以获得操作权限</string>
+    <string name="bind_tip">手机绑定功能已开启，您的手机未绑定，没有登录权限，是否向已绑定手机申请绑定？</string>
+    <string name="bind_dec">通过绑定本手机可开启绑定功能，手机将获得设备的最高管理权限：设置未绑定手机的登陆权限、处理其他手机的绑定申请，以保护您的隐私。</string>
+    <string name="bind_full">手机绑定功能已开启，需要绑定设备才具有登录权限，且设备绑定手机数量已满，如需申请绑定手机，请在web管理界面删除多余的绑定手机。</string>
+    <string name="bin_apply_full">该设备已绑定手机数量已达上限，可在web界面删除多余绑定手机</string>
+    <!-- 情景编辑 -->
+    <string name="sceneedit_title">编辑情景</string>
+    <string name="sceneedit_next_time">距下次执行还有</string>
+    <string name="sceneedit_name_hint">情景名称</string>
+    <string name="sceneedit_noname_info">请编辑情景名称</string>
+    <string name="sceneedit_event_desp">任务列表</string>
+    <string name="sceneedit_event_safe_desp2">当前状态&#160;已XX 执行动作&#160;YY</string>
+    <string name="sceneedit_event_safe_off">撤防</string>
+    <string name="sceneedit_event_safe_on">布防</string>
+    <string name="sceneedit_event_safe_ignore">忽略</string>
+    <string name="sceneedit_event_safe_off1">&#160;撤防</string>
+    <string name="sceneedit_event_safe_on1">&#160;布防</string>
+    <string name="sceneedit_event_safe_ignore1">&#160;忽略</string>
+    <string name="sceneedit_action_del">删除情景任务</string>
+    <string name="sceneedit_key_unknown">未知操作</string>
+    <string name="sceneedit_key_008_on">通电</string>
+    <string name="sceneedit_key_008_off">断电</string>
+    <string name="sceneedit_key_record_on">定时录像开启</string>
+    <string name="sceneedit_key_record_off">定时录像关闭</string>
+    <string name="sceneedit_nokey_info">请至少选择一个按键</string>
+    <string name="sceneedit_unknown_type_info">抱歉，未知类型</string>
+    <!-- 情景模式 -->
+    <string name="tab_scene">情景</string>
+    <string name="scene_not_supprt">不支持情景功能，请升级</string>
+    <string name="scene_over_max">已达支持情景最大个数</string>
+    <string name="scene_action_edit">编辑情景</string>
+    <string name="scene_action_del">删除情景</string>
+    <string name="scene_addok">添加情景成功</string>
+    <string name="scene_addfail">抱歉，添加情景失败，请重试</string>
+    <string name="scene_delok">删除情景成功</string>
+    <string name="scene_delfail">抱歉，删除情景失败，请重试</string>
+    <string name="scene_modok">修改情景成功</string>
+    <string name="scene_modfail">抱歉，修改情景失败，请重试</string>
+    <string name="scene_execok">执行情景成功</string>
+    <string name="scene_execfail">抱歉，执行情景失败，请重试</string>
+    <string name="scene_link">选择关联情景</string>
+    <string name="scene_exe_info">执行该情景？</string>
+    <string name="scene_exe_info_ok">执行</string>
+    <string name="scene_exe_noevent_title">添加情景事件？</string>
+    <string name="scene_exe_noevent_msg">没有任何事件，不能执行。是否添加情景事件？</string>
+    <string name="info_no_scene">当前没有情景，请添加</string>
+    <!-- 情景任务 -->
+    <string name="sceneevent_no_deveqs">暂无已学习电器或符合要求设备供选择哦</string>
+    <string name="sceneevent_desp">选择“设备或电器”的操作</string>
+    <string name="sceneevent_desp_replace">设备或电器</string>
+    <string name="sceneevent_choose_dev">选择电器或设备</string>
+    <!-- 情景定时 -->
+    <string name="scenetimer_timer_list">情景定时器列表</string>
+    <string name="scenetimer_add">添加情景定时器</string>
+    <string name="scenetimer_off">情景定时器未开启</string>
+    <string name="scenetimer_no_timer">尚未配置情景定时器</string>
+    <string name="scenetimer_name_hint">定时任务名称</string>
+    <string name="scenetimer_next_time">据下次执行还有</string>
+    <string name="scenetimer_no_tf">提示：请插入003的存储卡</string>
+    <!-- 视频 -->
+    <string name="tab_camera">视频</string>
+    <string name="info_no_camera">当前没有摄像头</string>
+    <string name="video_record_open">开启录像</string>
+    <string name="video_record_close">关闭录像</string>
+    <string name="video_mute_open">开启静音</string>
+    <string name="video_mute_close">取消静音</string>
+    <string name="video_no_image">视频还未显示，无法进行该操作</string>
+    <string name="video_cut_image_ok">截图成功!您可以在SD卡的ihome中看到图片</string>
+    <string name="video_quality_264_HD">高清</string>
+    <string name="video_quality_264_720P">720P</string>
+    <string name="video_quality_264_LD">普清</string>
+    <string name="video_quality_264_SD">标清</string>
+    <string name="video_quality_264_Diy">自定义</string>
+    <string name="video_quality_mjpeg_intelligent">智能</string>
+    <string name="video_quality_mjpeg_general">流畅</string>
+    <string name="video_quality_mjpeg_hd">高清</string>
+    <string name="video_setquality_ok">画质设置成功</string>
+    <string name="video_setquality_fail">画质设置失败</string>
+    <string name="video_info_speed">视频速率&#160; </string>
+    <string name="video_info_size">图像大小&#160; </string>
+    <string name="video_info_fps">视频帧率&#160; </string>
+    <string name="video_info_people">观看人数&#160; </string>
+    <string name="video_menu_capture">截图</string>
+    <string name="video_menu_ptz">云台</string>
+    <string name="video_menu_flip">翻转</string>
+    <string name="video_menu_eqcontrol">电器控制</string>
+    <string name="video_menu_speek">语音对讲</string>
+    <string name="video_quality_resolution_320_240">320x240</string>
+    <string name="video_quality_resolution_640_480">640x480</string>
+    <string name="video_quality_resolution_1280_720">1280x720</string>
+    <string name="video_quality_fps_5">5FPS</string>
+    <string name="video_quality_fps_10">10FPS</string>
+    <string name="video_quality_fps_15">15FPS</string>
+    <string name="video_quality_fps_20">20FPS</string>
+    <string name="video_quality_fps_25">25FPS</string>
+    <string name="video_quality_fps_30">30FPS</string>
+    <string name="video_switch">视频切换</string>
+    <string name="video_switch_no_camera">没有可切换的摄像头</string>
+    <string name="choose_video_switch">请选择需要观看的摄像头</string>
+    <string name="video_speek_btn_nomarl">按住说话</string>
+    <string name="video_speek_btn_pressed">松开结束</string>
+    <string name="info_video_loading">视频加载中....</string>
+    <string name="info_video_others_talking">别人正在讲话，请稍后再试\.\.\.</string>
+    <string name="video_menu_scene">场景</string>
+    <string name="video_menu_cloud_speed"> 云台转速  </string>
+    <string name="video_menu_indoor">室内</string>
+    <string name="video_menu_outdoor">室外</string>
+    <string name="video_menu_diy">自定义</string>
+    <string name="video_tf_time0">00:00</string>
+    <string name="video_tf_time2">02:00</string>
+    <string name="video_tf_time4">04:00</string>
+    <string name="video_tf_time6">06:00</string>
+    <string name="video_tf_time8">08:00</string>
+    <string name="video_tf_time10">10:00</string>
+    <string name="video_tf_time12">12:00</string>
+    <string name="video_tf_time14">14:00</string>
+    <string name="video_tf_time16">16:00</string>
+    <string name="video_tf_time18">18:00</string>
+    <string name="video_tf_time20">20:00</string>
+    <string name="video_tf_time22">22:00</string>
+    <!-- 电器 -->
+    <string name="tab_equipment">电器</string>
+    <string name="equip_input_name">电器名称</string>
+    <string name="equip_over_max">已达支持电器最大个数</string>
+    <string name="info_no_equipment">当前没有电器，请添加</string>
+    <string name="equip_no_support_add">您的设备不支持添加电器哦</string>
+    <string name="delete_equipment">删除电器</string>
+    <string name="equip_modname">重命名</string>
+    <string name="equip_del_ok">电器删除成功</string>
+    <string name="equip_del_fail">抱歉，电器删除失败，请重试</string>
+    <string name="equip_modname_ok">修改成功</string>
+    <string name="equip_modname_fail">抱歉，重命名失败，请重试</string>
+    <string name="equip_type_choose">请选择电器类型</string>
+    <string name="equip_edit_info_title">信息编辑</string>
+    <string name="equip_is_modlink">修改关联设备</string>
+    <string name="equip_is_reporter">中继</string>
+    <string name="equip_set_reporter">设置为中继器</string>
+    <string name="equip_brightness_control">亮度调节</string>
+    <string name="equip_cancel_reporter">取消设置中继器</string>
+    <string name="equipment_type_tv">电视</string>
+    <string name="equipment_type_tvbox">机顶盒</string>
+    <string name="equipment_type_aircondition">空调</string>
+    <string name="equipment_type_ir_other">其他红外设备</string>
+    <string name="equipment_type_lamp">智能灯</string>
+    <string name="equipment_type_plug">智能插座</string>
+    <string name="equipment_type_curtain">智能窗帘</string>
+    <string name="equipment_type_rf_other">其他无线设备</string>
+    <string name="equipment_type_alarm">报警设备</string>
+    <string name="equipment_type_scene_controller">情景遥控器</string>
+    <string name="equipment_type_unknow">其他电器</string>
+    <string name="equipment_type_unkown">未知电器类型</string>
+    <string-array name="equip_type_ir">
+        <item>电视</item>
+        <item>机顶盒</item>
+        <item>空调</item>
+        <item>其他红外设备</item>
+    </string-array>
+    <string-array name="equip_type_wifi">
+        <item>智能灯</item>
+        <item>智能插座</item>
+        <item>智能窗帘</item>
+        <item>其他无线设备</item>
+    </string-array>
+    <string-array name="equip_type_alarm">
+        <item>烟雾感应探测器</item>
+        <item>气体感应探测器</item>
+        <item>广角红外探测器</item>
+        <item>门磁感应器</item>
+        <item>窗户磁感应器</item>
+        <item>智能锁</item>
+        <item>紧急按钮</item>
+    </string-array>
+    <string-array name="equip_ways">
+        <item>1路</item>
+        <item>2路</item>
+        <item>3路</item>
+        <item>4路</item>
+    </string-array>
+    <string-array name="equip_method">
+        <item>单键模式</item>
+        <item>双键模式</item>
+    </string-array>
+    <string name="equip_type_alarm_sl">声光报警器</string>
+    <string name="equip_type_alarm_rf_sl">双向声光报警器</string>
+    <string name="equip_add_choose_ways">选择电器路数</string>
+    <string name="equip_add_choose_method">选择单键或双键</string>
+    <string name="equip_add_choose_link">选择关联设备</string>
+    <string name="equip_link_phone_num">选择关联报警号码</string>
+    <string name="equip_add_choose_erea">选择区域</string>
+    <string name="equip_add_name_hint">电器名称</string>
+    <string name="equip_add_ok">电器添加成功</string>
+    <string name="equip_add_fail">抱歉，请稍后再试试</string>
+    <!-- 智慧路由 -->
+    <!-- 无线摄像头 -->
+    <!-- 红外转发器 -->
+    <string name="info_no_ir_equipment">当前没有红外电器，请添加</string>
+    <!-- 主从设备 -->
+    <string name="unbind_dev">解绑定</string>
+    <string name="watch_dev_info">查看设备信息</string>
+    <!-- 電器控制 -->
+    <string name="eq_new_key">新按键</string>
+    <string name="eq_ctrl_fail">抱歉，控制失败了，请重试!</string>
+    <string name="eq_learn_method_title">选择获取编码方式</string>
+    <string name="eq_learn_method_host">主机学习编码方式</string>
+    <string name="eq_learn_method_eq">电器学习编码方式</string>
+    <string name="eq_learn_title1">按键学习——“</string>
+    <string name="eq_learn_title2">按键学习</string>
+    <string name="eq_learn_txt_setwide">设为宽脉宽</string>
+    <string name="eq_learn_txt_setnarrow">设为窄脉宽</string>
+    <string name="eq_learn_info_sendsingnal_ok">按键信号发送成功!</string>
+    <string name="eq_learn_info_sendsingnal_fail">抱歉，信号发送失败了，请再试试</string>
+    <string name="eq_learn_info_tryalarm_ok">报警尝试成功!</string>
+    <string name="eq_learn_info_sendborns_ok">发送学习到或产生的信号成功!</string>
+    <string name="eq_learn_info_save_ok">编码保存成功!</string>
+    <string name="eq_learn_info_tuning_ok">微调成功!</string>
+    <string name="eq_learn_info_pulse_ok">脉宽调整成功!</string>
+    <string name="eq_learn_info_stop_ok">停止了学习!</string>
+    <string name="eq_learn_info_err">抱歉，学习失败了，请再试试!</string>
+    <string name="eq_learn_info_alarm_success">安防控制编码学习成功</string>
+    <string name="eq_learn_err_learn_out">通知设备端进入学习状态超时</string>
+    <string name="eq_learn_err_input_out">用户按遥控器超时</string>
+    <string name="eq_learn_err_rev_alarm_out">尝试接收学习到的报警信号超时，有可能未学习成功或者用户未触发报警信号</string>
+    <string name="eq_learn_err_wait_out">等待设备返回尝试结果超时</string>
+    <string name="eq_learn_err_gen_out">等待设备返回产生编码结果超时</string>
+    <string name="eq_learn_err_stop_out">等待设备回应停止学习报文超时</string>
+    <string name="eq_learn_err_wid_query_out">等待设备回应脉宽查询报文超时</string>
+    <string name="eq_learn_err_wid_set_out">等待设备回应脉宽设置报文超时</string>
+    <string name="eq_learn_err_ajust_out">等待设备回应射频微调报文超时</string>
+    <string name="eq_learn_err_busyoroffline">设备忙，正在学习或者处理控制信号</string>
+    <string name="eq_learn_err_same_code">学习到的编码重复了</string>
+    <string name="eq_key_over_max">已达支持按键最大个数</string>
+    <string name="eq_key_add_fail">网络稍有延时，请稍后再试</string>
+    <string name="eq_key_mod_fail">抱歉，按键修改失败了，请重试</string>
+    <string name="eq_key_del_fail">抱歉，按键删除失败了，请重试</string>
+    <string name="eq_key_add_hint">按键名称</string>
+    <string name="eq_key_add_title">请编写按键名称</string>
+    <string name="eq_no_key">一个按键都没有，请添加</string>
+    <string name="eq_curtain_btn_open">开</string>
+    <string name="eq_curtain_btn_close">关</string>
+    <string name="eq_curtain_btn_stop">停</string>
+    <string name="eq_curtain_rf_return">抱歉，控制失败了，还原位置!</string>
+    <string name="eq_curtain_rf_check_before">请先校验窗帘状态哦!</string>
+    <string name="eq_air_new_edit_title">选择按键的模式和温度</string>
+    <string name="eq_air_new_edit_desp">请选择刚学习按键的模式和温度&#160;</string>
+    <string name="eq_air_btn_cold">制冷</string>
+    <string name="eq_air_btn_hot">制热</string>
+    <string name="eq_air_btn_wind">送风</string>
+    <string name="eq_air_btn_hum">除湿</string>
+    <string name="eq_air_btn_auto">自动</string>
+    <string name="eq_air_btn_close">关机</string>
+    <string name="eq_air_temper_desp">室外温度</string>
+    <string name="eq_air_temper">XX℃</string>
+    <string name="eq_air_temper_unit">℃</string>
+    <string name="eq_light_switch">开关</string>
+    <string name="qp_control_title">悟能遥控面板</string>
+    <string name="eq_light_btn_open">总开</string>
+    <string name="eq_light_btn_close">总关</string>
+    <string name="eq_light_key_open">路开</string>
+    <string name="eq_light_key_close">路关</string>
+    <string name="eq_light_key_switch">路开关</string>
+    <string name="eq_plug_key_open">路通电</string>
+    <string name="eq_plug_key_close">路断电</string>
+    <string name="eq_plug_key_switch">路插座</string>
+    <string name="eq_tv_chanup">频道+</string>
+    <string name="eq_tv_chandown">频道-</string>
+    <string name="eq_tv_volup">音量+</string>
+    <string name="eq_tv_voldown">音量-</string>
+    <string name="eq_tv_mute">静音</string>
+    <string name="eq_tv_avtv">AV/TV</string>
+    <string name="eq_tv_power">电源</string>
+    <string name="eq_tv_back">返回</string>
+    <string name="eq_tv_menu">菜单</string>
+    <string name="eq_tv_up">上</string>
+    <string name="eq_tv_down">下</string>
+    <string name="eq_tv_left">左</string>
+    <string name="eq_tv_right">右</string>
+    <string name="eq_security_code_desp">控制编码</string>
+    <string name="eq_security_code">重学编码</string>
+    <string name="eq_security_code_learn">开始学习</string>
+    <string name="eq_security_push_desp">报警推送</string>
+    <string name="eq_security_sms_desp">短信开关</string>
+    <string name="eq_security_smstitle_desp">短信文本编辑</string>
+    <string name="eq_security_sms_hint">报警短信内容</string>
+    <string name="eq_security_sms_save">保存短信内容</string>
+    <string name="alarm_switch_old">布防开关</string>
+    <string name="alarm_sound_light">声光报警器&#160;</string>
+    <string name="alarm_link_scene">触发后执行情景&#160;</string>
+    <string name="alarm_link_ph_num">短信接收号码&#160;</string>
+    <string name="alarm_not_found">未查询到报警器信息</string>
+    <string name="alarm_no_scene">未关联任何情景</string>
+    <string name="alarm_total">共XX个</string>
+    <string name="alarm_null_msg">请填写报警信息</string>
+    <string name="alarm_sl_no">尚未配置声光报警器</string>
+    <string name="alarm_sl_no_desp">当前没有声光报警器</string>
+    <string name="alarm_sl_title">声光报警器关联配置</string>
+    <string name="alarm_sl_switch_desp">声光报警器开关</string>
+    <string name="eq_key_action_rename">重命名</string>
+    <string name="eq_key_action_learn">学习编码</string>
+    <string name="eq_key_action_del">删除按键</string>
+    <string name="alarm_no_phone">当前无任何报警号码，请添加</string>
+    <!-- 按键学习 -->
+    <string name="keylearn_step_title">第1步 准备环境</string>
+    <string name="keylearn_step_desp">1. 准备好电器遥控器，将遥控器靠近和对准智慧主机\n\n2. “开始”后，请在倒计时结束前，按下您想要学习按钮</string>
+    <string name="keylearn_action_start">开始</string>
+    <string name="keylearn_action_try">尝试</string>
+    <string name="keylearn_action_save">保存</string>
+    <string name="keylearn_action_stop">停止</string>
+    <string name="keylearn_action_tundown">微调 -</string>
+    <string name="keylearn_action_pulse">脉宽</string>
+    <string name="keylearn_action_tunup">微调 +</string>
+    <string name="keylearn_time_remain_desp">还有</string>
+    <string name="keylearn_time_remain">30</string>
+    <string name="keylearn_time_remain_unit">s</string>
+    <!-- 学习过程各种描述 -->
+    <string name="keylearn_desp_link007">主机</string>
+    <string name="keylearn_desp_link001">网络型万能遥控器</string>
+    <string name="keylearn_desp_link003">无线摄像头</string>
+    <!-- 红转 -->
+    <string-array name="keylearn_infr_title">
+        <item>第1步 准备环境</item>
+        <item>第2步 观察学习结果</item>
+    </string-array>
+    <string-array name="keylearn_infr_desp">
+        <item> 1. 准备好能正常工作的电器遥控板和红外转发器\n
+            2. 学习过程中，让遥控板、主机、红外转发器尽量靠近，以便观察和学习\n
+            3. 按下红外转发器“SET”按钮，确认面板绿灯亮起，点击“开始”\n</item>
+        <item>1. 红外转发器红灯亮（如未亮，请点“尝试”按钮）\n
+            2. 将遥控器对准红外转发，按要学习的按钮，学习成功时，红外转发器红、绿灯会全灭</item>
+    </string-array>
+    <string name="keylearn_infr_tips1">注意：红外转发器有超时时间，后续操作请尽快完成 </string>
+    <string name="keylearn_infr_tips2">提示：若多次尝试后，仍不能学习到主机的无线信号，请调整脉宽后再试 </string>
+    <!-- 安防 -->
+    <string-array name="keylearn_alarm_title">
+        <item>第1步 准备环境</item>
+        <item>第2步 学习编码</item>
+    </string-array>
+    <string-array name="keylearn_alarm_desp">
+        <item> 1. 准备好能正常工作的报警器，将遥控器靠近和对准主机\n
+            2. “开始”后，请在倒计时结束前触发报警器</item>
+        <item>1. 学习到编码后将自动返回到控制界面\n</item>
+    </string-array>
+    <!-- RF Host -->
+    <string-array name="keylearn_rfhost_title">
+        <item>第1步 准备环境</item>
+        <item>第2步 学习编码</item>
+        <item>第3步 编码调整</item>
+    </string-array>
+    <string-array name="keylearn_rfhost_desp">
+        <item> 1. 准备好能正常工作的电器遥控器，将遥控器靠近和对准主机\n
+            2. “开始”后，请在倒计时结束前按下您想学习的按钮</item>
+        <item>1. 按下遥控器按钮后，请确认能否控制电器\n</item>
+        <item>1. 如果学习到的编码无法控制电器时，您可以通过微调来调整控制信号\n</item>
+        <item>1. 学习结束，请注意保存编码\n</item>
+    </string-array>
+    <!-- RF Gen -->
+    <string-array name="keylearn_rfgen_title">
+        <item>第1步 准备环境</item>
+        <item>第2步 观察学习状态</item>
+    </string-array>
+    <string-array name="keylearn_rfgen_desp">
+        <item>1. 准备好处于正常工作的电器，确认电器支持学习功能\n
+            2. 根据厂商说明书，将电器设置为学习编码状态\n
+            3. 当电器处于学习状态时，请点击开始</item>
+        <item>1. 如果无法控制电器，请调整脉宽后再尝试\n</item>
+    </string-array>
+    <!-- 修改密码 -->
+    <string name="layout_change_oldpwd">旧密码</string>
+    <string name="layout_change_newpwd">新密码</string>
+    <string name="info_changepwd_errold">旧密码不正确</string>
+    <string name="info_changepwd_same">新密码和旧密码一样</string>
+    <string name="info_changepwd_notsame">新密码和确认密码不一样</string>
+    <string name="dev_change_pwd">设备密码</string>
+    <!-- 手机账号登录后 -->
+    <string name="phone_main_title">我的设备</string>
+    <string name="phone_more_problems">常见问题</string>
+    <string name="phone_more_exit">退出登录</string>
+    <string name="phone_adddevice_title">添加设备</string>
+    <string name="phone_adddevice_ok">添加成功</string>
+    <string name="phone_adddevice_fail">添加失败</string>
+    <string name="phone_adddevice_samesn">已存在</string>
+    <string name="phone_declare_title">责任与声明</string>
+    <string name="phone_register_hasuser">已有账号，直接登录</string>
+    <string name="phone_delete_device_fail">删除设备失败</string>
+    <!-- 手机账号注册找回密码 -->
+    <string name="login_phone_title">手机用户登录</string>
+    <string name="login_type_phone">手机号</string>
+    <string name="login_phone_register">注册</string>
+    <string name="login_phone_countrydesp">国家和地区</string>
+    <string name="login_phone_countryname">中国</string>
+    <string name="login_phone_areanum_hint"> +86 </string>
+    <string name="login_phone_num_hint"> 手机号码 </string>
+    <string name="login_phone_pwd_hint"> 密码 </string>
+    <string name="login_phone_otherlogin">其他方式登录</string>
+    <string name="login_access_desp">登录</string>
+    <string name="login_phone_findpwd">找回密码</string>
+    <string name="login_phone_register_title">手机账号注册</string>
+    <string name="login_register">账号注册</string>
+    <string name="login_phone_rqvcode">请求发送验证码到</string>
+    <string name="login_phone_vcodefail">验证码获取失败</string>
+    <string name="login_phone_captcha_title">用户验证</string>
+    <string name="login_phone_getcaptcha">获取验证码</string>
+    <string name="info_phone_rightnum">请输入正确的手机号码</string>
+    <string name="info_phone_registered">您的手机号已经注册过了，请直接登录</string>
+    <string name="info_phone_input_rightvcode">验证码有误，请核对</string>
+    <string name="info_phone_input_pwd">请输入密码</string>
+    <string name="info_phone_input_pwd_again">请重复输入登录密码</string>
+    <string name="info_phone_input_not_same">请确认两次输入是否一致</string>
+    <string name="info_phone_exit_setpwd">验证码短信可能略有延迟，请确认是否不再等待？</string>
+    <string name="info_login_err">登录失败</string>
+    <string name="info_login_err_register">抱歉，手机账号注册失败</string>
+    <string name="info_login_wrongsn">无效序列号，请核对一下</string>
+    <string name="info_login_wrongnickname">无效名称，请核对一下</string>
+    <string name="info_login_wrongnickpwd">密码输错了哟</string>
+    <string name="info_login_noregister">这个手机号还没注册呢</string>
+    <string name="login_phone_numdesp_agree">我已阅读并同意</string>
+    <string name="login_phone_numdesp_dir">条款及隐私政策说明</string>
+    <string name="login_captcha_5mins">已发送验证码（5分钟内有效）到该号码</string>
+    <string name="login_captcha_inputhint">验证码</string>
+    <string name="login_captcha_60sec">60后可点此重新获取验证码</string>
+    <string name="login_captcha_pwd">密码</string>
+    <string name="login_captcha_pwd_again">确认密码</string>
+    <string name="login_captcha_remaintime">后可点此重新获取验证码</string>
+    <string name="login_captcha_timeout">重新获取验证码</string>
+    <string name="login_phone_adddeice_snorname">序列号/设备名称</string>
+    <string name="login_phone_adddeice_pwd">密码</string>
+    <string name="login_phone_numdesp_dirdesp">重要须知\n
+	\n\u0020\u0020\u0020\u0020\u0020\u0020在此特别提醒用户认真阅读、充分理解本《用户协议》（下称《协议》）--- 用户应认真阅读、充分理解本《协议》中各条款，包括免责条款及对用户的权利限制条款。请您审慎阅读并选择接受或不接受本《协议》（未成年人应在法定监护人陪同下阅读）。除非您接受本《协议》所有条款，否则您无权注册、登录或使用本协议所涉相关服务。您的注册、登录、使用等行为将视为对本《协议》的接受，并同意接受本《协议》各项条款的约束。
+	\n\n\u0020\u0020\u0020\u0020\u0020\u0020本《协议》是您（下称“用户”）与我公司之间关于用户注册、登录、使用本应用程序服务所订立的协议。本《协议》描述我公司与用户之间关于本应用程序服务相关方面的权利义务。“用户”是指注册、登录、使用、浏览本服务的个人或组织。
+	\n\n\u0020\u0020\u0020\u0020\u0020\u0020您对本协议的接受即受全部条款的约束，包括接受我公司对任一服务条款随时所做的任何修改。本《协议》可由我公司随时更新，更新后的协议条款一旦公布即代替原来的协议条款，恕不再另行通知，用户可在本网站查阅最新版协议条款。在我公司修改《协议》条款后，如果用户不接受修改后的条款，请立即停止使用我公司提供的服务，用户继续使用我公司提供的服务将被视为已接受了修改后的协议。
+	\n\n
+	一、使用规则
+	\n\n1、用户充分了解并同意，本应用程序仅为用户提供信息分享、传送及获取的平台，用户必须为自己注册帐号下的一切行为负责，包括您所传送的任何内容以及由此产生的任何结果。用户应对本应用程序中的内容自行加以判断，并承担因使用内容而引起的所有风险，包括因对内容的正确性、完整性或实用性的依赖而产生的风险。我公司无法且不会对因用户行为而导致的任何损失或损害承担责任。
+	\n\n2、用户在本应用程序服务中或通过本应用程序服务所传送的任何内容并不反映我公司的观点或政策，我公司对此不承担任何责任。
+	\n\n3、用户须对在本应用程序上所传送信息的真实性、合法性、无害性、有效性等全权负责，与用户所传播的信息相关的任何法律责任由用户自行承担。
+	\n\n4、我公司保留因业务发展需要，单方面对本服务的全部或部分服务内容在任何时候不经任何通知的情况下变更、暂停、限制、终止或撤销本应用程序服务的权利，用户需承担此风险。
+	\n\n5、本应用程序提供的服务中可能包括广告，用户同意在使用过程中显示本应用程序和第三方供应商、合作伙伴提供的广告。
+	\n\n6、用户不得利用本应用程序或本应用程序服务制作、上载、复制、发送如下内容：
+	\n		（1） 反对宪法所确定的基本原则的； 
+	\n		（2） 危害国家安全，泄露国家秘密，颠覆国家政权，破坏国家统一的； 
+	\n		（3） 损害国家荣誉和利益的； 
+	\n		（4） 煽动民族仇恨、民族歧视，破坏民族团结的； 
+	\n		（5） 破坏国家宗教政策，宣扬邪教和封建迷信的； 
+	\n		（6） 散布谣言，扰乱社会秩序，破坏社会稳定的； 
+	\n		（7） 散布淫秽、色情、赌博、暴力、凶杀、恐怖或者教唆犯罪的； 
+	\n		（8） 侮辱或者诽谤他人，侵害他人合法权益的； 
+	\n		（9） 含有法律、行政法规禁止的其他内容的信息。 
+	\n\n7、我公司可依其合理判断，对违反有关法律法规或本协议约定；或侵犯、妨害、威胁任何人权利或安全的内容，或者假冒他人的行为，我公司有权依法停止传输任何前述内容，并有权依其自行判断对违反本条款的任何人士采取适当的法律行动，包括但不限于，从本应用程序服务中删除具有违法性、侵权性、不当性等内容，终止违反者的成员资格，阻止其使用本应用程序全部或部分服务，并且依据法律法规保存有关信息并向有关部门报告等。
+	\n\n8、用户权利及义务：
+	\n		（1） 本应用程序帐号的所有权归我公司所有，用户完成申请注册手续后，获得本应用程序帐号的使用权，该使用权仅属于初始申请注册人，禁止赠与、借用、租用、转让或售卖。我公司因经营需要，有权回收用户的本应用程序帐号。
+	\n		（2） 用户注册本应用程序帐号后如果长期不登录该帐号，我公司有权回收该帐号，以免造成资源浪费，由此带来问题均由用户自行承担。
+	\n
+	\n二、隐私保护
+	\n\n\u0020\u0020\u0020\u0020\u0020\u0020用户同意个人隐私信息是指那些能够对用户进行个人辨识或涉及个人通信的信息，包括下列信息：用户真实姓名，身份证号，手机号码，IP地址。而非个人隐私信息是指用户对本服务的操作状态以及使用习惯等一些明确且客观反映在服务器端的基本记录信息和其他一切个人隐私信息范围外的普通信息；以及用户同意公开的上述隐私信息；
+	\n\u0020\u0020\u0020\u0020\u0020\u0020尊重用户个人隐私信息的私有性是我公司的一贯制度，我公司将会采取合理的措施保护用户的个人隐私信息，除法律或有法律赋予权限的政府部门要求或用户同意等原因外，我公司未经用户同意不向除合作单位以外的第三方公开、 透露用户个人隐私信息。 但是，用户在注册时选择同意，或用户与我公司及合作单位之间就用户个人隐私信息公开或使用另有约定的除外，同时用户应自行承担因此可能产生的任何风险，我公司对此不予负责。同时，为了运营和改善我公司的技术和服务，我公司将可能会自行收集使用或向第三方提供用户的非个人隐私信息，这将有助于我公司向用户提供更好的用户体验和提高我公司的服务质量。
+	\n
+	\n三、本应用程序商标信息
+	\n\n\u0020\u0020\u0020\u0020\u0020\u0020本应用程序服务中所涉及的UM、本应用程序 logo等图形、文字或其组成，以及其他我公司标志及产品、服务名称，均为我公司之商标（以下简称“我公司标识”）。未经我公司事先书面同意，用户不得将我公司标识以任何方式展示或使用或作其他处理，也不得向他人表明您有权展示、使用、或其他有权处理我公司标识的行为。
+	\n
+	\n四、法律责任及免责
+	\n\n1、用户违反本《协议》或相关的服务条款的规定，导致或产生的任何第三方主张的任何索赔、要求或损失，包括合理的律师费，用户同意赔偿我公司与合作公司、关联公司，并使之免受损害。
+	\n\n2、用户因第三方如电信部门的通讯线路故障、技术问题、网络、电脑故障、系统不稳定性及其他各种不可抗力原因而遭受的一切损失，我公司及合作单位不承担责任。
+	\n\n3、因技术故障等不可抗事件影响到服务的正常运行的，我公司及合作单位承诺在第一时间内与相关单位配合，及时处理进行修复，但用户因此而遭受的一切损失，我公司及合作单位不承担责任。
+	\n\n4、本服务同大多数互联网服务一样，受包括但不限于用户原因、网络服务质量、社会环境等因素的差异影响，可能受到各种安全问题的侵扰，如他人利用用户的资料，造成现实生活中的骚扰；用户下载安装的其它软件或访问的其他网站中含有“特洛伊木马”等病毒，威胁到用户的计算机信息和数据的安全，继而影响本服务的正常使用等等。用户应加强信息安全及使用者资料的保护意识，要注意加强密码保护，以免遭致损失和骚扰。
+	\n\n5、用户须明白，使用本服务因涉及Internet服务，可能会受到各个环节不稳定因素的影响。因此，本服务存在因不可抗力、计算机病毒或黑客攻击、系统不稳定、用户所在位置、用户关机以及其他任何技术、互联网络、通信线路原因等造成的服务中断或不能满足用户要求的风险。用户须承担以上风险，我公司不作担保。对因此导致用户不能发送和接受阅读信息、或接发错信息，我公司不承担任何责任。
+	\n\n6、用户须明白，在使用本服务过程中存在有来自任何他人的包括威胁性的、诽谤性的、令人反感的或非法的内容或行为或对他人权利的侵犯（包括知识产权）的匿名或冒名的信息的风险，用户须承担以上风险，我公司和合作公司对本服务不作任何类型的担保，不论是明确的或隐含的，包括所有有关信息真实性、适商性、适于某一特定用途、所有权和非侵权性的默示担保和条件，对因此导致任何因用户不正当或非法使用服务产生的直接、间接、偶然、特殊及后续的损害，不承担任何责任。
+	\n\n7、我公司定义的信息内容包括：文字、软件、声音、相片、录像、图表；在广告中全部内容；我公司为用户提供的商业信息，所有这些内容受版权、商标权、和其它知识产权和所有权法律的保护。所以，用户只能在我公司和广告商授权下才能使用这些内容，而不能擅自复制、修改、编纂这些内容、或创造与内容有关的衍生产品。
+	\n\n8、在任何情况下，我公司均不对任何间接性、后果性、惩罚性、偶然性、特殊性或刑罚性的损害，包括因用户使用本应用程序服务而遭受的利润损失，承担责任（即使本应用程序已被告知该等损失的可能性亦然）。尽管本协议中可能含有相悖的规定，我公司对您承担的全部责任，无论因何原因或何种行为方式，始终不超过您在成员期内因使用本应用程序服务而支付给我公司的费用（如有） 。
+	\n
+	\n五、其他条款
+	\n\n1、我公司郑重提醒用户注意本《协议》中免除我公司责任和加重用户义务的条款，请用户仔细阅读，自主考虑风险。未成年人应在法定监护人的陪同下阅读本《协议》。以上各项条款内容的最终解释权及修改权归我公司所有。
+	\n\n2、本《协议》所定的任何条款的部分或全部无效者，不影响其它条款的效力。
+	\n\n3、本《协议》签订地为深圳。本《协议》的解释、效力及纠纷的解决，适用于中华人民共和国法律。若用户和我公司之间发生任何纠纷或争议，首先应友好协商解决，协商不成的，用户在此完全同意将纠纷或争议提交我公司住所地即青岛市有管辖权的人民法院管辖。
+	\n\n4、本《协议》的版权由我公司所有，我公司保留一切解释和修改权利。
+	\n\n</string>
+    <!-- 设备账号登录 -->
+    <string name="login_device_title">设备登录</string>
+    <string name="login_type_device">设备序列号/名称</string>
+    <string name="login_device_pwd_hint"> 登录密码 </string>
+    <string name="login_enter_pwd_hint">密码</string>
+    <string name="info_login_username">请输入序列号或名称</string>
+    <string name="info_login_pwd">请输入密码</string>
+    <string name="scan_our_bar_code">请扫描我公司产品的条形码!</string>
+    <string name="control_center">主机信息</string>
+    <string name="my_device">主从设备</string>
+    <string name="systems_management">管理系统</string>
+    <string name="system_settings">设置</string>
+    <string name="scan_bar_code">扫描条形码</string>
+    <string name="login_device_input_phone">手机号用户请从手机用户登录界面登录</string>
+    <!-- 定时录像 -->
+    <string name="timer_status_open">TF卡录像功能已开启</string>
+    <string name="timer_status_close">TF卡录像功能已关闭</string>
+    <string name="timer_null_dev">当前没有支持录像的设备</string>
+    <string name="timer_choose_dev">选择录像设备</string>
+    <string name="timer_null">该设备无任何定时器</string>
+    <string name="timer_desp_init">待机</string>
+    <string name="timer_desp_notf">提示&#160;请插入003的存储卡</string>
+    <string name="timer_desp_err">提示&#160;内部错误</string>
+    <string name="timer_desp_ready">启动中\.\.\.</string>
+    <string name="timer_desp_run">录像中\.\.\.</string>
+    <string name="timer_switch_status">开关状态&#160;</string>
+    <string name="timer_choose_day">指定时间</string>
+    <string name="timer_full">已达支持定时器最大个数</string>
+    <string name="watch_video">查看录像</string>
+    <string name="no_tf_card">未插入TF卡</string>
+    <string name="get_record_failed">获取录像失败</string>
+    <string name="record_change_camera">摄像头</string>
+    <string name="record_set_time">时间</string>
+    <!-- 区域 -->
+    <string name="tab_area">区域</string>
+    <string name="tab_area_dev">区域电器</string>
+    <string name="area_edit_name">编写区域名称</string>
+    <string name="area_device">选择该区域设备</string>
+    <string name="area_del">删除该区域</string>
+    <string name="area_edit">编辑该区域</string>
+    <string name="area_add">增加区域</string>
+    <string name="area_null_name">请输入区域名称</string>
+    <string name="modify_area">修改区域</string>
+    <string name="area_other">其他区域</string>
+    <string name="area_choose">选择区域</string>
+    <string name="area_not_supprt">不支持区域功能，请升级</string>
+    <string name="info_no_area">当前没有区域，请添加</string>
+    <string name="area_full">已达支持区域最大个数</string>
+    <!-- 排插 -->
+    <string name="tab_intellplug_info">排插信息</string>
+    <string name="plug_first_timer">即将执行的定时开关任务</string>
+    <string name="plug_timer_list">开关任务列表</string>
+    <string name="plug_to_next">距下次</string>
+    <string name="plug_need">还有</string>
+    <string name="plug_last">持续</string>
+    <string name="plug_begin">起</string>
+    <string name="plug_exec">后执行</string>
+    <string name="plug_total_power">总用电量</string>
+    <string name="timer_name">定时开关</string>
+    <string name="timer_desp_last">持续&#160;</string>
+    <string name="timer_week_no_day"></string>
+    <string name="timer_week_every_day">每天</string>
+    <string name="timer_week_workday">工作日</string>
+    <string name="timer_week_weekend">周末</string>
+    <string name="timer_week_every_day1">周一\u0020周二\u0020周三\u0020周四\u0020周五\u0020周六\u0020周日</string>
+    <string name="timer_week_workday1">周一\u0020周二\u0020周三\u0020周四\u0020周五</string>
+    <string name="timer_week_weekend1">周六\u0020周日</string>
+    <string name="timer_week_sun">周日\u0020</string>
+    <string name="timer_week_mon">周一\u0020</string>
+    <string name="timer_week_tues">周二\u0020</string>
+    <string name="timer_week_wed">周三\u0020</string>
+    <string name="timer_week_thur">周四\u0020</string>
+    <string name="timer_week_fri">周五\u0020</string>
+    <string name="timer_week_sat">周六\u0020</string>
+    <string name="space">\u0020</string>
+    <string name="timer_week_sun1">周日</string>
+    <string name="timer_week_mon1">周一</string>
+    <string name="timer_week_tues1">周二</string>
+    <string name="timer_week_wed1">周三</string>
+    <string name="timer_week_thur1">周四</string>
+    <string name="timer_week_fri1">周五</string>
+    <string name="timer_week_sat1">周六</string>
+    <string name="timer_week_sun2">星期日</string>
+    <string name="timer_week_mon2">星期一</string>
+    <string name="timer_week_tues2">星期二</string>
+    <string name="timer_week_wed2">星期三</string>
+    <string name="timer_week_thur2">星期四</string>
+    <string name="timer_week_fri2">星期五</string>
+    <string name="timer_week_sat2">星期六</string>
+    <string name="timer_desp_repeat">重复</string>
+    <string name="timer_desp_start">始于</string>
+    <string name="timer_desp_wheel_last">时长</string>
+    <string name="timer_desp_start_hour">时</string>
+    <string name="timer_desp_start_minute">分</string>
+    <string name="timer_desp_least_1min">请至少设置1分钟</string>
+    <string name="timer_desp_most_24hours">注意，最多设置到24：00</string>
+    <string name="info_008_same_timer">该定时开关内容与原来完全相同</string>
+    <string name="info_008_timer_no_name">请填写名称</string>
+    <string name="info_008_timer_no_start">请选择开始时间</string>
+    <string name="info_008_timer_no_last">请设置持续时间</string>
+    <string name="edit_timer_title">编辑定时开关</string>
+    <string name="timer_input_desp">请输入定时开关名称</string>
+    <string name="timer_input_hint">定时开关名称</string>
+    <string name="plug_time_add">添加定时器</string>
+    <string name="plug_time_edit">修改定时器</string>
+    <string name="plug_timer_none">--</string>
+    <string name="plug_timer_list_title">排插定时器</string>
+    <string name="plug_time_del">删除该定时器</string>
+    <string name="plug_on">开启</string>
+    <string name="plug_off">关闭</string>
+    <string name="plug_null_timer">无任何定时器</string>
+    <string name="plug_timer_closed">定时器全部关闭</string>
+    <string name="plug_timer">设置定时</string>
+    <string name="plug_current">电流</string>
+    <string name="plug_voltage">电压</string>
+    <string name="plug_kwh">度</string>
+    <string name="plug_perio_power">阶段电量</string>
+    <string name="plug_clean_power">阶段电量清零</string>
+    <string name="plug_work">工作中</string>
+    <string name="plug_rest">待机</string>
+    <string name="plug_power_on">开机</string>
+    <string name="plug_no_periar">未开启阶段电量统计</string>
+    <string name="plug_begin_ele">开始统计电量</string>
+    <string name="plug_timer_name">名称</string>
+    <string name="time_task">执行任务</string>
+    <!-- 报警/推送 -->
+    <string name="tab_safe">安防</string>
+    <string name="alarm_action_edit">编辑报警设备</string>
+    <string name="err_input_phone_err">您输入的手机号码有误</string>
+    <string name="alarm_phone_management">报警手机号管理</string>
+    <string name="info_delete_alarm_phone">确认要删除手机号X？</string>
+    <string name="alarm_log">报警日志</string>
+    <string name="add_alarm_phone">新增报警接收号码</string>
+    <string name="alarm_touched">已触发</string>
+    <string name="timeformat_day">天</string>
+    <string name="timeformat_days">天</string>
+    <string name="timeformat_hour">时</string>
+    <string name="timeformat_hours">时</string>
+    <string name="timeformat_min">分</string>
+    <string name="timeformat_mins">分</string>
+    <string name="timeformat_seconds">秒</string>
+    <string name="timeformat_second">秒</string>
+    <string name="delete_alarm_log">删除报警日志</string>
+    <string name="safe_detail_log_title">安防报警详情</string>
+    <string name="safe_link_phone">关联报警手机号码</string>
+    <string name="info_no_alarm_log">没有报警日志</string>
+    <string name="info_no_alarm">当前没有安防电器，请添加</string>
+    <string name="err_alarm_phone_exceed">已达支持手机号码最大个数</string>
+    <string name="alarm_same_phone">该号码已被添加</string>
+    <string name="info_alarm_phone_add_success">手机号码添加成功</string>
+    <!-- Http下载 -->
+    <string name="err_connection_fail">服务器连接失败，请稍后再试</string>
+    <string name="err_file_does_not_exist">服务器端文件不存在，下载更新失败</string>
+    <!-- 设置 -->
+    <string name="reboot_app_now">是否立即重启程序</string>
+    <string name="do_you_reboot_app_now">排序结果将在重启程序后生效，是否立即重启程序？</string>
+    <string name="info_home_page_ranking">长按图标可拖动排序，前三个将被显示在首页</string>
+    <string name="config_save_ok">配置已保存</string>
+    <!-- 升级提醒 -->
+    <string name="update">升级提醒</string>
+    <string name="update_now">更新</string>
+    <string name="remind_later">跳过</string>
+    <string name="update_dialog">当前版本不再提醒</string>
+    <string name="start_download">开始下载</string>
+    <string name="downloading_update">正在下载更新</string>
+    <string name="download_complete">下载完成</string>
+    <string name="file_download_complete">文件已下载完毕</string>
+    <string name="lowerversion">发现新版本（v%s），建议立即更新使用</string>
+    <string name="lowerversion_desp">新版本更新提示&#160;</string>
+    <!-- 网关信息title -->
+    <string name="devinfo_title_001">遥控器信息</string>
+    <string name="devinfo_title_003">摄像头信息</string>
+    <string name="devinfo_title_008">排插信息</string>
+    <string name="devinfo_title_808">悟空信息</string>
+    <string name="devinfo_title_appli">家电信息</string>
+    <!-- 家电 -->
+    <string name="appli_type_aircleaner">空气净化器</string>
+    <string name="appli_type_airconditioner">智能空调</string>
+    <string name="appli_type_airheater">暖风机</string>
+    <string name="appli_type_airheaterOil">联创油汀</string>
+    <string name="appli_type_waterheater">热水器</string>
+    <string name="appli_type_waterheaterA9">前锋A9热水器</string>
+    <string name="appli_type_eletricfan">智能风扇</string>
+    <string name="appli_state_working">工作中</string>
+    <string name="appli_state_standby">待机</string>
+    <string name="appli_on_first">请先使家电处于工作中状态</string>
+    <string name="appli_off_first">请先使家电处于待机状态</string>
+    <string name="appli_on">开启</string>
+    <string name="appli_off">关闭</string>
+    <string name="appli_on_already">该家电已开启</string>
+    <string name="appli_off_already">该家电已关闭</string>
+    <string name="appli_timer_on">后开</string>
+    <string name="appli_timer_off">后关</string>
+    <string name="appli_w_now">当前功率</string>
+    <string name="appli_low">低</string>
+    <string name="appli_mid">中</string>
+    <string name="appli_hi">高</string>
+    <string name="appli_no">无</string>
+    <string name="appli_timer">设置定时</string>
+    <string name="appli_timer_unit">小时</string>
+    <string name="appli_timer_units">小时</string>
+    <string name="appli_timer_title">请设置定时时长</string>
+    <string name="appli_wind_title">请设置风速大小</string>
+    <string name="appli_gear_title">请设置档位</string>
+    <string name="appli_mode_title">请设置模式</string>
+    <string name="appli_a9_settemp_title">请设置加热温度</string>
+    <string name="appli_fan_gear_title">请设置风量大小</string>
+    <string name="appli_temper_set">设置&#160;X℃</string>
+    <string name="appli_cur_temper">当前温度</string>
+    <string name="appli_cur_roomtemper">当前室温</string>
+    <string name="appli_cur_watertemper">当前水温</string>
+    <string name="appli_mode_set">模式&#160;X</string>
+    <string name="appli_mode_set_desp">模式</string>
+    <string name="appli_temp_title">请设置温度</string>
+    <string name="appli_gear_set">档位&#160;X</string>
+    <string name="appli_watertemper_set">设置&#160;X℃</string>
+    <string name="appli_water_set">水量&#160;X</string>
+    <string name="appli_shake_set">摇头&#160;X</string>
+    <string name="appli_wind_set">风量&#160;X</string>
+    <string name="appli_timer_cancle">关闭</string>
+    <string name="appli_timer_hour">小时</string>
+    <string name="appli_timer_min">分钟</string>
+    <string name="appli_oper_timer_on">预约开机</string>
+    <string name="appli_oper_timer_off">定时关机</string>
+    <string name="appli_aper_timer_period">工作时段</string>
+    <string name="appli_a9_goal">耗气量</string>
+    <string name="appli_a9_goal_unit">m³</string>
+    <string name="appli_mode_ycyt_title">请设置智能模式</string>
+    <string name="appli_time_ycyt_title">请设置定时关机时长</string>
+    <string name="appli_timeon_ycyt_title">请设置预约开机时长</string>
+    <string name="appli_fan_desp_sleep">睡眠风</string>
+    <string name="appli_fan_desp_low">风量弱</string>
+    <string name="appli_fan_desp_mid">风量中</string>
+    <string name="appli_fan_desp_hi">风量高</string>
+    <string name="appli_aircondition_temp_16">16℃</string>
+    <string name="appli_aircondition_temp_21">21℃</string>
+    <string name="appli_aircondition_temp_26">26℃</string>
+    <string name="appli_aircondition_temp_32">32℃</string>
+    <string name="appli_airheater_temp_0">0℃</string>
+    <string name="appli_airheater_temp_15">15℃</string>
+    <string name="appli_airheater_temp_30">30℃</string>
+    <string name="appli_airheater_temp_45">45℃</string>
+    <string name="appli_airheater_ycytoil_temp_0">0℃</string>
+    <string name="appli_airheater_ycytoil_temp_17">17℃</string>
+    <string name="appli_airheater_ycytoil_temp_34">34℃</string>
+    <string name="appli_airheater_ycytoil_temp_51">51℃</string>
+    <string name="appli_aircleaner_pm0">0</string>
+    <string name="appli_aircleaner_pm50">50</string>
+    <string name="appli_aircleaner_pm100">100</string>
+    <string name="appli_aircleaner_pm150">150</string>
+    <string name="appli_aircleaner_pm200">200</string>
+    <string name="appli_aircleaner_pm300">300</string>
+    <string name="appli_aircleaner_pm500">500</string>
+    <string name="appli_aircleaner_pm0_desp">无污染</string>
+    <string name="appli_aircleaner_pm50_desp">优</string>
+    <string name="appli_aircleaner_pm100_desp">良</string>
+    <string name="appli_aircleaner_pm150_desp">轻度污染</string>
+    <string name="appli_aircleaner_pm200_desp">中度污染</string>
+    <string name="appli_aircleaner_pm300_desp">重度污染</string>
+    <string name="appli_aircleaner_pm500_desp">严重污染</string>
+    <string name="appli_waterheater_temp_0">0℃</string>
+    <string name="appli_waterheater_temp_25">25℃</string>
+    <string name="appli_waterheater_temp_50">50℃</string>
+    <string name="appli_waterheater_temp_75">75℃</string>
+    <string name="appli_waterheater_a9_temp_35">35℃</string>
+    <string name="appli_waterheater_a9_temp_40">40℃</string>
+    <string name="appli_waterheater_a9_temp_45">45℃</string>
+    <string name="appli_waterheater_a9_temp_50">50℃</string>
+    <string name="appli_waterheater_a9_temp_55">55℃</string>
+    <string name="appli_waterheater_a9_temp_60">60℃</string>
+    <string name="appli_waterheater_a9_temp_65">65℃</string>
+    <string name="appli_aircleaner_center_desp">当前PM2.5</string>
+    <string name="appli_aircleaner_center_desp_defualt">0</string>
+    <string name="appli_aircleaner_center_unit">ug/m³</string>
+    <string name="appli_aircleaner_temper_desp">温度</string>
+    <string name="appli_temper_unit">℃</string>
+    <string name="appli_aircleaner_weet_desp">湿度</string>
+    <string name="appli_aircleaner_weet_unit">%</string>
+    <string name="appli_aircleaner_wind">风速&#160;</string>
+    <string name="appli_aircleaner_ultr">紫外线&#160;</string>
+    <string name="appli_aircleaner_anion">负离子&#160;</string>
+    <string name="appli_fan_gear_sleep">睡眠</string>
+    <string name="appli_fan_gear_low">风量弱</string>
+    <string name="appli_fan_gear_mid">风量中</string>
+    <string name="appli_fan_gear_hi">风量高</string>
+    <string name="appli_fan_gear_center_low">弱风</string>
+    <string name="appli_fan_gear_center_mid">中风</string>
+    <string name="appli_fan_gear_center_hi">强风</string>
+    <string name="appli_fan_gear_center_auto">自动风</string>
+    <string name="appli_air_mode_auto">自动</string>
+    <string name="appli_air_mode_cold">制冷</string>
+    <string name="appli_air_mode_hot">制热</string>
+    <string name="appli_air_mode_dedum">除湿</string>
+    <string name="appli_air_mode_wind">通风</string>
+    <string name="appli_water_cap_half">半胆</string>
+    <string name="appli_water_cap_all">全胆</string>
+    <string name="appli_water_a9_waterall">累计水量</string>
+    <string name="appli_water_a9_mode">模式</string>
+    <string name="appli_water_a9_fire">分段</string>
+    <string name="appli_water_a9_mode_set">设置模式</string>
+    <string name="appli_water_a9_water_clean">清空累计水量</string>
+    <string name="appli_water_a9_fire_no">不燃烧</string>
+    <string name="appli_water_a9_fire_left">左燃烧</string>
+    <string name="appli_water_a9_fire_right">右燃烧</string>
+    <string name="appli_water_a9_fire_all">全燃烧</string>
+    <string name="appli_water_a9_mode_auto">自动</string>
+    <string name="appli_water_a9_mode_bath">浴缸</string>
+    <string name="appli_water_a9_mode_dishes">洗碗</string>
+    <string name="appli_water_a9_mode_vwge">洗菜</string>
+    <string name="appli_water_a9_mode_cloth">洗衣</string>
+    <string name="appli_airheater_mode_no">无</string>
+    <string name="appli_airheater_mode_sleep">睡眠</string>
+    <string name="appli_airheater_mode_save">省电</string>
+    <string name="appli_airheater_mode_comfot">舒适</string>
+    <string name="appli_airheater_mode_fasthot">速热</string>
+    <string name="appli_airheater_mode_temper">档位</string>
+    <string name="appli_airheater_mode_temper_first">请设置为档位模式</string>
+    <string name="appli_info_ycyt_power_ok">开机成功</string>
+    <string name="appli_info_ycyt_power_fail">抱歉，开机失败</string>
+    <string name="appli_info_ycyt_power_off_ok">关机成功</string>
+    <string name="appli_info_ycyt_power_off_fail">抱歉，关机失败</string>
+    <string name="appli_info_power_ok">开关机成功</string>
+    <string name="appli_info_power_fail">抱歉，开关机失败</string>
+    <string name="appli_info_timer_ok">定时设置成功</string>
+    <string name="appli_info_timer_fail">抱歉，定时设置失败</string>
+    <string name="appli_info_shark_ok">摇头设置成功</string>
+    <string name="appli_info_shark_fail">抱歉，摇头设置失败</string>
+    <string name="appli_info_mode_ok">模式设置成功</string>
+    <string name="appli_info_mode_fail">抱歉，模式设置失败</string>
+    <string name="appli_info_temp_ok">温度设置成功</string>
+    <string name="appli_info_temp_fail">抱歉，温度设置失败</string>
+    <string name="appli_info_gear_ok">档位设置成功</string>
+    <string name="appli_info_gear_fail">抱歉，档位设置失败</string>
+    <string name="appli_info_water_ok">水量设置成功</string>
+    <string name="appli_info_water_fail">抱歉，水量设置失败</string>
+    <string name="appli_info_water_clean_ok">清除水量统计成功</string>
+    <string name="appli_info_water_clean_fail">抱歉，清除水量统计失败</string>
+    <string name="appli_info_fire_ok">分段燃烧设置成功</string>
+    <string name="appli_info_fire_fail">抱歉，分段燃烧设置失败</string>
+    <string name="appli_info_timeron_ok">定时关机设置成功</string>
+    <string name="appli_info_timeron_fail">抱歉，关机设置失败</string>
+    <string name="appli_info_timeroff_ok">预约开机设置成功</string>
+    <string name="appli_info_timeroff_fail">抱歉，预约开机设置失败</string>
+    <string name="appli_info_wind_ok">风速设置成功</string>
+    <string name="appli_info_wind_fail">抱歉，风速设置失败</string>
+    <string name="appli_info_ultr_ok">紫外线设置成功</string>
+    <string name="appli_info_ultr_fail">抱歉，紫外线设置失败</string>
+    <string name="appli_info_anion_ok">负离子设置成功</string>
+    <string name="appli_info_anion_fail">抱歉，负离子设置失败</string>
+    <!-- 粉丝盒子 -->
+    <string name="my_inf">我的消息</string>
+    <string name="fansbox">粉丝盒子</string>
+    <string name="title_control">请选择操作</string>
+    <string name="total_analysis">汇总分析</string>
+    <string name="notice_content">通知内容</string>
+    <string name="input_notice">通知内容&#160;</string>
+    <string name="send_notice">发送通知</string>
+    <string name="share_receiver">共享接收者</string>
+    <string name="cancel_sharing">取消分享</string>
+    <string name="msg_detail">消息详情</string>
+    <!-- 粉丝盒子相关提示或警告 -->
+    <string name="fail_receive">获取数据失败</string>
+    <string name="fail_receive_username">用户名获取失败</string>
+    <string name="err_open">数据库打开错误</string>
+    <string name="check_msg_detail">查看消息详情</string>
+    <string name="delete_this_msg">删除本条消息</string>
+    <string name="delete_all">删除全部消息</string>
+    <string name="device">设备</string>
+    <string name="already_shared_to_user">已共享给用户&#160;</string>
+    <string name="handling">正在登录…</string>
+    <string name="ishandling">正在处理…</string>
+    <string name="error_url">地址错误</string>
+    <string name="cancel_sharing_success">取消共享成功</string>
+    <string name="cancel_sharing_fail">取消共享失败</string>
+    <string name="notifi_input_right">请输入正确的手机号</string>
+    <string name="notifi_input_content">请输入通知内容</string>
+    <string name="cant_find_device">设备没找到</string>
+    <string name="share_success">共享成功</string>
+    <string name="share_fail">共享失败</string>
+    <string name="all_delete">消息已经全部删除</string>
+    <string name="cannot_share_to_self">不能共享给自己</string>
+    <!-- 健康 -->
+    <string name="health">健康</string>
+    <string name="health_menber">共有X位成员</string>
+    <string name="health_next">下次测量者</string>
+    <string name="health_set_next">设置为下次测量者</string>
+    <string name="health_edit">编辑该成员</string>
+    <string name="health_delete">删除该成员</string>
+    <string name="health_add_member">添加成员</string>
+    <string name="health_del_member">编辑成员</string>
+    <string name="health_enter_name">请输入名称</string>
+    <string name="health_name">称呼</string>
+    <string name="health_man">男</string>
+    <string name="health_woman">女</string>
+    <string name="health_old">岁</string>
+    <string name="health_birth">出生&#160;</string>
+    <string name="health_hight">身高&#160;</string>
+    <string name="health_weight">体重&#160;</string>
+    <string name="health_moth">月</string>
+    <string name="health_year">年</string>
+    <string name="health_to">至</string>
+    <string name="health_cm">cm</string>
+    <string name="health_kg">kg</string>
+    <string name="health_weight_unit">体重</string>
+    <string name="health_date_unit">日期</string>
+    <string name="health_fat_unit">脂肪率</string>
+    <string name="health_water_unit">水分率</string>
+    <string name="health_muscle_unit">肌肉量</string>
+    <string name="health_v_fat_unit">内脏脂肪等级</string>
+    <string name="health_press_unit">血压</string>
+    <string name="health_plus_unit">脉搏</string>
+    <string name="health_plus_num">次/分钟</string>
+    <string name="health_l_press_unit">收缩压</string>
+    <string name="health_h_press_unit">舒张压</string>
+    <string name="health_sugar_unit">血糖</string>
+    <string name="health_oxygn_unit">血氧</string>
+    <string name="health_weight_data">体重测量记录</string>
+    <string name="health_fat_data">脂肪率测量记录</string>
+    <string name="health_water_data">水分测量记录</string>
+    <string name="health_mu_data">肌肉测量记录</string>
+    <string name="health_v_fat_data">脂肪等级测量记录</string>
+    <string name="health_press_data">血压测量记录</string>
+    <string name="health_plus_data">脉搏测量记录</string>
+    <string name="health_blood_sugar">血糖测量记录</string>
+    <string name="health_blood_oxygn">血氧测量记录</string>
+    <string name="health_measure_his">测量数据</string>
+    <string name="health_emputy_date">请选择时间</string>
+    <string name="health_do_data">操作</string>
+    <string name="health_del_data">删除该测量记录</string>
+    <string name="health_no_member">无任何成员，请添加</string>
+    <string name="health_enter_year">请输入出生年月</string>
+    <string name="health_enter_hight">请输入身高</string>
+    <string name="health_enter_weight">请输入体重</string>
+    <string name="health_enter_right_year">请输入正确出生年月（1~160岁）</string>
+    <string name="health_enter_right_height">请输入正确身高（50~300cm）</string>
+    <string name="health_enter_right_weight">请输入正确体重（3~200kg）</string>
+    <string name="health_enter_right_moth">请输入正确月份（1~12）</string>
+    <string name="health_unsurport_health">设备不支持健康功能</string>
+    <string name="health_full_member">已达支持家庭成员最大个数</string>
+    <string name="health_no_data">未获取到测量数据</string>
+    <string name="health_click_tip">点击图表查看详细数据</string>
+    <!-- 视频高级设置相关提示或警告 -->
+    <string name="vedio_advanced">高级</string>
+    <string name="vedio_advanced_contrast">对比度（32）</string>
+    <string name="vedio_advanced_saturation">饱和度（48）</string>
+    <string name="vedio_advanced_brightness">亮度（0）</string>
+    <string name="vedio_advanced_compensate">补偿（0）</string>
+    <string name="vedio_advanced_slow">慢</string>
+    <string name="vedio_advanced_fast">快</string>
+    <string name="vedio_advanced_0">0</string>
+    <string name="vedio_advanced_64">64</string>
+    <string name="vedio_advanced_128">128</string>
+    <string name="vedio_advanced_neg64">-64</string>
+    <string name="vedio_advanced_100">100</string>
+    <string name="vedio_set_color_fault">设置视频饱和度失败，请稍后再试</string>
+    <string name="vedio_set_roll_speed_fault">设置云台转速失败，请稍后再试</string>
+    <string name="vedio_no_record">没有录像</string>
+    <string name="vedio_set_color_ok">设置视频饱和度成功</string>
+    <string name="vedio_set_roll_speed_ok">设置云台转速成功</string>
+    <!-- 设备受控升级 -->
+    <string name="dev_firmware_upgrade">设备固件升级</string>
+    <string name="advlevel">立即更新</string>
+    <string name="known">知道了</string>
+    <string name="is_last_version">已是最新版</string>
+    <string name="version_num">版本号&#160;</string>
+    <string name="publish_time">发布日期&#160;</string>
+    <string name="firmware_feature">固件新特性&#160;</string>
+    <string name="upgrade_unknown_dev">未知设备</string>
+    <string name="warn">警告</string>
+    <string name="warn_content">即将升级设备的固件，可能会导致有些功能无法使用，请谨慎操作。设备升级过程中，请不要断开设备的电源。</string>
+    <string name="can_not_auto_upgrade">当前设备固件不支持手机远程升级！\n请先登录设备的web界面手动进行系统升级。</string>
+    <string name="notice_server">正在通知服务器…</string>
+    <string name="notice_device">正在连接设备…</string>
+    <string name="begin_upgrade">开始更新</string>
+    <string name="command_error">指令错误</string>
+    <string name="fail_notice_server">通知服务器失败</string>
+    <string name="fail_notice_device">连接设备失败</string>
+    <!-- 图标自定义 -->
+    <string name="custom_icon">自定义图标</string>
+    <string name="restore_icon">恢复默认图标</string>
+    <string name="choose_picture">请选择图片</string>
+    <string name="take_photo">拍摄照片</string>
+    <string name="choose_photo">选择照片</string>
+    <!-- 小区公告 -->
+    <string name="cmt">小区公告</string>
+    <string name="no_cmt_message">您还没有消息记录</string>
+    <!-- v3插座 配置 -->
+    <string name="smart_socket_pageone_tips1">请将空调插头插到悟空上，保证它处在Wi-Fi覆盖范围内</string>
+    <string name="smart_socket_pageone_tips2">等待悟空的红色指示灯进入快速闪烁状态</string>
+    <string name="smart_socket_pageone_tips3">确保Wi-Fi频段是2.4GHz</string>
+    
+    
+    <string name="input_wifi_pwd">路由器Wi-Fi密码</string>
+    <string name="config_begin">开始搜索</string>
+    <string name="configer_fail">搜索失败</string>
+    <string name="configer_fail_content">请长按设备的Reset按键，直到指示灯处于红色快闪状态，重新搜索。</string>
+    <string name="configer_fail_why">为什么搜索不到？</string>
+    <string name="connect_socket">搜索设备</string>
+    <string name="config_fail">网络配置失败，请重试</string>
+    <string name="finish_config">网络配置完成</string>
+    <string name="add_new_air">新设备</string>
+    <string name="add_pluged_air">已配置过的设备</string>
+    <string name="kind_remind">温馨提示</string>
+    <string name="pop_kind_remind">温馨提示</string>
+    
+    <string name="remind_content1_title">1.&#160;</string>
+    <string name="remind_content2_title">2.&#160;</string>
+    <string name="remind_content3_title">3.&#160;</string>
+
+    <string name="remind_content1">恢复出厂时请确认指示灯是红色快闪状态</string>
+    <string name="remind_content2">请确认Wi-Fi密码是否输入正确</string>
+    <string name="remind_content3">请确认手机连上的是2.4GHz的Wi-Fi</string>
+    
+    <string name="smart_config_mode_change">温馨提示</string>
+    <string name="smart_config_mode_change_msg_title">未搜索到设备</string>
+    <string name="smart_config_mode_change_msg1">请确认指示灯是红色快闪状态</string>
+    <string name="smart_config_mode_change_msg2">请确认Wi-Fi密码是否输入正确</string>
+    <string name="smart_config_mode_ap_title">热点模式配置</string>
+    <string name="smart_config_mode_ap_msg">手机热点模式会在热点模式和WLAN模式之间切换。在此模式中，Wi-Fi会自动断开，配置结束后自动恢复。请在系统弹出权限确认框时点击“确定”</string>
+    <string name="smart_config_mode_remind">手机未连接到2.4GHz的Wi-Fi上，悟家系列插座目前仅支持2.4GHz的Wi-Fi，请确认Wi-Fi后再点击“开始搜索”。</string>
+    <string name="smart_config_null_pwd_msg_ssid_desp"></string>
+    <string name="smart_config_null_pwd_msg_ssid">SSID：&#160;</string>
+    <string name="smart_config_null_pwd_msg_pwd_desp">密码：&#160;空</string>
+    <string name="smart_config_null_pwd_msg_desp">Wi-Fi密码未输入，请确认Wi-Fi密码是否为空</string>
+    
+    <string name="smart_config_null_pwd_positive">开始搜索</string>
+    <string name="smart_config_null_pwd_negtivie">重新输入</string>
+    <string name="smart_config_mode_change_positive">尝试热点模式</string>
+    <string name="smart_config_mode_change_negtivie">稍后再说</string>
+    <string name="positive_ok">好的</string>
+    <string name="please_choose">请选择</string>
+    <string name="add_air_failure">添加悟空失败</string>
+    <string name="smart_home_tips">智能回家已触发</string>
+    <string name="smart_home_tips_click">触摸查看详情</string>
+    
+    <!-- v3插座 匹配 -->
+    <string name="smart_socket_defaut_pwd_msg">您的悟空管理密码为出厂密码，为了安全考虑，建议修改密码</string>
+    <string name="socket_edit">匹配空调类型</string>
+    <string name="error_param">网络连接错误</string>
+    <string name="smart_socket_sn">序列号</string>
+    <string name="cloud_analysis">开始云智能分析您的空调</string>
+    <string name="other_way_match">其他方式分析</string>
+    <string name="pass_and_next_match">暂不分析</string>
+    <string name="match_success">匹配成功，让我们开始享受智能生活吧</string>
+    <string name="match_success_title">匹配成功</string>
+    <string name="match_success_ok">立即启程</string>
+    <string name="all_code_match">正在云端智能分析您的空调遥控器，请耐心等待……</string>
+    <string name="matching_dev">（匹配中%s…）</string>
+    <string name="match_warn">请不要断网断电\n请不要按空调遥控器</string>
+    <string name="match_fail">匹配出错，请重新匹配一次</string>
+    <string name="match_fail_reason">请检查&#160;</string>
+    <string name="match_fail_reason1">你的网络情况</string>
+    <string name="match_fail_reason2">确保按下了遥控器</string>
+    <string name="match_try_again">再次尝试</string>
+    <string name="smart_socket_default_name">悟空</string>
+    <string name="smart_sorket_default_pwd">请输入设备管理密码</string>
+    <string name="check_wifi">未连上Wi-Fi，请检查手机的无线局域网设置。</string>
+    <string name="wait_ir_timeout">等待用户按遥控板超时</string>
+    <string name="process_matching">设备正在匹配中&#8230;</string>
+    <string name="wait_server_code_timeout">等待从服务器获取编码超时</string>
+    <string name="no_result">匹配所有编码，无法匹配</string>
+    <string name="dev_not_connect_server">设备未连接服务器</string>
+    <string name="dev_net_err">无法连接到Internet</string>
+    <string name="edit_connect_server">正在连接服务器（%s）</string>
+    <string name="prepare_data">正在准备数据…</string>
+    <string name="air_timer">定时器列表</string>
+    <string name="air_timer_no_content">没有定时器，点击添加</string>
+    <string name="v3_list_no_aplug">搜索设备</string>
+    <string name="time_repeat">重复</string>
+    <string name="close_air_condition">关闭空调</string>
+    <string name="open_air_condition">开启空调</string>
+    <string name="timer_power">电源</string>
+    <string name="timer_poweron">开启</string>
+    <string name="timer_poweroff">关闭</string>
+    <string name="code_info_id">ID&#160;</string>
+    <string name="match_results">匹配结果</string>
+    <string name="confirm_change_code">是否修改匹配结果</string>
+    
+    <string name="airplug_rc_not_match">尚未匹配</string>
+    <string name="airplug_rc_match_stb">匹配机顶盒</string>
+    <string name="airplug_rc_match_tv">匹配电视</string>
+    <string name="airplug_rc_match_remind_press">请拿起您的XX遥控器，对着悟空按一下YY按钮</string>
+    <string name="airplug_rc_match_remind_progress">正在云端智能分析您的XX遥控器，请耐心等待……</string>
+    <string name="airplug_rcmatch_warn">请不要断网断电\n请不要按XX遥控器</string>
+    
+    <!-- i8-空调贴(任意贴)字符串 -->
+    <string name="rf_wukong_name">空调贴</string>
+    <string name="study_tips">请按需要设置的按钮\n注意区分按钮 开启/关闭等状态，\n以空调当前状态为准</string>
+    <string name="make_sure_signal">确认信号</string>
+    <string name="study_signal">学习信号</string>
+    <string name="match_encode_type">匹配编码类型</string>
+    <string name="input_button_name">建议输入对应按键名称</string>
+    <string name="dev_err_trans_ir_fail">IR信号传输失败</string>
+    <string name="dev_err_waiting_dev_timeout">等待设备响应超时</string>
+    <string name="retry_match">重新匹配</string>
+    <string name="match_fail_tips">匹配出错，是否重新匹配？</string>
+    <string name="cloud_match_point">请拿起您的空调遥控器，\n对着空调按一下开关按钮。</string>
+    <string name="match_clouding">云端匹配&#8230;</string>
+    <string name="conect_device">设备准备进入学习状态&#8230;</string>
+    
+    
+    <!-- 空调插座v3 -->
+    <string name="v3_tab">悟空</string>
+    <string name="v3_tab_control">遥控面板</string>
+    <string name="v3_tab_eletric">电量管家</string>
+    <string name="v3_tab_intell">智能模式</string>
+    <string name="v3_list_back_title">我的悟家</string>
+    <string name="v3_list_long_rename2">修改名称</string>
+    <string name="v3_list_long_changpwd">修改密码</string>
+    <string name="v3_list_long_del_dev">删除设备</string>
+    <string name="v3_list_long_changmatch">匹配空调类型</string>
+    <string name="v3_electric_hight">峰电</string>
+    <string name="v3_electric_low">谷电</string>
+    <string name="v3_electric_detail">电量详情</string>
+    <string name="v3_electric_hight_time">设置峰电时间段</string>
+    <string name="v3_electric_hight_price">设置峰电单价</string>
+    <string name="v3_electric_low_time">设置谷电时间段</string>
+    <string name="v3_electric_low_price">设置谷电单价</string>
+    <string name="v3_electric_begin_time">开始时间</string>
+    <string name="v3_electric_end_time">结束时间</string>
+    <string name="v3_electric_price">X元</string>
+    <string name="v3_electric_sum1">小计</string>
+    <string name="v3_electric_price_tip">单价</string>
+    <string name="v3_electric_month">月</string>
+    <string name="v3_electric_real_time">实时</string>
+    <string name="v3_electric_static">统计</string>
+    <string name="v3_electric_rmb">元</string>
+    <string name="v3_electric_hour_err">请输入正确小时（0~23）</string>
+    <string name="v3_electric_min_err">请输入正确分钟（0~59）</string>
+    <string name="v3_electric_price_err">请输入正确单价（0~10）</string>
+    <string name="v3_electric_time_err">开始时间和结束时间不能相同</string>
+    <string name="v3_electric_time_null">请输入时间</string>
+    <string name="v3_electric_ip">IP地址</string>
+    <string name="v3_layout_mode">模式</string>
+    <string name="v3_intell_close">智能关机</string>
+    <string name="v3_board_power_down">待机</string>
+    <string name="v3_board_temp_highest">已经是最高温度了</string>
+    <string name="v3_board_temp_lowest">已经是最低温度了</string>
+    <string name="v3_board_control_unsuccessfully">抱歉，控制失败</string>
+    <string name="v3_board_unmatch">请先匹配遥控器编码再使用</string>
+    <string name="v3_board_unmatch_dialog_msg">请先匹配遥控器编码再使用，确认匹配？</string>
+    <string name="v3_board_modify_timer_failed">修改定时器失败</string>
+    <string name="v3_board_del_timer_failed">删除定时器失败</string>
+    <string name="v3_board_max_timer">最多只能添加%d个定时器</string>
+    <string name="v3_list_prompt">友情提示</string>
+    <string name="v3_list_phone_manage_content">建议您使用手机帐号登录，这样您的插座信息可以保存在云服务器上，即使卸载APP、更换手机，都不会丢失。</string>
+    <string name="v3_list_userphone">使用手机账号</string>
+    <string name="v3_list_input_pwd">密码</string>
+    <string name="v3_list_input_pwd_titile">输入密码</string>
+    <string name="v3_input_price">单价</string>
+    <string name="v3_list_to_control_board">即将为您跳转到控制页面…</string>
+    <string name="v3_current_power">当前功率&#160;</string>
+    <string name="v3_smart_open">智能开机</string>
+    <string name="v3_smart_sleep">智能睡眠</string>
+    <string name="v3_smart_sleep_des">助你尽享美丽梦境</string>
+    <string name="v3_electric_total">共计</string>
+    <string name="v3_electric_hight_unit">峰电（度）</string>
+    <string name="v3_electric_low_unit">谷电（度）</string>
+    <string name="v3_electric_kw">度数</string>
+    
+    <string name="v3_electric_detail_price">单价</string>
+	<string name="v3_electric_all">总电量</string>
+    <string name="v3_electric_total_unit">总电量</string>
+    <string name="v3_led_mode_ctl">指示灯控制</string>
+    <string name="v3_led_mode_ctl_desc">随您的喜好</string>
+    <string name="v3_led_mode_on">常开</string>
+    <string name="v3_led_mode_off">常关</string>
+    <string name="v3_led_mode_smart">智能</string>
+    <string name="v3_led_mode_on_desc">指示灯保持常亮</string>
+    <string name="v3_led_mode_off_desc">指示灯保持关闭</string>
+    <string name="v3_led_mode_smart_desc">根据室内的光线强度，自动控制</string>
+    
+    <string name="v3_airplug_timer_switch">空调开关&#160;</string>
+    <string name="v3_airplug_timer_open">开始时间&#160;</string>
+    <string name="v3_airplug_timer_choose_long">选择定时时长</string>
+    <string name="v3_airplug_timer_set_repeat">重复时间</string>
+    <string name="v3_input_dev_sn">请输入序列号</string>
+    <string name="v3_input_right_dev_sn">请输入正确的序列号</string>
+
+    <string name="v3_electric_clearn">清零</string>
+    <string name="v3_electric_now">&#160;-&#160;至今</string>
+    <string name="sys_settings_led_mode_ok">控制成功</string>
+    <string name="sys_settings_led_mode_fail">抱歉，控制失败</string>
+    <string name="v3_electric_today">今天</string>
+    <string name="v3_electric_yesday">昨天</string>
+    <string name="v3_electric_w">瓦</string>
+    <string name="v3_electric_perid">单次电量</string>
+    <string name="v3_electric_money_unit">￥</string>
+    
+    <string name="v3_dev_advanced_info">高级信息</string>
+    <string name="v3_dev_advanced_info_phone_num">已连接手机数量&#160;</string>
+    <string name="v3_dev_advanced_info_light_ad">当前光敏ad值&#160;</string>
+    <string name="v3_dev_advanced_info_cur">当前电流值&#160;</string>
+    <string name="v3_dev_advanced_info_cur_ad">当前电流ad值&#160;</string>
+    <string name="v3_dev_advanced_info_cur_k">当前电流k值&#160;</string>
+    <string name="v3_dev_advanced_info_cur_b">当前电流b值&#160;</string>
+    <string name="v3_dev_advanced_info_vol">当前电压值&#160;</string>
+    <string name="v3_dev_advanced_info_vol_ad">当前电压ad值&#160;</string>
+    <string name="v3_dev_advanced_info_vol_k">当前电压k值&#160;</string>
+    <string name="v3_dev_advanced_info_vol_b">当前电压b值&#160;</string>
+    <string name="v3_dev_advanced_info_units_cur">&#160;安</string>
+    <string name="v3_dev_advanced_info_units_vol">&#160;伏</string>
+    <string name="v3_dev_advanced_info_avg_ad">待机平均电流ad值&#160;</string>
+    <string name="v3_dev_advanced_info_max_ad">待机最大电流ad值&#160;</string>
+    <string name="v3_dev_advanced_info_no_load_ad">空载电流的ad值&#160;</string>
+    <string name="v3_dev_advanced_info_smt_soft_ver">单片机软件版本&#160;</string>
+    <string name="v3_dev_advanced_info_smt_hard_ver">单片机硬件版本&#160;</string>
+    <string name="v3_dev_advanced_info_ir_lib_id">红外编码库id&#160;</string>
+    <string name="v3_dev_advanced_info_cdpnt">制冷开机电流突变时间&#160;</string>
+    <string name="v3_dev_advanced_info_cdpft">制冷关机电流突变时间&#160;</string>
+    <string name="v3_dev_advanced_info_hdpnt">制热开机电流突变时间&#160;</string>
+    <string name="v3_dev_advanced_info_hdpft">制热关机电流突变时间&#160;</string>
+    <string name="v3_dev_advanced_info_stm">单片机编译信息&#160;</string>
+    
+    <string name="v3_dev_advanced_more_info">更多信息</string>
+    <string name="v3_dev_advanced_yesterday">光敏-昨天采样</string>
+    <string name="v3_dev_advanced_today">光敏-今天采样</string>
+    
+    <string name="v3_modify_pwd_failed">密码错误</string>
+    
+    <string name="v3_setting_sound">声音</string>
+    <string name="v3_setting_vibrate">震动</string>
+    <string name="v3_edit_page_poor_connect">连接服务器超时，请确保无线路由器能正常上网</string>
+    <string name="v3_style_blue">宝石蓝</string>
+    <string name="v3_style_red">火红色</string>
+    <string name="v3_style_set">主题设置</string>
+    <string name="v3_style_color_set">指示灯颜色</string>
+    <string name="v3_style_color_select">指示灯颜色选择</string>
+    <string name="v3_led_color_default">默认（运行&#160;绿色 待机&#160;蓝色）</string>
+    <string name="v3_led_current_color">当前颜色&#160;&#160;</string>
+    <string name="v3_led_default">恢复默认</string>
+    <string-array name="led_color_items">
+        <item>默认</item>
+        <item>红色</item>
+        <item>绿色</item>
+        <item>蓝色</item>
+        <item>黄色</item>
+        <item>紫色</item>
+        <item>浅蓝色</item>
+        <item>白色</item>
+    </string-array>
+    
+    <string-array name="month_list">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
+    <string name="month_suffix">月</string>
+    
+    <string name="v3_logout_remind">当前正在使用智能开机功能，若退出客户端，该功能将不能正常工作。\n确认退出？</string>
+    <string name="v3_list_indoor_temp">&#160;&#160;&#160;&#160;&#160;室温 %d</string>
+    <string name="v3_list_indoor_temp_no_int">室温</string>
+    <string name="v3_upgrate_process">正在升级&#8230;（X%）</string>
+    <string name="v3_upgrate_downprocess">正在下载&#8230;（X%）</string>
+    <string name="v3_is_upgrating">正在升级，请耐心等待</string>
+    <string name="v3_upgrate_ok">升级成功</string>
+    <string name="v3_upgrate_failed">设备升级消息发送失败</string>
+    <string name="v3_dev_upgrate_desc">升级设备</string>
+    <string name="v3_dev_account">我的账号</string>
+    <string name="v3_app_switch_set">控制反馈</string>
+    <string name="v3_app_lang_set">语言设置</string>
+    <string name="v3_app_about_msg">是一款智能插座控制软件，它能远程控制您家中的壁挂式空调，实时获取空调的工作状态，并能实现定时和智能开关空调等功能。</string>
+    <string name="v3_app_about_intro">功能介绍：</string>
+    <string name="v3_app_about_connect_way">联系方式</string>
+    <string name="v3_app_about_phone_way">TEL：</string>
+    <string name="v3_app_about_phone_number">400&#8211;000&#8211;9879</string>
+    <string name="v3_app_about_qq_number">4000009879</string>
+    <string name="v3_app_about_qq_way">QQ：</string>
+    <string name="v3_app_about_local_connect_msg">Tel:&#160;400&#8211;000&#8211;9879&#160;&#160;&#160;QQ:&#160;4000009879</string>
+    <string name="v3_app_about_local_copyright">Copyright©2016 GALAXYWIND Network \nSystems Co.,Ltd.\nAll rights reserved</string>
+    
+    <string name="v3_elec_unit">度数</string>
+    <string name="v3_elec_month_unit">月份</string>
+    <string name="dev_info_title">设备信息</string>
+    <string name="unknown">unknown</string>
+    
+    <string name="page_change_password_title">修改登录密码</string>
+    <string name="mode_dev_pwd">修改设备密码</string>
+    <string name="page_change_password_oldpwd_hint">填写旧密码</string>
+    <string name="page_change_password_newpwd_hint">输入新密码</string>
+    <string name="page_change_password_confirmpwd_hint">再次输入新密码</string>
+    <string name="page_dev_reset_device_wifi">重置设备无线连接</string>
+    
+    <!-- 通用一键配置 -->
+    <string name="smart_config_found_dev">已搜索到设备，但是登录失败</string>
+    <!-- 奥普浴霸 -->
+    
+    <!-- E宝 -->
+    <string name="e_plug_next_time">定时任务&#160;xx</string>
+    <string name="e_plug_control_center">悟能信息</string>
+    <string name="e_plug_sys_dev_reroot">远程重启</string>
+    <string name="e_plug_info_title">设备信息</string>
+    <string name="e_plug_no_task"></string>
+    <string name="e_plug_task_pre_format">下次%s时间&#160;</string>
+    <string name="e_plug_task_day_later">天后</string>
+    <string name="e_plug_task_tomorrow">明天</string>
+    
+    <string name="tag_id1">tag1</string>
+    <string name="tag_id2">tag2</string>
+    <string name="tag_id3">tag2</string>
+    <string name="state_on">通电</string>
+    <string name="state_off">断电</string>
+    <string name="eplug_power_on">通电</string>
+    <string name="eplug_power_off">断电</string>
+    
+    <string name="eplug_on_time">通电时间</string>
+    <string name="eplug_off_time">断电时间</string>
+    <string name="airplug_on_time">开启时间</string>
+    <string name="airplug_off_time">关闭时间</string>
+    <string name="hint_nickname">昵称</string>
+    <string name="hint_passwd">密码</string>
+    <string name="hint_stripe_code">条形码ID</string>
+    <string name="period_timer_cross_day">&#160;次日</string>
+    <string name="timer_list_time_test">18:25</string>
+    <string name="eplug_modinfo_nickname_empty">请输入昵称</string>
+    <string name="eplug_modinfo_nickname_invalid">请输入合法昵称</string>
+    <string name="eplug_modinfo_nickname_toolong">昵称太长了</string>
+    <string name="eplug_modinfo_passwd_empty">请输入密码</string>
+    <string name="plug_modinfo_barcode_empty">请输入X位条形码</string>
+    <string name="eplug_modinfo_passwd_is_def">您的密码为默认密码，建议重新设置密码</string>
+    <string name="eplug_modinfo_dialog_yes">现在修改</string>
+    <string name="eplug_modinfo_dialog_no">以后再说</string>
+    <string name="eplug_modinfo_dev_not_find">设备异常，返回设备列表</string>
+    <string name="temp_unit_centi">℃</string>
+    <string name="temp_unit_fah">℉</string>
+    
+    <string name="about_local_wujia">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;悟家系列秉承科技改变生活的理念，把小产品落地和大数据挖掘完美相结合，为千家万户提供一系列智能舒适、节能环保、价廉物美的智能硬件。</string>
+    
+    <!-- 华天成热泵 -->
+    <string name="htchp_moremenu_version_check">新版本检测</string>
+    <string name="htchp_personal_btn">申报</string>
+    <string name="htchp_personal_name_hint">姓名</string>
+    <string name="htchp_personal_phone_hint">电话</string>
+    <string name="htchp_personal_passwd_hint">密码</string>
+    <string name="htchp_personal_email_hint">邮箱</string>
+    <string name="htchp_personal_addr_hint">地址</string>
+    <string name="htchp_firmware_update">设备升级</string>
+    <string name="htchp_host_system_update">上位机升级</string>
+    <string name="htchp_firmware_update_fail">升级失败</string>
+    <string name="htchp_firmware_update_begin">开始升级,请等待</string>
+    <string name="htchp_version_check_false">未知</string>
+
+   	<!-- 悟家系列支持单品 -->
+    <string name="dev_reroot">远程重启</string>
+    <string name="dev_restore">远程恢复出厂</string>
+    <string name="dev_reset_wifi">重置设备无线连接</string>
+    <string name="dev_settings_rename">修改设备名称</string>
+    <string name="dev_settings_info">设备信息</string>
+    <string name="settings">设置</string>
+
+    <!-- 杰能宝温控器 -->
+    <string name="dev_name_replaceto_tmc_jnb">温控器</string>
+    <string name="tmc_jnb_mode_deforst">除霜</string>
+    <string name="tmc_jnb_mode_economy">经济</string>
+    <string name="tmc_jnb_mode_comfort">舒适</string>
+    <string name="tmc_jnb_mode_auto">自动</string>
+    <string name="tmc_jnb_mode_holiday">假期</string>
+    <string name="tmc_jnb_temp">温度</string>
+    <string name="tmc_jnb_temp_eco">经济</string>
+    <string name="tmc_jnb_temp_comfort">舒适</string>
+    <string name="tmc_jnb_holiday_remain_day">剩余</string>
+    <string name="tmc_jnb_holiday_day">天</string>
+    <string name="tmc_jnb_holiday_days">天</string>
+    <string name="tmc_jnb_holiday_set">假期设置</string>
+    
+    <!-- 亿林温控器 -->
+    <string name="dev_name_replaceto_tmc_yilin">温控器 </string>
+    <string name="tmc_yl_scene_hand">手动</string>
+    <string name="tmc_yl_scene_prog">编程</string>
+    <string name="tmc_yl_scene_comfort">舒适</string>
+    <string name="tmc_yl_scene_save">节能</string>
+    <string name="tmc_yl_scene_leave">离家</string>
+    <string name="tmc_yl_scene_smart">智能</string>
+    
+    <string name="tmc_yl_scene_set">情景设置</string>
+    <string name="tmc_yl_temp_set">温度设置</string>
+    <string name="tmc_yl_auto_set">自动设置</string>
+    
+    <string name="tmc_yl_gear_low">低</string>
+    <string name="tmc_yl_gear_mid">中</string>
+    <string name="tmc_yl_gear_hi">高</string>
+    <string name="tmc_yl_gear_auto">自动</string>
+    
+    <!-- 金长信配电箱 -->
+    <string name="pdc_jcx_tab_realtime">实时状态</string>
+    <string name="pdc_jcx_tab_err">异常信息</string>
+    <string name="pdc_jcx_err_no">无异常信息</string>
+    <string name="pdc_jcx_err">异常</string>
+    <string name="pdc_jcx_ele_a">电流</string>
+    <string name="pdc_jcx_ele_v">电压</string>
+    <string name="pdc_jcx_ele_desp">电力参数</string>
+    <string name="pdc_jcx_rate">频率</string>
+    <string name="pdc_jcx_active_power">有功功率</string>
+    <string name="pdc_jcx_reactive_power">无功功率</string>
+    <string name="pdc_jcx_rate_factor">功率因素</string>
+    <string name="ele_units_a">安</string>
+    <string name="ele_units_v">伏</string>
+    <string name="ele_units_second">秒</string>
+    <string name="ele_power">功率</string>
+    <string name="ele_num_default">0.0</string>
+    
+    <string name="pdc_jcx_info">配电箱信息</string>
+    <string name="pdc_jcx_info_sn">配电箱序列号</string>
+    <string name="pdc_jcx_info_version_hare">配电箱硬件版本</string>
+    <string name="pdc_jcx_info_version_soft">配电箱软件版本</string>
+    
+    <string name="pdc_jcx_info_wifi_prefix">WiFi模组</string>
+    <string name="pdc_jcx_work_ok">正常工作</string>
+    <string name="pdc_jcx_del_err">清空异常信息</string>
+    
+    <string name="err_6621_type_v_hi">电压过高</string>
+    <string name="err_6621_type_v_low">电压过低</string>
+    <string name="err_6621_type_a_hi">电流过高</string>
+    <string name="err_6621_type_a_rate_hi">频率过高</string>
+    <string name="err_6621_type_a_rate_low">频率过低</string>
+    <string name="err_6621_type_temper_hi">当前温度X&#160;&#160;高于设定报警温度</string>
+    <string name="err_6621_type_temper_low">当前温度X&#160;&#160;低于设定报警温度</string>
+    
+    <string name="push_switch">推送</string>
+
+    <!-- 杰能宝国际版 -->   
+    <string name="jnb_inter_tab_ctrl">遥控面板</string>
+    <string name="jnb_inter_tab_electric">电量管家</string>
+    <string name="jnb_inter_tab_timer">定时器</string>
+    
+	<!-- lele调光灯 -->
+	<string name="lede_panel_title">调光灯</string>
+	<string name="lede_timer_set_color_title">灯光颜色</string>
+	<string name="lede_timer_set_power_on">开灯</string>
+	<string name="lede_timer_set_power_off">关灯</string>
+	<string name="lede_timer_set_power">开关控制</string>
+	<string name="lede_panel_current_color">当前灯光颜色</string>
+	<string name="lede_panel_timer">定时</string>
+	<string name="lede_tab_colorpanel">色盘</string>
+	<string name="lede_tab_picture">照片</string>
+	<string name="lede_scence_1">炫酷</string>
+    <string name="lede_scence_2">浪漫</string>
+    <string name="lede_scence_3">起床</string>
+    <string name="lede_scence_4">睡眠</string>
+    <string name="lede_scence_5">聚会</string>
+    <string name="lede_scence_6">阅读</string>
+    <string name="lede_scence_7">锻炼</string>
+    <string name="lede_scence_8">思考</string>
+    <string name="lede_scence_9">用餐</string>
+    <string name="lede_pick_picture">从相册中选取</string>
+    <string name="lede_take_photo">照相</string>
+    <string name="lede_picture_fail">获取图片失败</string>
+	<string name="lede_picture_err">图片格式错误</string>
+    
+	<!-- 定时器 -->
+	<string name="not_support_timer">不支持定时器</string>
+	<string name="select_on_or_off_time">请选择X或Y时间</string>
+	
+	<!-- 电量统计 -->
+	<string name="page_elec_month_title_format">月电量</string>
+	<string name="elec_detail_title">电量统计详情</string>
+	
+	<!-- 悟空新支持的学习 相关 -->
+	<string name="airplug_learn_key_learn_page_title">按键学习</string>
+	<string name="airplug_learn_key_busy">学习按键中，请稍后再试</string>
+	<string name="airplug_learn_key_ready">设备准备就绪</string>
+	<string name="airplug_learn_key_success">按键学习成功</string>
+	<string name="airplug_learn_key_timeout">等待按键超时</string>
+	<string name="airplug_learn_key_fail">学习按键失败</string>
+	<string name="airplug_learn_key_stop_learn">已终止学习</string>
+	<string name="airplug_learn_key_step1">第1步 准备环境</string>
+	<string name="airplug_learn_key_sub1_step1">1. 准备好能正常工作的电器遥控器，将遥控器靠近和对准悟空</string>
+	<string name="airplug_learn_key_sub1_step2">2. 点击“开始”按钮进行学习</string>
+	<string name="airplug_learn_key_step2">第2步 学习编码</string>
+	<string name="airplug_learn_key_sub2_step1">1. 按下遥控器按钮后，请确认是否控制电器</string>
+	<string name="airplug_learn_key_cur_power">当前功率    XXW</string>
+	<string name="airplug_learn_key_room_temp">室内温度</string>
+	<string name="airplug_learn_key_learn_mode">学习模式</string>
+	<string name="airplug_learn_key_to_control_page">进入控制面板</string>
+	<string name="airplug_learn_key_lcd">有液晶屏</string>
+	<string name="airplug_learn_key_no_lcd">无液晶屏</string>
+	
+	<!-- 悟家引导页面 -->
+	<string name="airplug_giudepage_start_btn">开启我的悟家</string>	
+	
+	<!--     前锋壁挂器 -->
+	<string name="chiffo_mode_hotwater">热水\n模式</string>
+    <string name="chiffo_mode_floorheater">供暖\n模式</string>
+    
+	
+	
+	<!-- 智能睡眠 -->
+	<string name="smart_sleep_description">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;悟空i8内置传感器，会学会用户睡眠时光照环境。在晚上22点到次日6点，
+	    当光照环境低于睡眠光照环境就会触发智能睡眠。\n\n
+	    触发效果\n
+	    1.空调调整为低风\n
+	    2.空调制热超过28度时，在客户设置温度基础上降低两度\n
+	    3.制冷低于20度时温度增加两度</string>
+	    
+	<!-- 悟空配置界面 -->
+	<string name="smart_open_des">开启后，为您提供舒适安逸的享受。</string>
+	<string name="smart_sleep_des">开启后，助你尽享美丽梦境。</string>
+	<string name="find_details">了解详情</string>
+	<string name="smart_tempe">智能恒温</string>
+	<string name="smart_tempe_des">开启后，将室内温度智能恒温控制在设定温度内。</string>
+	<string name="tempe_curve">温度曲线</string>
+	<string name="temp_curve_des">开启后，空调将按曲线自动设置温度。</string>
+	
+	<!-- 同码匹配 -->
+	<string name="smart_match_same_power_title">开关机状态校正</string>
+	<string name="smart_match_set_air_status">请选择当前空调的实际运行状态</string>
+	<string name="smart_match_set_power_on">开机</string>
+	<string name="smart_match_set_power_off">关机</string>
+	
+	<!-- 智能开机 -->
+	<string name="smart_on_description">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;开启智能开机后当您在回家的途中，若探测室温低于17度时，
+	    触发开机制热24度；当探测室温高于30度时，触发开机制冷24度；若探测室温在17-30度时，悟空i8不会执行开机操作。（注意：第一次开启智能开机时需要手机APP与悟空i8在同一局域网，以便准确定位；
+	    另外手机定位功能权限需要允许打开，否则功能失效）\n\n
+	    1.要求手机和悟空在同一局域网方可确定悟空的位置，从而智能开机开始生效 \n
+	    2.若手机关闭定位功能，则功能失效（苹果GPS，安卓基站）\n
+	    3.若卸载客户端重新安装，位置信息也会清空，需要与悟空在同一局域网重新定位</string>
+	
+	<!-- 智能恒温start -->
+	<string name="temperature_keep_in">室温保持在</string>
+	<string name="period_setting">时段设置</string>
+	<string name="mode">模式</string>
+	<string name="date_repeate">重复日期</string>
+	<string name="intell_temp_nextday">次日</string>
+	<!-- 智能恒温end -->
+	
+	<!--机顶盒遥控器start  -->
+	<string name="stb_volume">音\n量</string>
+	<string name="stb_channel">频\n道</string>
+	<string name="stb_tv">TV</string>
+	<string name="stb_control_fail">抱歉，控制失败!</string>
+	<string name="stb_ok">OK</string>
+	<!--机顶盒遥控器end  -->
+	
+	<!-- 温度曲线 -->
+	<string name="period_set">时段设置</string>
+	<string name="temper_set">温度设置</string>
+	<string name="temper_curve">温度曲线</string>
+	
+
+	<!-- 参数校正界面 -->
+	<string name="parameter_adjust">参数校正</string>
+	<string name="code_adjust">开关机状态校正</string>
+	<string name="code_adjust_des">校正空调开关状态。（因开关机同码出现状态不一致）</string>
+	<string name="windmode_adjust">扫风状态</string>
+	<string name="windmode_adjust_des">校正扫风状态。（因扫风同码出现状态不一致）</string>
+	<string name="wind_adjust">风速校正</string>
+	<string name="wind_adjust_des">校正部分特殊机型大、小风相反现象。</string>
+	<string name="tempe_adjust">环境温度校正</string>
+	<string name="tempe_adjust_des">校正因工作环境不同造成室温偏差现象。</string>
+	<string name="air_on">空调开启</string>
+	<string name="air_off">空调关闭</string>
+	<string name="wind_on">扫风开启</string>
+	<string name="wind_off">扫风关闭</string>
+	
+	<!-- 电量修正 -->
+	<string name="ele_adjust">电量校正</string>
+	<string name="ele_adjust_des">电量数据将乘以设置的系数。（解决电子器件个体差异导致电量有偏差现象）</string>
+	<string name="ele_clear">所有电量清零</string>
+	<string name="alert_ele_clear">确定清零所有电量？</string>
+	
+	<!-- 	定时器 -->
+	<string name="timer_type_period_min">时段设置请不少于5个小时</string>
+	<string name="timer_type_period_set_temp">至少设置一个温度</string>
+	<string name="timer_type_simple">简约</string>
+	<string name="timer_type_advance">高级</string>
+	
+	<!-- 	温湿度曲线图 -->
+	<string name="curve_title">24小时曲线</string>
+	<string name="cur_room_temper">当前室温</string>
+	<string name="cur_room_weet">当前湿度</string>
+
+	<!-- 车载悟空 -->	
+	<string name="slave_czwk">车载悟空</string>
+	<string name="czwk">车载悟空</string>
+	<string name="czwk_ac_time">空调持续时间(10~30分钟)</string>
+	<string name="czwu_my_msg">我的消息</string>
+	<string name="czwk_find_car">智能寻车</string>
+	<string name="czwk_ac">A/C</string>
+	<string name="czwk_open_ac">开启空调</string>
+	<string name="czwk_close_ac">关闭空调</string>
+	<string name="czwk_standby">待机</string>
+	<string name="czwk_charge_ok">已充满电</string>
+	<string name="czwk_charging">正在充电</string>
+	<string name="czwk_power_low">电量不足，请充电</string>
+	<string name="czwk_start_engine_fail">开启发动机失败</string>
+	<string name="czwk_open_ac_fail">开启空调失败</string>
+	<string name="czwk_battery_voltage_err">电瓶电压错误</string>
+	<string name="czwk_car_temp">车内温度</string>
+	<string name="czwk_open_failed">开启失败</string>
+	<string name="czwk_close_failed">关闭失败</string>
+	
+	<!-- 增强型悟空 -->
+	<string name="stb_add_key">添加按键</string>
+	<string name="stb_mod_key">修改名称</string>
+	<string name="stb_learn_again">学习按键</string>
+	<string name="stb_key_name_hint">按键名称</string>
+	<string name="stb_input_key_name">请输入按键名称</string>
+	<string name="delete_custom_key">删除</string>
+	<string name="stb_user_key_exceed">对不起，自定义按键最多支持%d个</string>
+
+	<!-- 童锁 -->
+	<string name="childlock_title">童锁</string>
+	<string name="childlock_desp">开启后，空调自带遥控板的控制功能将被限制。</string>
+	<string name="childlock_desp_off">不启用</string>
+	<string name="childlock_desp_all">限制所有按键</string>
+	<string name="childlock_desp_power">限制除开关外的其他按键</string>
+	<string name="childlock_desp_short_off">关闭</string>
+	<string name="childlock_desp_short_all">限制所有</string>
+	<string name="childlock_desp_short_power">开关除外</string>
+	
+	<!-- 升级提示框 -->
+	<string name="upgrade_alert_tips_1">检查到设备[%@]可升级</string>
+	<string name="upgrade_alert_tips_n">检查到%@个设备可升级</string>
+	<string name="upgrade_alert_start">立即升级</string>
+	<string name="upgrade_alert_wait">稍后再说</string>
+	<string name="upgrade_alert_noshow">不再提示</string>
+	<string name="upgrade_guide_tips">你可以通过以下方式升级</string>
+	
+	<!-- 排名 -->
+	<string name="rank_list">荣誉排行</string>
+	<string-array name="rank_share_titles">
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+    </string-array>
+<!-- 	<string-array name="rank_share_titles"> -->
+<!--         <item>本周用电排名</item> -->
+<!--         <item>制冷排名</item> -->
+<!--         <item>制热排名</item> -->
+<!--         <item>开机时长排名</item> -->
+<!--         <item>常用空调温度</item> -->
+<!--     </string-array> -->
+	
+
+	<string name="guide_list_slide">左滑有惊喜！</string>
+	
+	<string name="web_open_with_browser">在浏览器中打开</string>
+
+	<!-- 沙特插座 -->
+	<string name="saudi_person_detect">人体感应</string>
+	<string name="saudi_power">电量统计</string>
+	
+	<!-- 门锁 -->
+	<string name="slave_gatelock">智能门锁</string>
+    <string name="gatelock_control">控制面板</string>
+	<string name="gatelock_record">历史记录</string>
+	<string name="gatelock_alert_manager">提醒设置</string>
+	<string name="gatelock_close_state">关闭</string>
+	<string name="gatelock_open_state">打开</string>
+	<string name="lock_open">锁开</string>
+	<string name="lock_close">锁关</string>
+	<string name="gatelock_close">关锁</string>
+	<string name="gatelock_open">开锁</string>
+	<string name="gatelock_panl_match">识别遥控器</string>
+	
+		<!-- 新门锁 -->
+	<string name="push_warn_notify">推送报警提醒</string>
+	<string name="warn_notify_unlock_door">门未关好报警提醒</string>
+	<string name="warn_notify_unlock_door_time">多久未关门报警</string>
+	<string name="remote_controller_manage">遥控器管理</string>
+	<string name="press_recongnise_remote_controller">请按下遥控器按钮进行识别</string>
+	<string name="recongnise_success">识别成功</string>
+	<string name="recongnise_fail">识别出错，请重新识别一次</string>
+	<string name="try_again">再次尝试</string>
+	<string name="recongnise_fail_reason">1.请检查你的网络情况\n2.请确保按下了门锁遥控器</string>
+	<string name="lock_auto_guard_des">关锁状态，默认已开启手机端安全信息提示。\n电池电量，默认已开启电量检测及低电量报警。</string>
+	<string name="lock_unguard">接入Wi-Fi开锁</string>
+	<string name="lock_unguard_des">8:00~24:00点，手机连接同一Wi-Fi网络解除上锁</string>
+	<string name="lock_guard">断开Wi-Fi关锁</string>
+	<string name="lock_guard_des">8:00~24:00点，手机断开同一Wi-Fi网络自动关锁</string>
+	<string name="lock_switch_proteced">滑动关锁</string>
+	<string name="lock_switch_unproteced">滑动开锁</string>
+	<string name="lock_close_succ">门已关好</string>
+	<string name="lock_close_fail">门未关好</string>
+	<string name="lock_brokedown">门栓故障</string>
+	<string name="door_state_open">门打开</string>
+	<string name="door_state_close">门关上</string>
+	<string name="lock_state_open">锁未合</string>
+	<string name="lock_state_close">锁已合</string>
+	<string name="lock_tip_open_fail">锁芯未到位，请再次开关锁</string>
+	<string name="lock_state_unexcp_vibrance">%s异常震动</string>
+	<string name="his_type_door_on">门开</string>
+	<string name="his_type_door_off">门关</string>
+	<string name="his_type_lock_on">锁开</string>
+	<string name="his_type_lock_off">锁关</string>
+	<string name="his_type_unexpected_vibrate">异常震动</string>
+	<string name="his_type_low_power">电量低</string>
+	<string name="guard_desp_app">APP</string>
+	<string name="guard_desp_wifi">Wi-Fi</string>
+	<string name="guard_desp_system">系统</string>
+	<string name="guard_desp_physical">手动</string>
+	<string name="guard_desp_remote">遥控器</string>
+	<string name="guard_desp_lock_open">开锁</string>
+	<string name="guard_desp_lock_close">关锁</string>
+	<string name="open_push_warn">请先开启报警推送提醒</string>
+	<string name="lock_alarm_unlock_timeout">XX长时间未关</string>
+	
+
+	<string  name="rf_door">门</string>
+	<string name="lock_state_closing">关锁中</string>
+	<string name="lock_state_opening">开锁中</string>
+	
+	<!-- 通用报警信息的字符提示 -->
+	<string name="com_alarm_open_door">XX开门</string>
+	<string name="com_alarm_close_door">XX关门</string>
+	<string name="com_alarm_open">XX打开</string>
+	<string name="com_alarm_close">XX关闭</string>
+	<string name="com_alarm_force_open_lock">XX锁被撬</string>
+	<string name="com_alarm_low_power">XX电量过低</string>
+	<string name="com_alarm_unexpect_vibrate">XX异常震动</string>
+	<string name="com_alarm_force_open_door">XX门被撬</string>
+	<!-- 网关 -->
+	<string name="list_tab_group">分组</string>
+	<string name="rf_gateway">网关</string>
+	<string name="rf_gw_find_new_slave">检测到XX个新设备，是否绑定</string>
+	<string name="rf_gw_find_new_single_slave">检测到新XX[YY]，是否绑定</string>
+	<string name="rf_gw_bind">立即绑定</string>
+	<string name="rf_group_empty">组中没有设备</string>
+	<string name="rf_group_gw_nolight">网关没有在线灯</string>
+	<string name="rf_rmt_nolight">遥控器中没有在线设备</string>
+	<string name="rf_group_login_status">登录中，请稍后!</string>
+	<string name="rf_group_edit">修改</string>
+	<string name="rf_group_rename">重命名</string>
+	<string name="rf_group_del">删除</string>
+	<string name="rf_select_title">选择网关</string>
+	<string name="add_group">新建分组</string>
+	<string name="modify_group">修改组</string>
+	<string name="input_group_name">请输入组名</string>
+	<string name="rf_no_group_info">没有分组信息</string>
+	<string name="no_rfgw_type_dev">没有网关设备</string>
+	<string name="group_type_led">灯组</string>
+	<string name="group_type_door">门锁组</string>
+	<string name="group_type_magnet">门磁组</string>
+	<string name="group_type_sf_switch">单火线组</string>
+	<string name="group_empty_alert_toast">至少选择一个设备</string>
+	
+	<string name="group_list_device_type">设备&#160;</string>
+	<string name="group_list_device_unit">个</string>
+	<string name="group_list_device_unit_plu">个</string>
+	<string name="group_list_belong_gw">&#160;&#160;所属网关</string>
+	
+	<string name="rfgw_type_led">灯</string>
+	<string name="rfgw_type_dianwei_switch">智能开关</string>
+	<string name="rfgw_type_nobind">未绑定设备</string>
+	<string name="rfgw_type_online">在线设备</string>
+	<string name="rfgw_type_unline">离线设备</string>
+	<string name="rf_light_neuter">中性光</string>
+	<string name="rf_light_white">白光</string>
+	<string name="rf_light_warm">暖光</string>
+	<string name="rf_unbind_dev">新发现设备</string>	
+	<string name="rf_dhx_switch_all_on">全开</string>
+	<string name="rf_dhx_switch_all_off">全关</string>
+	<string name="rf_dhx_switch_on">开启</string>
+	<string name="rf_dhx_switch_off">关闭</string>
+	<string name="rf_dhx_switch_whitch">路&#160;&#160;</string>
+	<string name="rf_dhx_page_title">单火线</string>
+	<string name="rf_dhx_path_one">1路</string>
+	<string name="rf_dhx_path_two">2路</string>
+	<string name="rf_dhx_path_three">3路</string>
+	<string name="rf_dhx_switch_slide_on">滑动开启</string>
+	<string name="rf_dhx_switch_slide_off">滑动关闭</string>
+	<string name="rf_bind_remind">正在绑定设备，请稍候&#8230;</string>
+	<string name="rf_light_all">全部</string>
+	<string name="rf_light_not_support_rgb">不支持色彩设置</string>
+	<string name="rf_light_alert_mode1">模式一</string>
+	<string name="rf_light_alert_mode2">模式二</string>
+	<string name="rf_light_alert_mode_sync">同步模式</string>
+	
+	<string name="rf_gw_compat_def">默认</string>
+	<string name="rf_gw_compat_level">级别</string>
+	<string name="rf_gw_compat_switch">兼容级别选择</string>
+	<string name="rf_gw_deleteall">清除所有子设备</string>
+	<string name="rf_gw_deleteall_msg">即将清除所有子设备，确定？</string>
+	<string name="rf_gw_remind_upgrading">正在升级子设备</string>
+	<string name="rf_gw_remind_upgrade">&#160;&#160;|&#160;&#160;子设备可升级</string>
+	<string name="rf_slave_is_upgrading_try_latter">已有设备正在升级，请稍后尝试</string>
+	<string name="rf_slave_update_failed">升级失败</string>
+	<string name="rf_slave_upgrading">升级中</string>
+	<string name="rf_slave_click_update">点击升级</string>
+	<string name="rf_slave_upgrade_failed">产品升级失败可尝试再次点击升级或者联系客服</string>
+	<string name="rf_ds_year_none">年</string>
+	<string name="rf_ds_year_month">yyyy年MM月</string>
+	<string name="rf_ds_month">月</string>
+	<string name="rf_ds_status_open">打开</string>
+	<string name="rf_ds_status_close">关闭</string>
+	<string name="rf_ds_switch_proteced">滑动布防</string>
+	<string name="rf_ds_switch_unproteced">滑动撤防</string>
+	<string name="rf_ds_protect_remind">XX未关闭</string><!-- ，请在3分钟内关闭XX -->
+	
+	<string name="rf_alarm">悟家报警</string>
+	<string name="rf_alarm_info_power">电量不足</string>
+	<string name="rf_alarm_info_body">感应到活动目标</string>
+	
+	<string name="rf_smart_sos_sensor">智能SOS</string>
+	<string name="rf_smart_smoke_sensor">智能烟感</string>
+	<string name="rf_smart_co_sensor">CO传感</string>
+	<string name="rf_smart_water_sensor">智能水感</string>
+	<string name="rf_light_sw_dev">智能开关</string>
+	<string name="rf_light_dev">灯</string>
+	<string name="rf_magnet_dev">门磁</string>
+	<string name="rf_kate_dev">凯特插座</string>	
+	<string name="picture_pick_color_remind">点击选色</string>
+	<string name="remote_control">遥控器</string>
+	<string name="rf_new_dev_num">[@]&#160;新设备</string>
+	<string name="rf_all_dev_bind">一键配置</string>
+	<string name="rf_online_dev_num">[@]&#160;款在线</string>
+	<string name="rf_offline_dev_num">[@]&#160;款离线</string>
+	
+	<string name="rf_light_mode_rgb">RGB模式</string>
+	<string name="rf_light_mode_wc">色温模式</string>
+	<string name="rf_light_mode_layer">色温分层</string>
+	<string name="rf_light_mode_sync">色温同步</string>
+	
+
+	
+	<!-- 门磁 -->
+	<string name="slave_magnet">智能门磁</string>
+	<string name="guard_open">布防</string>
+	<string name="guard_close">撤防</string>
+	<string name="is_guard_open">已布防</string>
+	<string name="is_guard_close">已撤防</string>
+	<string name="float_window_disable">请设置显示悬浮窗，否则您将不能使用电视遥控板。现在设置吗</string>
+	<string name="magnet_auto_guard_des">布防状态，默认已开启手机端安全信息提示。\n电池电量，默认已开启电量检测及低电量报警。</string>
+	<string name="magnet_unguard">接入Wi-Fi撤防</string>
+	<string name="magnet_unguard_des">手机连接同一Wi-Fi网络解除布防</string>
+	<string name="magnet_guard">断开Wi-Fi布防</string>
+	<string name="magnet_guard_des">手机断开Wi-Fi一分钟后自动布防</string>
+	<string name="magnet_set">智能设置</string>
+	<string name="magnet_ring_set">报警声音</string>
+	<string name="magnet_local_ring">本地提示音</string>
+	<string name="magnet_default_ring">默认提示音</string>
+	<string name="magnet_system_default">系统默认</string>
+	
+	<string name="magnet_left_slid_protect">一键布防</string>
+	<string name="magnet_left_slid_unprotect">一键撤防</string>
+	
+	<string name="title_hisrec">历史记录</string>
+	
+	<string name="guard_desp_on">门打开</string>
+	<string name="guard_desp_off">门关闭</string>
+	<string name="guard_desp_nonnormal_vibrate2">异常震动</string>
+	<string name="guard_desp_low_battery">电量不足%d%%</string>
+	<string name="guard_desp_lower_battery">低电量%d%%</string>
+	
+	<string name="guard_title_on">开</string>
+	<string name="guard_title_off">关</string>
+	<string name="guard_title_nonnormal_vibrate">危</string>
+	<string name="guard_title_low_title_battery">电</string>
+	
+	<string name="guard_title_pause">停</string>
+	<string name="guard_title_pause_canel">启</string>
+	<string name="guard_title_low_power">低</string>
+	<string name="guard_title_normal_power">恢</string>
+	<string name="guard_title_alarm">危</string>
+	<string name="guard_title_safe">安</string>
+	
+	<string name="guard_desp_pause">免扰开启</string>
+	<string name="guard_desp_pause_canel">免扰关闭</string>
+	<string name="guard_desp_low_power">电量过低</string>
+	<string name="guard_desp_normal_power">电量正常</string>
+	<string name="guard_desp_alarm">报警</string>
+	<string name="guard_desp_safe">安全</string>
+	
+	
+	<!-- 友泰门锁 -->
+	<string name="slave_yt_lock">友泰门锁</string>
+	<string name="youtai_lock_state">设备状态</string>
+	<string name="ytlock_power_alert">低电量报警提醒</string>
+	<string name="ytlock_password">开锁密码</string>
+	<string name="ytlock_set_password">设置开锁密码</string>
+	<string name="ytlock_mod_password">修改开锁密码</string>
+	<string name="ytlock_input_old_pwd">输入旧密码</string>
+	<string name="ytlock_input_pwd">请输入密码</string>
+    <string name="ytlock_input_pwd_again">请再次输入密码</string>
+    <string name="ytlock_set_pwd_ok">密码设置成功</string>
+    <string name="ytlock_old_pwd_err">原始密码错误</string>
+    <string name="ytlock_no_set_pwd">未设置控制密码</string>
+    <string name="ytlock_old_pwd_short">旧密码过短</string>
+    <string name="ytlock_new_pwd_short">新密码过短</string>
+    <string name="ytlock_more_menu_direct">操作说明</string>
+    <string name="ytlock_direct">1.打开APP后点击“搜索设备”或点击右上角的“+”并点击“新设备”，会弹出“搜索设备”界面；\r\n
+        2.需要在“搜索设备”界面正确输入手机连接的无线路由器的密码， 然后点击“开始搜索”，等待最多2分钟后即可发现设备；\r\n
+        	3.此时需要输入设备的昵称和密码，即可完成设备的绑定。</string>
+    <string name="youtai_history_open">开门</string>
+    <string name="youtai_history_close">关门</string>
+    <string name="youtai_history_door">撬门</string>
+    <string name="youtai_history_lock">撬锁</string>
+    <string name="youtai_history_power">电量低于5%</string>
+    <string name="youtai_unlocking">正在关锁，请稍候\.\.\.</string>
+    <string name="youtai_locking">正在开锁，请稍候\.\.\.</string>
+    <string name="yt_guard_open">已布防</string>
+	<string name="yt_guard_close">已撤防</string>
+	<!-- 汇泰龙 -->
+	<string name="slave_hutlon_lock">汇泰龙云锁</string>
+    <string name="htl_not_lock_alarm">XX门未锁好</string>
+    <string name="htl_error_alarm">XX错误报警</string>
+    <string name="htl_rob_alarm">XX劫持报警</string>
+    <string name="htl_mechanical_lock_alarm">XX机械锁报警</string>
+    <string name="htl_open_door_alarm">XX开门</string>
+    <string name="htl_close_door_alarm">XX关门</string>
+    
+    <string name="history_opendoor">开门记录</string>
+    <string name="history_warming">报警信息</string>
+
+    <string name="hutlon_usermanage">用户管理</string>
+    <string name="hutlon_history">历史记录</string>
+    <string name="hutlon_setting">提醒设置</string>
+    
+    <string name="user_details">用户详情</string>
+    <string name="icon_choose">头像选择</string>
+    <string name="system_icon">系统自带头像</string>
+    
+    <string name="hutlon_admin_pwd">请输入管理员密码</string>
+    <string name="login_success">登录成功</string>
+    <string name="login_failed">登录失败</string>
+    <string name="notify_change_ok">消息提醒修改成功</string>
+    <string name="icon_change_ok">头像修改成功</string>
+    <string name="name_change_ok">用户名修改成功</string>
+    <string name="opendoor_remind_change_ok">开关门提醒修改成功</string>
+    <string name="notify_change_fail">消息提醒修改失败</string>
+    <string name="icon_change_fail">头像修改失败</string>
+    <string name="name_change_fail">用户名修改失败</string>
+    <string name="opendoor_remind_change_fail">开关门提醒修改失败</string>
+    
+    <string name="album_icon">从手机相册选择</string>
+    <string name="open_close_door_notify">开关门提醒</string>
+    <string name="opendoor_category_pwd">密码ID</string>
+    <string name="opendoor_category_finger">指纹ID</string>
+    <string name="opendoor_category_card">感应卡ID</string>
+    <string name="alter_user_nickname">编辑用户名称</string>
+    <string name="no_user_nickname">未命名</string>
+    
+    <string name="history_date">日期</string>
+    <string name="history_category">类别</string>
+    <string name="history_user_name">用户名</string>
+    
+    <string name="all">全部</string>
+    <string name="finger_unlock">指纹解锁</string>
+    <string name="card_unlock">感应卡解锁</string>
+    <string name="pwd_unlock">密码解锁</string>
+    
+    <string name="all_notify">全局通知提醒</string>
+    <string name="low_electric_alarm">低电压报警</string>
+    <string name="not_lock_alarm">门未锁好报警</string>
+    <string name="error_alarm">错误报警</string>
+    <string name="rob_alarm">劫持报警</string>
+    <string name="pry_alarm">防撬报警</string>
+    <string name="mechanical_lock_alarm">机械锁报警</string>
+    <string name="notify_alarm">通知提醒</string>
+    <string name="phone_notify_alarm">手机推送消息报警</string>
+    <string name="do_not_notify">不要提醒</string>
+    <string name="do_not_notify_forever">永久不提醒</string>
+    
+    <string name="htl_week_mon">星期一</string>
+    <string name="htl_week_tues">星期二</string>
+    <string name="htl_week_wed">星期三</string>
+    <string name="htl_week_thur">星期四</string>
+    <string name="htl_week_fri">星期五</string>
+    <string name="htl_week_sat">星期六</string>
+    <string name="htl_week_sun">星期日</string>
+    
+    <!-- 人体感应 -->
+	<string name="slave_rf_induction">红外感应器</string>
+	<string name="rf_induction_count_title">感应</string>
+	<string name="rf_induction_count_unit">次</string>
+	
+	<string name="slave_rf_temperhum">温湿度传感</string>
+	
+	<string name="slave_rf_gas">智能气感</string>
+	<string name="rf_induction_settime">报警间隔时间</string>	
+	<string name="rf_induction_settime_set">报警间隔时间设置</string>	
+	
+	<!--气感水感 -->
+	<string name="slave_rf_alarminfo_realarm">安全</string>
+	<string name="slave_rf_alarminfo_alarm">报警</string>
+	
+	<string name="slave_rf_alarminfo_rebattery">电量正常</string>
+	<string name="slave_rf_alarminfo_battery_low">电量过低</string>
+	
+	<string name="slave_rf_alarminfo_restart">免扰关闭</string>
+	<string name="slave_rf_alarminfo_pause">免扰开启</string>
+	
+	<string name="slave_rf_gas_smoke">烟雾</string>
+	<string name="slave_rf_gas_desp">可燃气体</string>
+	<string name="slave_rf_senser_desp_noti">检测到</string>
+	<string name="slave_rf_senser_desp_noti_no">未检测到</string>
+	
+	<string name="slave_rf_recovery">报警及推送状态恢复</string>
+	<string name="slave_rf_demo_desp">注意，这是演示报警。</string>
+	<string name="slave_rf_pause">暂停报警</string>
+	<string name="slave_rf_pause_desp">分钟后恢复报警</string>
+	
+	<string name="slave_rf_water_alarm">报警</string>
+	<string name="slave_rf_water_detect">探测到水</string>
+	<string name="slave_rf_detect_nothing">未探测到水</string>
+	
+    <string name="week">周</string>
+    <string name="week_mon">一</string>
+    <string name="week_tues">二</string>
+    <string name="week_wedn">三</string>
+    <string name="week_thur">四</string>
+    <string name="week_fri">五</string>
+    <string name="week_sat">六</string>
+    <string name="week_sun">七</string>
+    <string name="timer_on">开</string>
+    <string name="timer_off">关</string>
+    <string name="timer_all_day">全</string>
+    
+    <string name="timer_edit_period">阶段定时器设置</string>
+    <string name="timer_edit_one_way">开关定时器设置</string>
+    <string name="timer_edit_timer_null">对不起，传入参数有误</string>
+    <string name="timer_edit_choose_color">选择颜色及亮度</string>
+    <string name="timer_style_onoff">开关定时</string>
+    <string name="timer_style_period">阶段定时</string>
+    <string name="timer_list_add_timer">添加您的定时器</string>
+    <string name="timer_list_empty_title">规划时间</string>
+    <string name="timer_list_empty_sub_title">随心所欲</string>
+    <string name="timer_week_select">日期选择</string>
+    
+    <!-- 二维码扫描添加相关 -->
+    <string name="add_scan_qr_code">扫描二维码添加设备</string>
+	<string name="scan_invite_slide_txt">邀请家人</string>
+    <string name="scan_invite_dev_desc">客厅悟空</string>
+    <string name="scan_invite_count_def">已成功邀请0位家人</string>
+    <string name="scan_invite_count_formatter">已成功邀请%d位家人</string>
+    <string name="scan_invite_tip">请让您的家人打开悟家扫描上面的二维码\n就可以与您一起遥控悟家啦</string>
+    <string name="scan_invite_refresh">二维码失效了？再换一个</string>
+    <string name="scan_invite_list_name">Huawei H6-L01</string>
+    <string name="scan_invite_list_remark">备注</string>
+    <string name="scan_invite_modify_remark">修改备注</string>
+    <string name="scan_invite_remark_empty_tip">备注名称不能修改为空</string>
+    <string name="scan_invite_remark_too_long">备注名称太长，请重新输入</string>
+    <string name="scan_invite_del_invite">删除分享</string>
+    <string name="scan_invite_del_invite_tip">删除后，此用户将不能控制设备了，是否继续删除？</string>
+    <string name="scan_invite_title_scan_add">扫描二维码添加设备</string>
+    <string name="scan_invite_title_invite">邀请家人</string>
+    <string name="scan_invite_title_invited">我邀请的家人</string>
+    <string name="scan_invite_scan_tip">扫描家人分享的二维码，即可遥控Ta</string>
+    <string name="scan_invite_disable_refresh_tip">%d秒后可重新获取二维码</string>
+    <string name="scan_invite_invalid_qr">二维码内容无效</string>
+    <string name="scan_invite_scan_success">二维码扫描成功</string>
+    <string name="scan_invite_scan_success_tip">您收到家人的邀请，可以随时与家人一起遥控悟家啦</string>
+    <string name="scan_invite_scan_failed">二维码扫描失败</string>
+    <string name="scan_invite_scan_failed_tip">1、请检查您的网络情况\n2、您扫描的二维码已过期</string>
+    <string name="scan_invite_back_to_list">回到设备列表</string>
+    <string name="scan_invite_already_exist">设备已存在</string>
+    
+    <string name="hardware_version">射频版本</string>
+    <string name="software_version">应用版本</string>
+    
+    <!-- 暖气阀 -->
+    <string name="slave_heating">智能暖气阀</string>
+    <string name="heating_control_title">遥控面板</string>
+    <string name="open_window">开窗待机</string>
+    <string name="open_window_desc">开启此功能后，当检测到房间窗户打开了，自动关闭阀门从而达到节能的目的。</string>
+    <string name="heating_temp_min">关闭</string>
+    <string name="heating_temp_max">全开</string>
+    <string name="heating_dev_time">设备时间</string>
+    <string name="heating_manual_mode">\n手动模式设置</string>
+    <string name="heating_temp_desc">\n周一至周日，固定一个加热温度与经济温度。</string>
+    <string name="heating_time_desc">\n每日最多可设置2组定时，时间段不能重复。</string>
+    <string name="heating_temp_set">温度设置</string>
+    <string name="heating_hot_temp">加热</string>
+    <string name="heating_economic_temp">经济</string>
+    <string name="heating_group1">组1</string>
+    <string name="heating_group2">组2</string>
+    <string name="heating_dev_date">日期</string>
+    <string name="heating_time">时间</string>
+    <string name="heating_temp">温度</string>
+    <string name="heating_last_time">剩余时间段</string>
+    <string name="heating_timing">定时</string>
+    <string name="heating_end_time_tip">结束时间应晚于开始时间</string>
+    <string name="heating_dialog_time_tip">开始于@,请设置结束时间。</string>
+    <string name="heating_auto_mode">自动模式</string>
+    <string name="heating_manual">手动模式</string>
+    
+    <!-- APP 升级 -->
+    <string name="app_upgrade_finished">升级完成</string>
+    <string name="app_upgrade_maintitle">检测更新</string>
+    <string name="app_upgrade_title">检测新版本</string>
+    <string name="app_upgrade_no_new">没有检测新版本</string>
+    <string name="app_upgrade_find_new">发现新版本</string>
+    <string name="app_upgrade_nowifi_msg">当前处于非Wi-Fi状态，是否继续更新？土豪随意~</string>
+    
+<!--     思博特 -->
+	<string name="slave_oem_sport">恒温控制器</string>
+    
+    <string name="sport_standby">待机</string>
+    
+    <string name="sport_settemp_default">设置X℃</string>
+    <string name="sport_replce">X</string>
+    
+    <string name="sport_set_title">参数设置</string>
+    <string name="sport_points_title">编程模式</string>
+    <string name="sport_points_time_title">时间点设置</string>
+    
+    <string-array name="sport_set_titles">
+        <item>风机开关</item>
+        <item>时钟设置</item>
+        <item>温度补偿校正值</item>
+        <item>低温防冻温度值</item>
+        <item>回差温度值</item>
+        <item>最高温度限制值</item>
+        <item>最低温度限制值</item>
+    </string-array>
+    
+    <string-array name="sport_weeks">
+        <item>星期一</item>
+        <item>星期二</item>
+        <item>星期三</item>
+        <item>星期四</item>
+        <item>星期五</item>
+        <item>星期六</item>
+        <item>星期日</item>
+    </string-array>
+    
+    <string-array name="sport_modes">
+        <item>制冷</item>
+        <item>制热</item>
+        <item>通风</item>
+        <item>节能</item>
+    </string-array>
+    
+     <string-array name="sport_point_time_type">
+        <item>工作日</item>
+        <item>周六</item>
+        <item>周日</item>
+    </string-array>
+    
+    <string-array name="sport_point_time">
+        <item>时间点一</item>
+        <item>时间点二</item>
+        <item>时间点三</item>
+        <item>时间点四</item>
+    </string-array>
+    
+    <!-- 中央空调 -->
+    <string name="slave_gwcd_thermost">中央空调</string>
+    <string name="thermost_btn_water_hot">地暖制热</string>
+    <string name="thermost_btn_fan_hot">风盘制热</string>
+    <string name="thermost_btn_hot">风盘地暖制热</string>
+    
+    <string name="thermost_panel_cold">制冷</string>
+    <string name="thermost_panel_water_hot">地暖\n制热</string>
+    <string name="thermost_panel_fan_hot">风盘\n制热</string>
+    <string name="thermost_panel_hot">风盘\n地暖</string>
+    
+    <!-- 联动 -->
+    <string name="tab_linkage">智能联动</string>
+    <string name="time_set">时间点</string>
+    <string name="time_edit_set">定时设置</string>
+    <string name="light_set">亮度</string>
+    <string name="dev_select">设备选择</string>
+    <string name="dev_all_select">全选</string>
+    <string name="dev_all_unselect">取消</string>
+    <string name="linage_qrshare_desp">分享联动建立智能家庭，家庭成员能分享给任何人，但只有创建者能删除家庭成员。</string>
+    <string name="linage_qrshare_qrdesp">A邀请你加入“B”</string>
+    <string name="linage_qrshare_qrtime">二维码失效时间</string>
+    <string name="linage_qrshare_qrchange">换一组二维码</string>
+    <string name="linage_qrshare_title">邀请家人一起使用</string>
+    <string name="linage_stagheader_add_title">你还没有联动，赶紧添加联动吧</string>
+    <string name="linage_stagheader_add_desp">可选择联动模板</string>
+    <string name="linage_qrshare_addto">扫描二维码</string>
+    <string name="linage_qrshare_scan_tip">扫描家人分享的二维码，即可加入</string>
+    <string name="ple_select_if_dev">请选择触发设备</string>
+    <string name="ple_select_then_dev">请选择执行设备</string>
+    <string name="link_data_null">该联动没有数据</string>
+    <string name="module_des_split">，</string>
+    <string name="linage_qradd_success">加入分享圈子成功！</string>
+    <string name="linage_qradd_fail">加入分享圈子失败！</string>
+    <string name="linage_qradd_already">该圈子已存在！</string>
+    
+    <!-- 门锁新界面 -->
+    <string name="lock_remote_ctrl_name">遥控器名称</string>
+    <string name="lock_page_remote_ctrl_manage">遥控器管理</string>
+    <string name="lock_remote_ctrl_edit_name">修改名称</string>
+    <string name="lock_remote_ctrl_report_loss">挂失</string>
+    <string name="lock_remote_ctrl_cancel_report_loss">解除挂失</string>
+    <string name="lock_remote_ctrl_delete">删除</string>
+    <string name="lock_alert_time_label">分</string>
+    <string name="lock_alert_time_setting_title">多久未关门报警</string>
+    <string name="lock_remote_ctrl_name_empty">遥控器名称不能为空</string>
+    <string name="lock_remote_ctrl_name_too_long">遥控器名称太长，请重新输入</string>
+    
+    <string name="linage_newlink_title">新建联动</string>
+    <string name="linage_des_if">如果</string>
+    <string name="linage_des_if_eg">如果家里有人</string>
+    <string name="linage_des_then">就</string>
+    <string name="linage_des_then_eg">就撤防开灯</string>
+    
+    <string name="menu_smart_home">我的智能家庭</string>
+    <string name="menu_family_member">家庭成员</string>
+    <string name="linkage_menu_item_create_family">新建家庭</string>
+    <string name="linkage_page_title_create_family">新建家庭</string>
+    <string name="linkage_page_title_edit_family_mem">编辑成员</string>
+    <string name="linkage_edit_family_name">修改家庭名称</string>
+    <string name="family_role_new_member">新人</string>
+    <string name="family_role_father">父亲</string>
+    <string name="family_role_mother">母亲</string>
+    <string name="family_role_elder_sister">姐姐</string>
+    <string name="family_role_little_sister">妹妹</string>
+    <string name="linkage_create_family_def_name">我的家庭</string>
+    <string name="linkage_create_family_success">家庭创建成功</string>
+    <string name="linkage_create_family_failed">家庭创建失败</string>
+    <string name="linkage_del_family_success">删除成功</string>
+    <string name="linkage_del_family_failed">删除失败</string>
+    <string name="linkage_del_family_member">删除家庭成员</string>
+    <string name="linkage_del_family_member_failed">家庭成员删除失败</string>
+    <string name="linkage_edit_family_success">%s修改成功</string>
+    <string name="linkage_edit_family_failed">%s修改失败</string>
+    <string name="linkage_edit_family_member_success">家庭成员修改成功</string>
+    <string name="linkage_edit_family_member_failed">家庭成员修改失败</string>
+    <string name="linkage_exit_family_success_tip">您已退出家庭“%1$s”</string>
+    <string name="linkage_del_family_creator_tip">您是“%1$s”创建者，删除本人将解散家庭，删除所有家庭相关信息。</string>
+    <string name="linkage_del_family_member_tip">删除家庭成员%1$s，删除后将%2$s将收到提示信息。</string>
+    <string name="linkage_exit_family_tip">退出“%1$s”，所有家庭相关信息将被删除。</string>
+    <string name="linkage_exit_family_failed">退出“%1$s”失败</string>
+    <string name="linkage_family_name_empty_tip">家庭名称不能为空</string>
+    <string name="linkage_family_del_by_super_user">没有家庭信息，请稍后重试。</string>
+    <string name="linkage_family_mem_last_login_time">上次登录\n%1$s</string>
+    <string name="linkage_family_mem_join_time">加入时间\n%1$s</string>
+    <string name="linkage_family_def_name">我的家</string>
+    <string name="linkage_family_mem_me">(我)</string>
+    <string name="linkage_family_mem_no_info">未获取到成员信息，请稍后重试。</string>
+    <string name="linkage_family_mem_name_empty">成员名称不能为空</string>
+    <string name="linkage_family_mem_deleted_tip">您在“%1$s”的权限已被创建者收回</string>
+    <string name="linkage_rule_last_exe_time">最近执行\n%1$s</string>
+    
+    <string name="linkage_rule_try">试一试</string>
+    <string name="linkage_rule_exe_suceess">执行联动成功</string>
+    
+    <string name="linkage_del_dev_dialog_desp">删除XX设备后，所有相关联动都会受到影响。</string>
+    <string name="linage_home_adddev_fail">添加失败，该设备已加入其他家庭</string>
+    <string name="linage_color_title">颜色选择</string>
+    
+    <string name="linage_linkserver_err_time_out">连接服务器超时</string>
+    
+	<!-- 海曼情景遥控器 -->
+    <string name="rf_hm_sceneremoter_name">情景遥控器</string>
+    
+    <!-- 海曼求救器 -->
+	<string name="sos_alarm_push">报警推送</string>
+	<string name="sos_alarm_push_desp">SOS报警触发时，推送报警信息给手机</string>
+	<string name="sos_alarm_push_always">一直推送</string>
+	<string name="sos_alarm_push_always_desp">一直推送报警信息直至确认</string>
+	<string name="sos_alarm_push_once">只推一次</string>
+	<string name="sos_alarm_push_once_desp">只推送一次报警信息</string>
+	<string name="sos_alarm_push_period">同一报警之间推送时间间隔</string>
+	
+	<string name="sos_alarm_push_once_short">推送一次</string>
+	<string name="sos_alarm_push_always_short">一直推送</string>
+	
+	<string name="sos_alarm_notification_desp">XXSOS报警</string>
+	
+	<string name="info_add_device_no_slave">添加失败，请通过网关添加终端设备</string>
+</resources>
+
+
+
+
+
+/*******************************  arrays.xml *******************************************/
+
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="array_week">
+        <item>日</item>
+        <item>一</item>
+        <item>二</item>
+        <item>三</item>
+        <item>四</item>
+        <item>五</item>
+        <item>六</item>
+    </string-array>
+    
+    <string-array name="week_array">
+        <item>周一</item>
+        <item>周二</item>
+        <item>周三</item>
+        <item>周四</item>
+        <item>周五</item>
+        <item>周六</item>
+        <item>周日</item>
+    </string-array>
+    
+    
+    <string-array name="htchp_work_modes">
+        <item>夏天</item>
+        <item>冬天</item>
+        <item>智能</item>
+        <item>经济</item>
+        <item>标准</item>
+        <item>高温</item>
+        <item>定时</item>
+    </string-array>
+    
+    <string-array name="wk_eh_learn_steps_title">
+        <item>第1步 准备环境</item>
+        <item>第2步 学习</item>
+    </string-array>
+    
+    <string-array name="wk_eh_learn_steps_content">        
+        <item>1.准备好能正常工作的遥控器，将遥控器靠近和对准悟空\n\n2.点击“开始”按钮进行学习</item>
+        <item>1.按下遥控器按钮后，请确定能否控制电器</item>
+    </string-array>
+    
+    <string-array name="wk_eh_fix_keys">
+        <item>退出</item>
+        <item>菜单</item>
+        <item>主页</item>
+        <item>电源</item>
+        <item>确定</item>
+        <item>向左</item>
+        <item>向上</item>
+        <item>向右</item>
+        <item>向下</item>
+        <item>上一页</item>
+        <item>下一页</item>
+        <item>音量加</item>
+        <item>音量减</item>
+        <item>频道加</item>
+        <item>频道减</item>
+        <item>静音</item>
+        <item>TV/AV</item>
+    </string-array>
+    
+    <string-array name="air_plug_rc_tv_btns">
+        <item>开关</item>
+        <item>丽音</item>
+        <item>伴音</item>
+        <item>制式</item>
+        <item>睡眠</item>
+        <item>数字1</item>
+        <item>数字2</item>
+        <item>数字3</item>
+        <item>数字4</item>
+        <item>数字5</item>
+        <item>数字6</item>
+        <item>数字7</item>
+        <item>数字8</item>
+        <item>数字9</item>
+        <item>--/-</item>
+        <item>数字0</item>
+        <item>节目交替</item>
+        <item>交换</item>
+        <item>画中画</item>
+        <item>正常</item>
+        <item>选台</item>
+        <item>图像</item>
+        <item>CH-</item>
+        <item>CH+</item>
+        <item>声音</item>
+        <item>向上</item>
+        <item>向下</item>
+        <item>向左</item>
+        <item>向右</item>
+        <item>菜单</item>
+        <item>屏显</item>
+        <item>TV/AV</item>
+        <item>完成</item>
+        <item>音量加</item>
+        <item>音量减</item>
+        <item>频道加</item>
+        <item>频道减</item>
+        <item>静音</item>
+    </string-array>
+    
+    <string-array name="air_plug_rc_stb_btns">
+    	<item>数字1</item>
+    	<item>数字2</item>
+    	<item>数字3</item>
+    	<item>数字4</item>
+    	<item>数字5</item>
+    	<item>数字6</item>
+    	<item>数字7</item>
+    	<item>数字8</item>
+    	<item>数字9</item>
+    	<item>数字0</item> 
+    	<item>列表</item>
+    	<item>上一节目</item>
+    	<item>待机</item>
+    	<item>频道+</item>
+    	<item>频道-</item>
+    	<item>音量+</item>
+    	<item>音量-</item>
+    	<item>向上</item>
+    	<item>向下</item>
+    	<item>向左</item>
+    	<item>向右</item>
+    	<item>确认</item>
+    	<item>退出</item>
+    	<item>菜单</item>
+    	<item>红</item>
+    	<item>绿</item>
+    	<item>黄</item>
+    	<item>蓝</item>
+    	<item>返回</item>
+    	<item>上页</item>
+    	<item>下页</item>
+    	<item>声道</item>
+    	<item>信息</item>
+    	<item>静音</item>
+    	<item>喜爱</item>
+    	<item>导视</item>
+    	<item>电视</item>
+    	<item>广播</item>
+    	<item>资讯</item>
+    	<item>股票</item>
+    	<item>点播</item>
+    	<item>邮件</item>
+    	<item>游戏</item>
+    	<item>列表</item>
+    	<item>上一节目</item>
+    	<item>设定</item>
+    	<item>主页</item>
+    	<item>记录●</item>
+    	<item>停止■</item>
+    	<item>A</item>
+    	<item>B</item>
+    	<item>C</item>
+    	<item>D</item>
+    	<item>E</item>
+    	<item>F</item>
+    	<item>快退</item>
+    	<item>快进</item>
+    	<item>播放/暂停</item> 
+    </string-array>
+    
+    
+    <string-array name="air_plug_rf_light_scence">
+         <item>自动</item>
+         <item>炫酷</item>
+         <item>思考</item>
+         <item>聚会</item>
+         <item>缤纷</item>
+         <item>流光</item>
+         <item>霓虹</item>
+         <item>明亮</item>
+         <item>月光</item>
+         <item>阅读</item>
+         <item>冷冽</item>
+         <item>温暖</item>
+         <item>魅惑</item>
+    </string-array> 
+    
+    <string-array name="lede_light_scence">
+        <item>炫酷</item>
+        <item>浪漫</item>
+        <item>起床</item>
+        <item>睡眠</item>
+        <item>聚会</item>
+        <item>阅读</item>
+        <item>锻炼</item>
+        <item>思考</item>
+        <item>用餐</item>
+    </string-array>
+    <string-array name="warn_rings">
+        <item>系统默认</item>
+        <item>1331</item>
+        <item>BB机</item>
+        <item>Dinlinlin</item>
+        <item>啊哦</item>
+        <item>报警声5s</item>
+        <item>车警</item>
+        <item>单车铃声</item>
+        <item>电子警报3s</item>
+        <item>狗狗叫声</item>
+        <item>警报</item>
+        <item>闹铃</item>
+        <item>哦no</item>
+        <item>潜艇警报声</item>
+        <item>潜艇紧急集合声</item>
+	</string-array>
+    
+</resources>
+
+
+/*******************************  eplug_ql_strings.xml *******************************************/
+
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ql_devname">晴乐插座</string>
+    <string name="ql_tab_dev">设备详情</string>
+    <string name="ql_tab_set">提醒设置</string>
+    <string name="ql_tab_time">定时器</string>
+    
+    <string name="ql_set_freez">防冻保护</string>
+    <string name="ql_set_safe">安全模式</string>
+    <string name="ql_set_alarm">报警提醒</string>
+    
+    <string name="ql_set_freez_desp">开启后，根据设置温度，自动通电、断电</string>
+    <string name="ql_set_safe_desp">开启后，当设备离线时可自动断电，防止意外发生</string>
+    <string name="ql_set_alarm_desp">开启后，室温高于设定温度时，设备推送报警给手机</string>
+    
+    <string name="ql_set_alarm_morethan">高于</string>
+    <string name="ql_set_alarm_push_title">报警历史记录</string>
+    
+    <string name="ql_about_info">公司简介：北京华阳舒适系统集成有限公司是一家专门从事家庭能源管理的智能家居创新产品研发和销售的互联网创业公司。我们致力于让您的家居更安全、更舒适、更节能。让您以最经济的方式享受更现代化的科技生活。
+\n\n我们的团队\n
+公司有强大的产品创新研发团队，包括产品研究、硬件设计、嵌入式开发、APP开发、物联网云平台等开发小组，分别由经验丰富的行业专家领衔。我们的目标是：智能生活触手可得！</string>
+    <string name="ql_about_name">产品名称：晴乐智能WI-FI能源管理插座</string>
+    <string name="ql_about_model">产品型号：QL-C101</string>
+    <string name="ql_about_company">公司全名：北京华阳舒适系统集成有限公司</string>
+    <string name="ql_about_adress">公司地址：北京市昌平区北七家镇高新技术工业园定泗路华阳</string>
+    <string name="ql_about_mail">客服邮箱：rcs@lucky34.com.cn</string>
+
+
+</resources>
+

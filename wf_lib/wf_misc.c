@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/sysinfo.h>
 #include <signal.h>
 #include <setjmp.h>
 #include <errno.h>
 #include <sys/ipc.h>
+#include <dirent.h>
 
 #include "wf_misc.h"
 
@@ -75,7 +77,37 @@ int test_jmp()
 
 
 
+int close_fd_self()
+{
+	struct dirent **namelist = NULL;
+	int n=0, i=0, fd=0;
+	char dir[256];
 
+	sprintf(dir, "/proc/%d/fd", getpid());
+
+	n = scandir(dir, &namelist, 0, alphasort);
+	if(n < 0)
+		return -1;
+	for(i=n-1; i>=0; i--)
+	{
+		if(0 == strcmp(".", namelist[i]->d_name)){
+			free(namelist[i]);
+			continue;
+		}
+		if(0 == strcmp("..", namelist[i]->d_name)){
+			free(namelist[i]);
+			continue;
+		}
+		fd = atoi(namelist[i]->d_name);
+		free(namelist[i]);
+		if(fd == 0 || fd == 1 || fd == 2)
+			continue;
+		close(fd);
+	}
+
+	free(namelist);
+	return 0;
+}
 
 void bubble_sort_char(char *str, int start_index, int end_index)
 {

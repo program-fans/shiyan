@@ -1,0 +1,3230 @@
+/*******************************  string.xml *******************************************/
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources>
+
+    <!-- 系统级字符串 -->
+    <string name="app_name">iWUHome</string>
+    <string name="app_version">v1.3</string>
+    <!-- 通用字符串 -->
+    <string name="common_upgrade">Upgrade</string>
+    <string name="common_edit">Edit</string>
+    <string name="common_save">Done</string>
+    <string name="common_complete">Complete</string>
+    <string name="common_switch">Change</string>
+    <string name="common_add">Add</string>
+    <string name="common_cancle">Cancel</string>
+    <string name="common_ok">Done</string>
+    <string name="common_yes">Yes</string>
+    <string name="common_no">No</string>
+    <string name="common_have_problem">Can’t log in?</string>
+    <string name="common_latelyrecord"> Got it</string>
+    <string name="common_wait">Please wait </string>
+    <string name="common_fail">Sorry operation failure</string>
+    <string name="common_success">Operation succeed </string>
+    <string name="common_nocontent">no XX, please add </string>
+    <string name="common_changewifi_failed">Failed to change device Wi-Fi</string>
+    <string name="common_look">To See</string>
+    <string name="common_del_dev">Delete</string>
+    <string name="common_del_dev_sure">Delete this device ?</string>
+    <string name="common_load_data">Loading, please wait\.\.\.</string>
+    <string name="common_prompt">Prompt</string>
+    <string name="common_other_link">Associate other </string>
+    <string name="common_next">Next </string>
+    <string name="common_product">Not support </string>
+    <string name="common_err"> Sorry, some problem </string>
+    <string name="common_null_name">Name can\'t be empty</string>
+    <string name="common_name_too_long">Name too long </string>
+    <string name="common_err_getdata">Sorry,  can not get data, please try again</string>
+    <string name="common_null">NO</string>
+    <string name="in_english">English</string>
+    <string name="switch_account">Change Account</string>
+    <string name="removeItem">Remove</string>
+    <string name="in_ch_cn">简体中文</string>
+    <string name="common_err_unknow">Unknown error </string>
+    <string name="err_app">Sorry something wrong with program </string>
+    <string name="common_err_invlid_param">Invalid parameter </string>
+    <string name="common_replace_char">X</string>
+    <string name="common_replace_char_y">Y</string>
+    <string name="common_time_unit_min">minute</string>
+    <string name="common_dev_busy">Device is busy, please wait</string>
+    <string name="common_content_empty">please add</string>
+    <string name="common_not_support_dev_type">Please invite iFans Cloud Platform to control</string>
+    <string name="common_click_exit">Once more click to exit the program</string>
+    <string name="common_timer">Timer</string>
+    <string name="common_getdata_fail">Get data failure</string>
+    <string name="common_dev_not_support">Does notsupport current version, please upgrade the device.</string>
+    <string name="common_timer_conflict">Time conflict, please modify time.</string>
+    <!-- 系统设备字符串 -->
+    <string name="sys_dev">Device </string>
+    <string name="sys_clone_dev">Activating\.\.\.</string>
+    <string name="sys_dev_sn">SN&#160;&#160;</string>
+    <string name="sys_dev_nickname">Nickname&#160;</string>
+    <string name="sys_dev_state_online">Online </string>
+    <string name="sys_dev_state_offline">Offline </string>
+    <string name="sys_dev_state">State&#160;</string>
+    <string name="sys_dev_state_logining">Login\.\.\.</string>
+    <string name="sys_dev_logining">Logging please wait\.\.\.</string>
+    <string name="sys_dev_deling">Deleteing \.\.\.</string>
+    <string name="sys_dev_offline">Offline</string>
+    <string name="sys_dev_exit_info">Sure to exit? </string>
+    <string name="sys_dev_exit_ok">Exit</string>
+    <string name="sys_dev_already_off"> Closed </string>
+    <string name="sys_dev_already_on"> Open </string>
+    <string name="sys_dev_bind_online">Bind online </string>
+    <string name="sys_dev_bind_offline">Bind offline</string>
+    <string name="sys_dev_unbind">Unbound </string>
+    <string name="sys_dev_binding">Binding \.\.\.</string>
+    <string name="sys_dev_info">Device information</string>
+    <string name="sys_dev_mod_bind_pwd">Modify bind password</string>
+    <string name="sys_dev_mod_name">Rename device </string>
+    <string name="sys_dev_mod_area">Change area </string>
+    <string name="sys_dev_action_bind">Bind </string>
+    <string name="sys_dev_action_unbind">Unbind </string>
+    <string name="sys_area_no_dev">No device in this area</string>
+    <string name="sys_dev_reroot">Reboot</string>
+    <string name="sys_dev_reroot_ok">Start reboot device \.\.\.</string>
+    <string name="sys_dev_restore_ok">Remote factory reset\.\.\.</string>
+    <string name="sys_dev_no_003record">Unsurport record</string>
+    <string name="sys_dev_off_line">Failed to connect server</string>
+    <string name="sys_dev_reroot_fail">Sorry, failed to reboot device </string>
+    <string name="sys_dev_err_sn">Invalid serial number </string>
+    <string name="sys_dev_err_nikname">Invalid nickname </string>
+    <string name="sys_dev_err_phone">Invalid phone number </string>
+    <string name="sys_dev_err_pwd">wrong password </string>
+    <string name="sys_dev_bind_full">Bind phone is full </string>
+    <string name="sys_dev_bindness">Must apply bind the phone </string>
+    <string name="sys_dev_net_err">Network Fault </string>
+    <string name="sys_dev_server_busy">Network Fault </string>
+    <string name="sys_net_err">Unavailable Network</string>
+    <string name="sys_login_err">Login incorrect, please try again </string>
+    <string name="rs_err_err">Sorry, the operation failed</string>
+    <string name="rs_err_init">Sorry, has not been initialized</string>
+    <string name="rs_err_not_supprt">Sorry, do not support this operation</string>
+    <string name="rs_err_not_login">Sorry, you are not login</string>
+    <string name="rs_err_not_found">Sorry, not found</string>
+    <string name="rs_err_inva_licens">Sorry, invalid authorization document</string>
+    <string name="sys_err_qrcode">Please scan the QR code to add this device</string>
+
+    <!-- 设置 -->
+    <string name="sys_settings_title">Settings </string>
+    <string name="sys_settings_skin">System theme </string>
+    <string name="sys_settings_diy">Preferences </string>
+    <string name="sys_settings_add">System authority contral </string>
+    <string name="sys_settings_nickname">Modify nickname</string>
+    <string name="sys_settings_name_ok">Name is changed</string>
+    <string name="sys_settings_name_fail">Failed to change name(maybe in use)</string>
+    <string name="sys_settings_pwd">Change Password</string>
+    <string name="sys_settings_pwd1">Modify Login Password</string>
+    <string name="sys_settings_nickname_ok">Nickname is changed</string>
+    <string name="sys_settings_nickname_fail">Failed to change nickname(maybe in use)</string>
+    <string name="sys_settings_barcode_ok">Bar code is changed</string>
+    <string name="sys_settings_barcode_fail">Failed to change bar code</string>
+    <string name="sys_settings_pwd_ok">Password is changed</string>
+    <string name="sys_settings_pwd_fail">Failed to change password</string>
+    <string name="sys_settings_about">About</string>
+    <string name="sys_settings_config">Settings</string>
+    <string name="sys_settings_faq">FAQ</string>
+    <string name="sys_settings_feedback">Feedback</string>
+    <string name="sys_settings_upgrade">Upgrade</string>
+    <string name="sys_settings_nickname_desp">nickname </string>
+    <string name="sys_settings_pwd_desp">new password </string>
+    <string name="sys_settings_eq_sort">Set classify type </string>
+    <string name="sys_settings_eq_sort_by_area">Classify by area</string>
+    <string name="sys_settings_eq_sort_by_type">Classify by device type </string>
+    <string name="sys_settings_temp_unit">C-Fahrenheit</string>
+    <string name="sys_settings_temp_unit_set">Temperature Scale</string>
+    <string name="sys_settings_temp_unit_centi">Centigrade</string>
+    <string name="sys_settings_temp_unit_fah">Fahrenheit</string>
+    
+    <!-- moremenu -->    
+    <string name="more_menu_faq_url">http://www.galaxywind.com/pages/APPFAQ/FAQ.html?language=english#en_q</string>
+    <string name="more_menu_faq_url_root">http://www.galaxywind.com/pages/APPFAQ/FAQ.html?language=english</string>
+    <string name="more_menu_faq">FAQ</string>
+    <string name="more_menu_feedback">FeedBack</string>
+    <string name="more_menu_upgrade">Upgrade</string>
+    <string name="more_menu_about">About</string>
+    <string name="more_menu_quit">Exit</string>
+    <string name="more_menu_phone">Phone Account</string>
+    <string name="more_menu_sys_settings">Settings</string>
+    <string name="more_menu_reboot">Reboot</string>
+    <string name="more_menu_back">iWuHome</string>
+    <string name="more_menu_match">Identify AC</string>
+    <string name="more_menu_phone_pwd">Account Password</string>
+    <string name="more_menu_lang_cn">中文</string>
+    <string name="more_menu_lang_en">English</string>
+
+    <!-- 从设备 -->
+    <string name="slave_title">Slave </string>
+    <string name="slave_master_dev">Master device </string>
+    <string name="slave_input_name">device name </string>
+    <string name="sys_dev_mod_bind_pwd_title">Please enter new bind password </string>
+    <string name="slave_input_bindpwd">Please enter bind password </string>
+    <string name="slave_no_slave">No slaves </string>
+    <string name="slave_type"></string>
+    <string name="slave_001">Intelligent remote control board</string>
+    <string name="slave_003">Camera </string>
+    <string name="slave_006">Intelligent host </string>
+    <string name="slave_007">Intelligent host  </string>
+    <string name="slave_008">Intelligent outlet </string>
+    <string name="slave_807">Intelligent host </string>
+    <string name="slave_tmc_jnb">Thermostat</string>
+    <string name="slave_tmc_yl">Thermostat</string>
+    <string name="slave_pdc_jcx">PDB</string>
+    <string name="slave_808">AC Socket</string>
+    <string name="slave_htc_hp">Htc heater pump</string>
+    <string name="slave_unkown_type">Unknown device type </string>
+    <string name="unkown_type_state">Not support this device type</string>
+    <string name="slave_101">E Socket</string>
+    <string name="slave_lan_scan">Device in LAN </string>
+    <string name="slave_ia">Intelligent appliances</string>
+    <string name="slave_in_scan">Scaning new devices…</string>
+    <string name="slave_scan_dev">Scan devices&#160;</string>
+    <string name="slave_change_name_ok">Rename device successfully </string>
+    <string name="slave_change_name_failed">Failed to rename device</string>
+    <string name="slave_binding_err_pwd">Wrong password </string>
+    <string name="slave_binding_err_other">Has been bind by XX</string>
+    <string name="slave_reboot_sure">Are you sure to reboot device now?</string>
+    <string name="slave_resetwifi_sure">即将重置设备Wi-Fi，确定？</string>
+    <string name="slave_restore_sure">Are you sure you want to reset the contents and settings of the device?</string>
+    <string name="slave_reboot_cancel">Cancel</string>
+    <string name="slave_reboot_reboot">Reboot</string>
+
+    <!-- 一键配置 -->
+    <string name="scan_water_pump">华天成热泵</string>
+    <string name="quik_one">Step 1 Preparation </string>
+    <string name="quik_configer">Wi-Fi shortcut Configure</string>
+    <string name="quik_configer_pre">Prepare surroundings </string>
+    <string name="quik_add_suc">Camera is offline </string>
+    <string name="quik_cancle">Cancle Configure </string>
+    <string name="quik_confige_fail">Fail to shortcut configure Wi-Fi please try again. </string>
+    <string name="quik_two">Step2 prepare to shortcut configure</string>
+    <string name="quik_ssid">SSID</string>
+    <string name="quik_begin_config">Begin Wi-Fi shortcut configure</string>
+    <string name="quik_pwd">Password </string>
+    <string name="quik_configing">In configuration</string>
+    <string name="quik_config_begin">Begin configuration </string>
+    <string name="quik_config_null_ssid">Emputy SSID </string>
+    <string name="quik_config_suc">Shortcut Wi-Fi configure succeed </string>
+    <string name="quik_config_no_voice">No voice sounded? </string>
+    <string name="quik_config_completed">Configuration completed</string>
+    <string name="quik_config_no_voice_cont">If no \"Wait for Wi-Fi shortcut configuration\" is sound, please long press reset button in camera bottom for about 5s. then \"Factory data reset\" will sound, wait for 3 minutes  </string>
+    <string name="quik_config_comp">Shortcut Wi-Fi configure complete </string>
+    <string name="quik_no_wifi">Please try again when you phone connected</string>
+    <string name="quik_succes">If configuration is successfully done, \"Wi-Fi shortcut configured\" will sound.</string>
+    <string name="quik_add_config_tip"> To start Wi-Fi shortcut configuration right now? </string>
+    <string name="quik_config_step_tip">Put camera in the region of Wi-Fi. Make sure your phone is linked to Wi-Fi and online. </string>
+    <string name="quik_config_step_tip2">Power on camera. In 3 minutes, it will sound \"Waiting Wi-Fi shortcut configuration\", then click \"Next\". </string>
+    <!-- 设备信息 -->
+    <string name="intelcenter_title">Information</string>
+    <string name="intelcenter_sys_info">System Overview</string>
+    <string name="intelcenter_sys_sn">Serial NO.</string>
+    <string name="intelcenter_cpu_info">CPU usage</string>
+    <string name="intelcenter_ram_info">RAM usage</string>
+    <string name="intelcenter_detail_info">Details</string>
+    <string name="intelcenter_wireless_net">Wireless Network</string>
+    <string name="intelcenter_net_interface_info">Interface Information</string>
+    <string name="intelcenter_interface_name">Interface</string>
+    <string name="intelcenter_wireless_port">Wireless</string>
+    <string name="intelcenter_outside_port">WAN</string>
+    <string name="intelcenter_inside_port">LAN</string>
+    <string name="intelcenter_user_info">LAN Host Info</string>
+    <string name="intelcenter_computer_name">PC</string>
+    <string name="intelcenter_ip_addr">IP address</string>
+    <string name="intelcenter_mac_addr">MAC</string>
+    <string name="intelcenter_connect_stat">Status</string>
+    <string name="intelcenter_connect_stat_on">Connected</string>
+    <string name="intelcenter_connect_stat_off">Disconnected</string>
+    <string name="intelcenter_bytes_packetrecept">Rx </string>
+    <string name="intelcenter_bytes_packetsend">Tx</string>
+    <string name="intelcenter_access_way">Access mode</string>
+    <string name="intelcenter_access_way_wire">Ethernet</string>
+    <string name="intelcenter_access_way_wireless">Wi-Fi</string>
+    <string name="intelcenter_access_way_wireless_password">Password</string>
+    <string name="intelcenter_sofe_version">Firmware version</string>
+    <string name="intelcenter_hard_version">Hardware version</string>
+    <string name="intelcenter_upgrade_version">Upgrade software version</string>
+    <string name="intelcenter_online_time">Device uptime</string>
+    <string name="intelcenter_connect_time">Connected to server</string>
+    <string name="intelcenter_wan_time">Connected WAN</string>
+    <string name="intelcenter_computer_noname">(unknown)</string>
+
+    <!-- 环境 -->
+    <string name="env_alarm_desp">The alarm of smoke has been triggered please deal with it.  2014\-3\-11</string>
+    <string name="env_info_city">City &#160;</string>
+    <string name="env_info_temperature">Temp &#160;</string>
+    <string name="env_info_air">Air &#160;</string>
+    <string name="env_info_weather">Weather &#160;</string>
+    <string name="env_info">Weather and environment</string>
+    <string name="env_no_air_info">Can\'t get environment information</string>
+    <string name="env_no_weather_info">Can\'t get weather information</string>
+    <string name="env_snow">Snow</string>
+    <string name="env_thunder">Thunder</string>
+    <string name="env_rain">Rain</string>
+    <string name="env_cloudy">Cloudy</string>
+    <string name="env_sunshine_cloudy">Cloud</string>
+    <string name="env_sunshine">Sunshine</string>
+    <string name="env_fog">Fog</string>
+    <string name="env_aqi">AQI&#160;&#160;</string>
+    <string name="env_humidity">Humidity&#160;&#160;</string>
+    <string name="env_pm25">PM 2.5&#160;&#160;</string>
+    <string name="env_aqi_light">Light Unhealthy</string>
+    <string name="env_aqi_center">Unhealthy</string>
+    <string name="env_aqi_hight">Very Unhealthy</string>
+    <string name="env_aqi_dark">Hazardous</string>
+    <string name="env_aqi_better">Moderate</string>
+    <string name="env_aqi_good">Good</string>
+    <string name="env_humidity_dry">Dry</string>
+    <string name="env_humidity_confutable">Comfortable</string>
+    <string name="env_humidity_hum">Moist</string>
+    <string name="env_pm_hight">Hight</string>
+    <string name="env_pm_low">Normal</string>
+    <string name="env_pm_danger">Dangerous</string>
+    <string name="env_location">Choose city</string>
+    <string name="env_up_time">Update</string>
+    <!-- 更多 -->
+    <string name="more_timer_manage">Timing video</string>
+    <string name="more_area_manage">Area management</string>
+    <string name="more_notify_manage">Bulletin</string>
+    <string name="more_bind_phone">Bind phone</string>
+    <string name="more_light_manage">System light contral </string>
+    <string name="more_plug_manage">System outlet contral </string>
+    <string name="more_curtain_manage">System curtain  contral </string>
+    <string name="more_secrety">Privacy protection</string>
+
+    <!-- 绑定手机 -->
+    <string name="bind_p_allow">Allow</string>
+    <string name="bind_p_reject">Reject</string>
+    <string name="bind_dec_infor">please enter description</string>
+    <string name="bind_phone">Bind phone</string>
+    <string name="bind_my_phone">Bind your phone</string>
+    <string name="bind_disable">Binding functionality is not open</string>
+    <string name="bind_apply">Apply</string>
+    <string name="unbind_phone">Phone is unboud</string>
+    <string name="binding_phone">Phone is bind</string>
+    <string name="apply_bind">Apply for binding</string>
+    <string name="apply_dec">Comment</string>
+    <string name="delete_tip">You can delete bind phone on web management page</string>
+    <string name="null_tip">No bind apply</string>
+    <string name="bind_phone_authority_tip">Unboud phone have No authority to edit this</string>
+    <string name="phone_name_tip">name</string>
+    <string name="bind_set">Binding Settings</string>
+    <string name="bind_resave_tip">Resave XX phone </string>
+    <string name="bind_phone_apply">Binding application</string>
+    <string name="bind_apply_succ">Succeed in applying for binding</string>
+    <string name="bind_apply_err">Failed to send binding application, please try again</string>
+    <string name="bind_list">Binding list</string>
+    <string name="bind_send">Binding application is sent out.</string>
+    <string name="bind_wait_respons">Waiting for binding processing.</string>
+    <string name="bind_err">Fail to bind</string>
+    <string name="detail">Look up</string>
+    <string name="bind_apply_mode">Model&#160; </string>
+    <string name="bind_done">Bind apply have been done by someone</string>
+    <string name="bind_decs">Description&#160; </string>
+    <string name="bind_apply_time">Time&#160; </string>
+    <string name="bind_apply_name">Name&#160; </string>
+    <string name="bind_apply_op">Bind operation</string>
+    <string name="phone_number">Phone number&#160; </string>
+    <string name="bind_succe">Succeed in binding</string>
+    <string name="no_authority">No authority to edit this</string>
+    <string name="allow_login">Allow ordinary user to login</string>
+    <string name="miss_login_type">No login type is obtained</string>
+    <string name="bind_phone_dec">Given user privacy, unbound phone cannot login the device. If "Allow ordinary user to login" is selected, unbound phone will be allowed to login, with the following limitations.</string>
+    <string name="unbind_phone_dec">Not allowed to change the settings! bind your phone to acquire authority?</string>
+    <string name="bind_tip">Not allowed to login, bind your phone?</string>
+    <string name="bind_dec">A bound phone has the top management authority that configuring unbound phone operation and handling applications from unbound phone.</string>
+    <string name="bind_full">Number of bound phone is maximum. Please remove extra bound phone in web interface to continue binding your phone.</string>
+    <string name="bin_apply_full">Number of bound phone is maximum. Remove extra bound phone in web interface.</string>
+    <string name="fobiden_login">Unboud phone can\'t login</string>
+    <string name="bind_no_apply">No binding application</string>
+
+    <!-- 情景编辑 -->
+    <string name="sceneedit_title">Edit profiles</string>
+    <string name="sceneedit_next_time">The next time execute still&#160; </string>
+    <string name="sceneedit_name_hint">Profiles name</string>
+    <string name="sceneedit_noname_info">Please enter scene name </string>
+    <string name="sceneedit_event_desp">Event list</string>
+    <string name="sceneedit_event_safe_desp2">Current state&#160; be XX action&#160;YY</string>
+    <string name="sceneedit_event_safe_off">Unprotectedness</string>
+    <string name="sceneedit_event_safe_on">Protected</string>
+    <string name="sceneedit_event_safe_ignore">Ignore</string>
+    <string name="sceneedit_event_safe_off1">&#160;Unprotectedness</string>
+    <string name="sceneedit_event_safe_on1">&#160;Protected</string>
+    <string name="sceneedit_event_safe_ignore1">&#160;Ignore</string>
+    <string name="sceneedit_action_del">Delete profiles event</string>
+    <string name="sceneedit_action_mod">Edit profiles event</string>
+    <string name="sceneedit_key_unknown">Unknown operation</string>
+    <string name="sceneedit_key_008_on">Power on</string>
+    <string name="sceneedit_key_008_off">Power off</string>
+    <string name="sceneedit_key_record_on">Open timing video</string>
+    <string name="sceneedit_key_record_off">Close timing video</string>
+    <string name="sceneedit_key_motion_on">Open motion detection</string>
+    <string name="sceneedit_key_motion_off">Close motion detection</string>
+    <string name="sceneedit_nokey_info">No key</string>
+    <string name="sceneedit_unknown_type_info">Unknown type</string>
+
+    <!-- 情景模式 -->
+    <string name="tab_scene">Scene</string>
+    <string name="scene_not_supprt">Before execute an event, please add at least one</string>
+    <string name="scene_over_max">Failed to add, the number of scene reaches its maximum</string>
+    <string name="scene_action_edit">Edit scene</string>
+    <string name="scene_action_del">Delete scene</string>
+    <string name="scene_action_quit">Quit operation</string>
+    <string name="scene_addok">Add scene successfully</string>
+    <string name="scene_addfail">Failed to add scene, please try again</string>
+    <string name="scene_delok">Delete scene successfully</string>
+    <string name="scene_delfail">Failed to delete scene, please try again</string>
+    <string name="scene_modok">Edit scene successfully</string>
+    <string name="scene_modfail">Failed to edit scene, please try again</string>
+    <string name="scene_execok">Execute scene successfully</string>
+    <string name="scene_execfail">Failed to execute scene, please try again</string>
+    <string name="scene_link">Choose the link scene</string>
+    <string name="scene_exe_info">Execute the scene?</string>
+    <string name="scene_exe_noevent_title">Add scene event </string>
+    <string name="scene_exe_noevent_msg">No event, add one</string>
+    <string name="sceneevent_desp_replace">Slave or device</string>
+    <string name="scene_exe_info_ok">Execute</string>
+    <string name="info_no_scene">No scene, please add</string>
+    <!-- 情景任务 -->
+    <string name="sceneevent_title">Edit scene event</string>
+    <string name="sceneevent_no_deveqs">No slave and learned appliance</string>
+    <string name="sceneevent_desp">Select\"slave or appliance\"operation</string>
+    <string name="sceneevent_choose_dev">Select appliance or device</string>
+    <string name="sceneevent_one_key_info">Can only operate one every time</string>
+    <string name="info_no_sceneevent">No scene event, please add</string>
+    <!-- 情景定时 -->
+    <string name="scenetimer_title">Edit scene timer</string>
+    <string name="scenetimer_timer_list">Scene timer </string>
+    <string name="scenetimer_add">Add scene timer</string>
+    <string name="scenetimer_off">Scene timer closed</string>
+    <string name="scenetimer_no_timer">No scene timer</string>
+    <string name="scenetimer_name_hint"> scene timer name</string>
+    <string name="scenetimer_next_time">The next time still&#160; </string>
+    <string name="scenetimer_no_tf">Insert the TF card</string>
+    <!-- 视频 -->
+    <string name="tab_camera">Video </string>
+    <string name="info_no_camera">No cameras </string>
+    <string name="video_record_open">Record ON</string>
+    <string name="video_record_close">Record OFF</string>
+    <string name="video_mute_open">Mute</string>
+    <string name="video_mute_close">Voice</string>
+    <string name="video_no_image">Video is not ready, can\'t control appliance.</string>
+    <string name="video_cut_image_ok">Screenshot saved in the \"ihome\" folder in your SD card </string>
+    <string name="video_quality_264_HD">HD</string>
+    <string name="video_quality_264_720P">720P</string>
+    <string name="video_quality_264_LD">LD</string>
+    <string name="video_quality_264_SD">SD</string>
+    <string name="video_quality_264_Diy">AUTO</string>
+    <string name="video_quality_mjpeg_intelligent">AUTO</string>
+    <string name="video_quality_mjpeg_general">Standard</string>
+    <string name="video_quality_mjpeg_hd">Distinct</string>
+    <string name="video_setquality_ok">Quality set successfully </string>
+    <string name="video_setquality_fail">Fail to set quality </string>
+    <string name="video_info_speed">Video  data rate &#160; </string>
+    <string name="video_info_size">Image size &#160; </string>
+    <string name="video_info_fps">Video frame rate &#160; </string>
+    <string name="video_info_people">Watch member &#160; </string>
+    <string name="video_menu_capture">Snap </string>
+    <string name="video_menu_ptz">PTZ </string>
+    <string name="video_menu_flip">Rotate </string>
+    <string name="video_menu_eqcontrol">Remote</string>
+    <string name="video_menu_speek">Talk</string>
+    <string name="video_quality_resolution_320_240">320x240</string>
+    <string name="video_quality_resolution_640_480">640x480</string>
+    <string name="video_quality_resolution_1280_720">1280x720</string>
+    <string name="video_quality_fps_5">5FPS</string>
+    <string name="video_quality_fps_10">10FPS</string>
+    <string name="video_quality_fps_15">15FPS</string>
+    <string name="video_quality_fps_20">20FPS</string>
+    <string name="video_quality_fps_25">25FPS</string>
+    <string name="video_quality_fps_30">30FPS</string>
+    <string name="info_video_loading">Loading....</string>
+    <string name="video_SD_no">SD card isn\'t inserted, can\'t capture. </string>
+    <string name="video_cap_complete">Screenshot saved in the \"ihome\" folder in your SD card</string>
+    <string name="video_switch">Switch camera</string>
+    <string name="video_switch_no_camera">No other camera</string>
+    <string name="choose_video_switch">Please select camera </string>
+    <string name="video_speek_btn_nomarl">Press and speak</string>
+    <string name="video_speek_btn_pressed">Loosen when stop </string>
+    <string name="info_video_others_talking">There are people in the speech,please try later\.\.\.</string>
+    <string name="video_menu_scene">Scene</string>
+    <string name="video_menu_cloud_speed"> Tilt speed  </string>
+    <string name="video_menu_indoor">Indoor</string>
+    <string name="video_menu_outdoor">Outdoor</string>
+    <string name="video_menu_diy">Custom</string>
+    <string name="video_tf_time0">00:00</string>
+    <string name="video_tf_time2">02:00</string>
+    <string name="video_tf_time4">04:00</string>
+    <string name="video_tf_time6">06:00</string>
+    <string name="video_tf_time8">08:00</string>
+    <string name="video_tf_time10">10:00</string>
+    <string name="video_tf_time12">12:00</string>
+    <string name="video_tf_time14">14:00</string>
+    <string name="video_tf_time16">16:00</string>
+    <string name="video_tf_time18">18:00</string>
+    <string name="video_tf_time20">20:00</string>
+    <string name="video_tf_time22">22:00</string>
+    <!-- 电器 -->
+    <string name="tab_equipment">Appliance </string>
+    <string name="equip_input_name">equipment name </string>
+    <string name="equip_over_max">Failed to add, the number of equipment reaches its maximum</string>
+    <string name="info_no_equipment">No appliance, please add</string>
+    <string name="equip_no_support_add">Your device do not support adding appliance </string>
+    <string name="modify_equipment">Edit appliance</string>
+    <string name="delete_equipment">Delete appliance</string>
+    <string name="equip_modname">Rename</string>
+    <string name="equip_del_ok">Delete appliance successfully</string>
+    <string name="equip_del_fail">Failed to delete appliance, please try again</string>
+    <string name="equip_modname_ok">Rename appliance successfully</string>
+    <string name="equip_modname_fail">Sorry, failed to rename appliance, please try again </string>
+    <string name="equip_type_choose">Please choose the type of appliance </string>
+    <string name="equip_edit_info_title">Edit information </string>
+    <string name="equip_is_modlink">Associated IR repeater </string>
+    <string name="equipment_type_tv">TV</string>
+    <string name="equipment_type_tvbox">STB</string>
+    <string name="equipment_type_aircondition">Air-conditioner</string>
+    <string name="equipment_type_plug">Intelligent plug</string>
+    <string name="equipment_type_curtain">Intelligent curtain</string>
+    <string name="equipment_type_rf_other">Wireless custom appliances</string>
+    <string name="equipment_type_alarm">Alarm Equipment </string>
+    <string name="equipment_type_scene_controller">Scene Remote</string>
+    <string name="equipment_type_unknow">Other equipment</string>
+    <string name="equipment_type_unkown">Unknown equipment</string>
+    <string name="equip_type_alarm_rf_sl">双向声光报警器</string>
+    <string name="equip_is_reporter">Relay </string>
+    <string name="equip_set_reporter">Relay</string>
+    <string name="equip_brightness_control">Brightness</string>
+    <string name="equip_cancel_reporter">Remove relay</string>
+    <string name="equipment_type_ir_other">其他红外设备</string>
+    <string name="equipment_type_lamp">智能灯</string>
+
+    <string-array name="equip_type_ir">
+        <item>TV </item>
+        <item>STB </item>
+        <item>Air-conditioner </item>
+        <item>Other infrared repeater equipment </item>
+    </string-array>
+    <string-array name="equip_type_wifi">
+        <item>Intelligent light</item>
+        <item>Intelligent plug </item>
+        <item>Intelligent curtain</item>
+        <item>Wireless custom appliances </item>
+    </string-array>
+    <string-array name="equip_type_alarm">
+        <item>Smoke detector</item>
+        <item>Gas detector </item>
+        <item>Wide Angle Infrared Detector </item>
+        <item>Door sensor </item>
+        <item>Window sensor </item>
+        <item>Intelligent lock </item>
+        <item>Emergency button </item>
+    </string-array>
+    <string-array name="equip_ways">
+        <item>1-line </item>
+        <item>2-line</item>
+        <item>3-line</item>
+        <item>4-line</item>
+    </string-array>
+    <string-array name="equip_method">
+        <item>Single model </item>
+        <item>Double model </item>
+    </string-array>
+
+    <string name="equip_type_alarm_sl">Horn/strobe notification appliances</string>
+    <string name="equip_type_sence_broad">Scene Remote </string>
+    <string name="equip_add_choose_ways">Choose appliance lines</string>
+    <string name="equip_add_choose_method">Choose model </string>
+    <string name="equip_add_choose_link">Choose associate device </string>
+    <string name="equip_link_phone_num">Choose associate report phone number </string>
+    <string name="equip_add_choose_erea">Choose area </string>
+    <string name="equip_add_name_hint">appliance name </string>
+    <string name="equip_add_ok">Add appliance successfully </string>
+    <string name="equip_add_fail">Sorry failed to add appliance, please try again </string>
+    <!-- 智慧路由 -->
+    <string name="tab_intellroute">Intelligent route </string>
+    <string name="tab_intellroute_title">Intelligent route list</string>
+    <!-- 无线摄像头 -->
+    <string name="tab_wirelesscamera">Wireless camera</string>
+    <string name="tab_wirelesscamera_title">Wireless camera list</string>
+    <!-- 红外转发器 -->
+    <string name="tab_irrepeater">Infrared transponder </string>
+    <string name="tab_irrepeater_title">Infrared transponder list </string>
+    <string name="info_no_ir_equipment">no ir appliance,please add</string>
+    <!-- 主从设备 -->
+    <string name="unbind_dev">Unboud</string>
+    <string name="watch_dev_info">View Device Information</string>
+    <!-- 電器控制 -->
+    <string name="eq_new_key">New key </string>
+    <string name="eq_ctrl_fail">Sorry, failed to control, please try latter </string>
+    <string name="eq_learn_method_title">Choose obtained encoding</string>
+    <string name="eq_learn_method_host">Host learning mode</string>
+    <string name="eq_learn_method_eq">Electrical learning mode</string>
+    <string name="eq_learn_title1">Key learning——\"</string>
+    <string name="eq_learn_title2">Key learning</string>
+    <string name="eq_learn_txt_setwide">Set to wide pulse width </string>
+    <string name="eq_learn_txt_setnarrow">Set to narrow pulse width </string>
+    <string name="eq_learn_info_sendsingnal_ok">The signal sent successfully</string>
+    <string name="eq_learn_info_sendsingnal_fail">Sorry, failed to sent signal, please try latter</string>
+    <string name="eq_learn_info_tryalarm_ok">Try give an alarm successfully</string>
+    <string name="eq_learn_err_learn_fail">Notice the equipment end into the learning state failure</string>
+    <string name="eq_learn_info_sendborns_ok">Sent the leaned or produce signal successfully</string>
+    <string name="eq_learn_info_save_ok">Save encoding successfully </string>
+    <string name="eq_learn_info_tuning_ok">Fine success</string>
+    <string name="eq_learn_info_pulse_ok">Adjust pulse width successfully </string>
+    <string name="eq_learn_info_stop_ok">Stop learn </string>
+    <string name="eq_learn_err_learn_out">Timeout to inform device</string>
+    <string name="eq_learn_err_input_out">Timeout to press the remote</string>
+    <string name="eq_learn_err_rev_alarm_out">Timeout to resave the alarm signal</string>
+    <string name="eq_learn_err_wait_out">Timeout to resave attempt result</string>
+    <string name="eq_learn_err_gen_out">Timeout to resave encoding</string>
+    <string name="eq_learn_err_stop_out">Timeout to stop learn</string>
+    <string name="eq_learn_err_wid_query_out">Timeout to query pulse</string>
+    <string name="eq_learn_err_wid_set_out">Timeout to set pulse</string>
+    <string name="eq_learn_err_ajust_out">Timeout to fine-tune pulse</string>
+    <string name="eq_learn_err_busyoroffline">Device is busy to learn encoding or deal with signal </string>
+    <string name="eq_learn_err_same_code">Learn repeat encoding </string>
+    <string name="eq_key_over_max">Failed to add, the number of key reaches its maximum </string>
+    <string name="eq_learn_info_err">Sorry, failed to learn, please try latter</string>
+    <string name="eq_learn_info_alarm_success">Learn the safe control successfully</string>
+    <string name="eq_key_add_fail">Sorry, failed to add key please try latter</string>
+    <string name="eq_key_mod_fail">Sorry, failed to edit key please try latter</string>
+    <string name="eq_key_del_fail">Sorry, failed to delete key please try latter</string>
+    <string name="eq_key_add_hint">Key name</string>
+    <string name="eq_key_add_title">Enter key name</string>
+    <string name="eq_key_add_ok_desp">OK</string>
+    <string name="eq_no_key">No any key</string>
+    <string name="eq_curtain_btn_open"> Open </string>
+    <string name="eq_curtain_btn_close">Close</string>
+    <string name="eq_curtain_btn_stop">Stop</string>
+    <string name="eq_curtain_rf_return">Sorry, failed to control</string>
+    <string name="eq_curtain_rf_check_before">Please check the curtain state first</string>
+    <string name="eq_air_new_edit_title">Select the key model and temperature</string>
+    <string name="eq_air_new_edit_desp">Select the model and temperature of the leaned key</string>
+    <string name="eq_air_btn_cold">cool</string>
+    <string name="eq_air_btn_hot">heat</string>
+    <string name="eq_air_btn_wind">wind</string>
+    <string name="eq_air_btn_hum">dry</string>
+    <string name="eq_air_btn_auto">auto</string>
+    <string name="eq_air_btn_close">Power off</string>
+    <string name="eq_air_temper_desp">Outdoor temperature</string>
+    <string name="eq_air_temper">XX℃</string>
+    <string name="eq_air_temper_unit">℃</string>
+    <string name="eq_light_switch">Switch </string>
+    <string name="eq_light_btn_open">Open all </string>
+    <string name="eq_light_btn_close">Close all </string>
+    <string name="eq_light_key_open">line open</string>
+    <string name="eq_light_key_close">line close</string>
+    <string name="eq_light_key_switch">line switch </string>
+    <string name="eq_plug_key_open">line ON </string>
+    <string name="eq_plug_key_close">line OFF</string>
+    <string name="eq_plug_key_switch">line plug</string>
+    <string name="eq_tv_chanup">Channel +</string>
+    <string name="eq_tv_chandown">Channel-</string>
+    <string name="eq_tv_volup">Volume +</string>
+    <string name="eq_tv_voldown">Volume-</string>
+    <string name="eq_tv_mute">Mute </string>
+    <string name="eq_tv_avtv">AV/TV</string>
+    <string name="eq_tv_power">Power </string>
+    <string name="eq_tv_back">Back </string>
+    <string name="eq_tv_menu">Menu </string>
+    <string name="eq_tv_up">Up </string>
+    <string name="eq_tv_down">Down </string>
+    <string name="eq_tv_left">Left </string>
+    <string name="eq_tv_right">Right </string>
+    <string name="eq_security_code_desp">Encoding</string>
+    <string name="eq_security_code">Relearn</string>
+    <string name="eq_security_code_learn">Learn</string>
+    <string name="eq_security_push_desp">Notification</string>
+    <string name="eq_security_sms_desp">Message</string>
+    <string name="eq_security_switch_desp">Alarm switch </string>
+    <string name="eq_security_smstitle_desp">Edit phone message </string>
+    <string name="eq_security_sms_hint">warning phone message </string>
+    <string name="eq_security_sms_save">Save phone message </string>
+    <string name="alarm_switch_old">Alarm switch </string>
+    <string name="alarm_msg">SMS notifications </string>
+    <string name="alarm_sound_light">Audible/Visual Alarm&#160;</string>
+    <string name="alarm_link_scene">Associate scene&#160; </string>
+    <string name="alarm_link_ph_num">Recipient&#160; </string>
+    <string name="alarm_not_found">No any alarm information </string>
+    <string name="alarm_no_scene">NO</string>
+    <string name="alarm_total">Total XX</string>
+    <string name="alarm_null_msg">Please enter alarm information </string>
+    <string name="alarm_sl_no">No Audible/Visual Alarm</string>
+    <string name="alarm_sl_no_desp">NO</string>
+    <string name="alarm_sl_title">Associate Audible/Visual Alarm setting </string>
+    <string name="alarm_sl_switch_desp">Audible/Visual Alarm </string>
+    <string name="eq_key_action_rename">Rename </string>
+    <string name="eq_key_action_learn">Learn</string>
+    <string name="eq_key_action_del">Delete key </string>
+    <string name="alarm_no_phone">No any accept phone number, plaese add</string>
+    <!-- 按键学习 -->
+    <string name="keylearn_title">Host learn key </string>
+    <string name="keylearn_step_title">First, prepare surroundings</string>
+    <string name="keylearn_step_desp">1. prepare your remote-controller, Hold the remote close and align Intelligent host. \n\n2. Press the remote button wanted to learn before the countdown stops.</string>
+    <string name="keylearn_action_start">Start </string>
+    <string name="keylearn_action_try">Try </string>
+    <string name="keylearn_action_save">Save </string>
+    <string name="keylearn_action_stop">Stop </string>
+    <string name="keylearn_action_tundown">Fine-tune -</string>
+    <string name="keylearn_action_pulse">Pulse width</string>
+    <string name="keylearn_action_tunup">Fine-tune+</string>
+    <string name="keylearn_time_remain_desp">Need</string>
+    <string name="keylearn_time_remain">30</string>
+    <string name="keylearn_time_remain_unit">s</string>
+    <!-- 学习过程各种描述 -->
+    <string name="keylearn_desp_link007">the host</string>
+    <string name="keylearn_desp_link001">Network universal remote control</string>
+    <string name="keylearn_desp_link003">wireless camera</string>
+    <!-- 红转 -->
+    <string-array name="keylearn_infr_title">
+        <item>First, prepare surroundings</item>
+        <item>Second, Observational learning results</item>
+    </string-array>
+    <string-array name="keylearn_infr_desp">
+        <item> 1. Prepare a appliance remoter and Infrared transponder , make sure it works properly and keep it close to host.\n
+            2.In the process of learning, to the remoter , the host, the infrared transponder as close as possible, so as to observe and learn. \n
+            3.Press the infrared transponder \"set\" button, confirm the panel lights, click \"began\". \n</item>
+        <item>1.infrared transponder (such as red light does not light, please click "try" button).\n
+            2.Point the remote infrared forwarding, according to a study button, learning success, infrared transponder red, the green light will be extinguished.</item>
+    </string-array>
+
+    <string name="keylearn_infr_tips1">Note:the infrared transponder with a timeout, please complete the following operations.</string>
+    <string name="keylearn_infr_tips2">Tip:if after several attempts, still can not learn that the wireless signal host, please try again after adjusting the pulse width.</string>
+    <!-- 安防 -->
+    <string-array name="keylearn_alarm_title">
+        <item>First, prepare surroundings</item>
+        <item>Second, learn the encoding</item>
+    </string-array>
+    <string-array name="keylearn_alarm_desp">
+        <item>  1. Prepare an equipment remoter, make sure it works properly and keep it close to host.\n
+            2. After click \"Start\", please press the remoter button you want to study asap.</item>
+        <item>1. If code is learned, app will turn back to alarm control page.\n</item>
+    </string-array>
+    <!-- RF Host -->
+    <string-array name="keylearn_rfhost_title">
+        <item>First, prepare surroundings</item>
+        <item>Second, learn the encoding</item>
+        <item>Third, Adjust the encoding</item>
+    </string-array>
+    <string-array name="keylearn_rfhost_desp">
+        <item> 1. Prepare an equipment remoter, make sure it works properly and keep it close to host.\n
+            2. After click \"Start\", please press the remoter button you want to study asap.</item>
+        <item>1. After press remoter button, check whether it can control equipment.\n</item>
+        <item>1. If equipment is still out of control, please click \"Fine-tune\" and try again.\n</item>
+    </string-array>
+    <!-- RF Gen -->
+    <string-array name="keylearn_rfgen_title">
+        <item>First, prepare surroundings</item>
+        <item>Second, Confirm Result </item>
+    </string-array>
+    <string-array name="keylearn_rfgen_desp">
+        <item>1. Prepare an equipment, make sure it works properly and support study feature. \n
+            2. Refer to its specification, set equipment into study code mode. \n
+            3. When equipment is in study state, click \"Start\". </item>
+        <item>1. If equipment is out of control, please adjust pulse width and try again. \n</item>
+    </string-array>
+    <!-- 修改密码 -->
+    <string name="layout_change_oldpwd">Please enter previous password</string>
+    <string name="layout_change_newpwd">Please enter new password</string>
+    <string name="layout_change_confirmpwd">Please confirm new password</string>
+    <string name="info_changepwd_errold">Incorrect old password</string>
+    <string name="info_changepwd_same">New password is same as the old one</string>
+    <string name="info_changepwd_notsame">Confirm password is not the same to new password</string>
+    <string name="changepwd_ok">Password is changed</string>
+    <string name="changepwd_fail">Failed to change password</string>
+    <string name="phone_adddevice_samesn">Already existed</string>
+    <string name="phone_register_hasuser">Existing account, log in ?</string>
+    <string name="dev_change_pwd">Dev Password</string>
+    <!-- 手机账号登录后 -->
+    <string name="phone_main_title">My devices </string>
+    <string name="phone_more_modpwd">Change phone account password</string>
+    <string name="phone_more_problems">Common problem </string>
+    <string name="phone_more_exit">Log Out </string>
+    <string name="phone_adddevice_title">Add device </string>
+    <string name="phone_adddevice_ok">Added</string>
+    <string name="phone_adddevice_fail">Failed</string>
+    <string name="phone_declare_title">Responsibility and statement</string>
+    <string name="phone_no_device">There is no device, please add</string>
+    <string name="phone_delete_device_fail">Sorry, remove device failed</string>
+    <!-- 手机账号注册找回密码 -->
+    <string name="login_phone_title">Phone account login</string>
+    <string name="login_type_phone">Phone number</string>
+    <string name="login_phone_register">Sign Up </string>
+    <string name="login_phone_countrydesp">Countries and regions </string>
+    <string name="login_phone_countryname">China</string>
+    <string name="login_phone_areanum_hint"> +86 </string>
+    <string name="login_phone_num_hint">Phone number </string>
+    <string name="login_phone_pwd_hint">Password</string>
+    <string name="login_phone_otherlogin">Other ways to login</string>
+    <string name="login_access_desp">Login </string>
+    <string name="login_phone_findpwd">Forgot password </string>
+    <string name="login_phone_help">Help center </string>
+    <string name="login_phone_register_title">Sign up by phone number</string>
+    <string name="login_register">Sign up</string>
+    <string name="login_phone_rqvcode">Sent verification code to </string>
+    <string name="login_phone_vcodefail">Failed to get the verification code </string>
+    <string name="login_phone_captcha_title">User authentication </string>
+    <string name="login_phone_getcaptcha">Get verification code </string>
+    <string name="info_phone_rightnum">Please enter phone number </string>
+    <string name="info_phone_noregister">Please register your phone number first </string>
+    <string name="info_phone_registered">Have an account. Login </string>
+    <string name="info_phone_input_rightvcode">Wrong verification code </string>
+    <string name="info_phone_input_pwd">Please enter password </string>
+    <string name="info_phone_input_pwd_again">Please enter password again </string>
+    <string name="info_phone_input_not_same">Please make sure the password is the same</string>
+    <string name="info_phone_exit_setpwd">It takes some time to send verification code. Cancel?</string>
+    <string name="info_login_err">Failed to login </string>
+    <string name="info_login_err_register">Failed to register</string>
+    <string name="info_login_wrongsn">Invalid serial number, please check it </string>
+    <string name="info_login_wrongnickname">Invalid nickname, please check it </string>
+    <string name="info_login_wrongnickpwd">Wrong password</string>
+    <string name="info_login_noregister">Your phone number diden\'t register</string>
+    <string name="login_phone_numdesp_agree">I agree </string>
+    <string name="login_phone_numdesp_dir">Software License Agreement </string>
+    <string name="login_captcha_5mins">Verification code is send to phone( effective in 5 min) </string>
+    <string name="login_captcha_authentication">User checking </string>
+    <string name="login_captcha_inputhint">Verification code</string>
+    <string name="login_captcha_60sec">60 seconds later to retrieve code </string>
+    <string name="login_captcha_pwd">Password </string>
+    <string name="login_captcha_pwd_again">confirm password </string>
+    <string name="login_captcha_remaintime"> later to retrieve code </string>
+    <string name="login_captcha_timeout">Retrieve code </string>
+    <string name="login_phone_adddeice_snorname">SN/Nickname </string>
+    <string name="login_phone_adddeice_pwd">Password </string>
+    <string name="login_phone_numdesp_dirdesp">       GALAXYWIND SOFTWARE LICENSE AGREEMENT:
+       \n\nPLEASE READ THIS SOFTWARE LICENSE AGREEMENT CAREFULLY BEFORE DOWNLOADING OR USING THE SOFTWARE.
+       \n\nBY LOADING OR USING THE SOFTWARE, YOU ARE AGREEING TO BE BOUND BY THE TERMS OF THIS LICENSE. IF YOU DO NOT WISH TO SO AGREE, DO NOT INSTALL AND/OR USE THE SOFTWARE. 
+       \n\n\IMPORTANT NOTE:To the extent that this software may be used to reproduce materials, it is licensed to you only for reproduction of non-copyrighted materials, materials in which you own the copyright, or materials you are authorized or legally permitted to reproduce. If you are uncertain about your right to copy any material, you should contact your legal advisor.
+       \n\nOWNERSHIP OF SOFTWARE AND COPYRIGHTS. Title to all copies of the Software remains with Galaxywind or its suppliers. The Software is copyrighted and protected by the laws of the United States and other countries, and international treaty provisions. You may not remove any copyright notices from the Software. Galaxywind may make changes to the Software, or to items referenced therein, at any time without notice, but is not obligated to support or update the Software. Except as otherwise expressly provided, Galaxywind grants no express or implied right under Galaxywind patents, copyrights, trademarks, or other intellectual property rights. You may transfer the Software only if the recipient agrees to be fully bound by these terms and if you retain no copies of the Software.
+       \n\nDisclaimer of Warranty of Software. THE SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY EXPRESS OR IMPLIED WARRANTY OF ANY KIND INCLUDING WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT, OR FITNESS FOR A PARTICULAR PURPOSE.  Galaxywind does not warrant or assume responsibility for the accuracy or completeness of any information, text, graphics, links or other items contained within the Software.
+       \n\nLIMITATION OF LIABILITY. IN NO EVENT SHALL GALAXYWIND OR ITS SUPPLIERS BE LIABLE FOR ANY DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, LOST PROFITS, BUSINESS INTERRUPTION, OR LOST INFORMATION) ARISING OUT OF THE USE OF OR INABILITY TO USE THE SOFTWARE, EVEN IF GALAXYWIND HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. SOME JURISDICTIONS PROHIBIT EXCLUSION OR LIMITATION OF LIABILITY FOR IMPLIED WARRANTIES OR CONSEQUENTIAL OR INCIDENTAL DAMAGES, SO THE ABOVE LIMITATION MAY NOT APPLY TO YOU. YOU MAY ALSO HAVE OTHER LEGAL RIGHTS THAT VARY FROM JURISDICTION TO JURISDICTION.
+       \n\nTERMINATION OF THIS AGREEMENT. Galaxywind may terminate this Agreement at any time if you violate its terms. Upon termination, you will immediately destroy the Software or return all copies of the Software to Galaxywind.
+       \n\nAPPLICABLE LAWS. Claims arising under this Agreement shall be governed by the laws of Delaware, excluding its principles of conflict of laws and the United Nations Convention on Contracts for the Sale of Goods. You may not export the Software in violation of applicable export laws and regulations. Galaxywind is not obligated under any other agreements unless they are in writing and signed by an authorized representative of Galaxywind.
+       \n\nGOVERNMENT RESTRICTED RIGHTS. The Software is provided with "RESTRICTED RIGHTS." Use, duplication, or disclosure by the Government is subject to restrictions as set forth in FAR52.227-14 and DFAR252.227-7013 et seq. or its successor. Use of the Software by the Government constitutes acknowledgement of Galaxywind\'s proprietary rights therein. Contractor or Manufacturer is ShenZhen GalaxyWind Network Systems Co., Ltd, No.5 Xinxi Rd. Shenzhen High-Tech Industry Park, Nanshan, Shenzhen China.</string>
+    <!-- 设备账号登录 -->
+
+    <string name="login_device_title">Device login </string>
+    <string name="login_type_device">SN/nickname </string>
+    <string name="login_device_pwd_hint">Password</string>
+    <string name="login_enter_pwd_hint">Password</string>
+    <string name="info_login_username">Please enter serial number or nickname </string>
+    <string name="info_login_pwd">Enter password </string>
+    <string name="scan_our_bar_code">Please scan product bar code </string>
+    <string name="scan_faild">Failed to scan </string>
+    <string name="control_center">Host information </string>
+    <string name="my_device">Slave </string>
+    <string name="my_health">i+Home health </string>
+    <string name="security_management">Security management </string>
+    <string name="systems_management">System Settings </string>
+    <string name="system_settings">Settings </string>
+    <string name="scan_bar_code">Scan bar code </string>
+    <string name="login_device_input_phone">Phone account user please login from phone login page </string>
+    <!-- 定时录制 -->
+    <string name="timer_status_open">TF record option is enabled</string>
+    <string name="timer_status_close">TF record option is disabled</string>
+    <string name="timer_null_dev">No any recording device </string>
+    <string name="timer_null">No any record timer </string>
+    <string name="timer_desp_init">Standby </string>
+    <string name="timer_desp_notf">No SD is inserted </string>
+    <string name="timer_desp_err">Inner error </string>
+    <string name="timer_desp_ready">Starting \.\.\.</string>
+    <string name="timer_choose_dev">Choose recording device </string>
+    <string name="timer_desp_run">Recording \.\.\.</string>
+    <string name="timer_no_timer">No any record timer </string>
+    <string name="timer_switch_status">Switch status&#160; </string>
+    <string name="timer_choose_day">Schedule time </string>
+    <string name="timer_more_now">Please set a future time </string>
+    <string name="timer_full">The timer has reached the number limit, cannot add</string>
+    <string name="watch_video">Watch video record</string>
+    <string name="no_video_found_today">No video found today</string>
+    <string name="no_tf_card">No TF card</string>
+    <string name="get_record_failed">Get record failed</string>
+    <string name="record_change_camera">Camera</string>
+    <string name="record_set_time">Time</string>
+    <!-- 区域 -->
+    <string name="tab_area">Area </string>
+    <string name="tab_area_dev">Devices in area </string>
+    <string name="area_edit_name">Edit area name </string>
+    <string name="area_device">Select devices in area </string>
+    <string name="area_del">Delete this area </string>
+    <string name="area_edit">Edit this area </string>
+    <string name="area_add">Add a area </string>
+    <string name="area_null_name">Please enter area name </string>
+    <string name="unknow_area">Unknown area </string>
+    <string name="modify_area">Edit area </string>
+    <string name="area_other">Other area </string>
+    <string name="area_choose">Select area </string>
+    <string name="area_not_supprt">Your system did\'t support area </string>
+    <string name="info_no_area">No any area, please add </string>
+    <string name="area_full">The number of area has reached the limit, cannot add</string>
+
+    <!-- 排插 -->
+    <string name="tab_intellplug">Intelligent Outlet </string>
+    <string name="tab_intellplug_info">Outlet information </string>
+    <string name="tab_intellplug_title">Outlet list </string>
+    <string name="plug_first_timer">Task to be execute </string>
+    <string name="plug_timer_list">Timer List </string>
+    <string name="plug_to_next">To be executed  </string>
+    <string name="plug_need">After </string>
+    <string name="plug_last">Last </string>
+    <string name="plug_begin"> begin </string>
+    <string name="plug_exec"> later execute </string>
+    <string name="plug_total_power">Total Electric Quantity </string>
+    <string name="timer_name">Timer</string>
+    <string name="timer_desp_last">Last&#160; </string>
+    <string name="timer_week_no_day"></string>
+    <string name="timer_week_every_day">Everyday</string>
+    <string name="timer_week_workday">Workday</string>
+    <string name="timer_week_weekend">Weekend</string>
+    <string name="timer_week_every_day1">Mon.\u0020Tues.\u0020Wed.\u0020Thur.\u0020Fri.\u0020Sat.\u0020Sun.</string>
+    <string name="timer_week_workday1">Mon.\u0020Tues.\u0020Wed.\u0020Thur.\u0020Fri.</string>
+    <string name="timer_week_weekend1">Sat.\u0020Sun.</string>
+    <string name="timer_week_sun">Sun\u0020</string>
+    <string name="timer_week_mon">Mon\u0020</string>
+    <string name="timer_week_tues">Tues\u0020</string>
+    <string name="timer_week_wed">Wed\u0020</string>
+    <string name="timer_week_thur">Thur\u0020</string>
+    <string name="timer_week_fri">Fri\u0020</string>
+    <string name="timer_week_sat">Sat\u0020</string>
+    <string name="space">\u0020</string>
+    <string name="timer_week_sun1">Sun</string>
+    <string name="timer_week_mon1">Mon</string>
+    <string name="timer_week_tues1">Tues</string>
+    <string name="timer_week_wed1">Wed</string>
+    <string name="timer_week_thur1">Thur</string>
+    <string name="timer_week_fri1">Fri</string>
+    <string name="timer_week_sat1">Sat</string>
+    <string name="timer_week_sun2">Sunday</string>
+    <string name="timer_week_mon2">Monday</string>
+    <string name="timer_week_tues2">Tuesday</string>
+    <string name="timer_week_wed2">Wednesday</string>
+    <string name="timer_week_thur2">Thursday</string>
+    <string name="timer_week_fri2">Friday</string>
+    <string name="timer_week_sat2">Saturday</string>
+    <string name="timer_desp_repeat">Repeat</string>
+    <string name="timer_desp_start">Start</string>
+    <string name="timer_desp_wheel_last">Last</string>
+    <string name="timer_desp_start_hour"> h </string>
+    <string name="timer_desp_start_minute"> m </string>
+    <string name="timer_desp_least_1min">1 minute at least</string>
+    <string name="timer_desp_most_24hours">24:00 at most</string>
+    <string name="prompt_latelyrecord">Prompt</string>
+    <string name="info_008_no_timer">No any timer, please add </string>
+    <string name="info_008_same_timer">Be same as the original </string>
+    <string name="info_008_timer_no_name">Please enter the name </string>
+    <string name="info_008_timer_no_start">Please select start time </string>
+    <string name="info_008_timer_no_last">Please set last time </string>
+    <string name="info_008_timer_week_first">Please set repetition time  </string>
+    <string name="info_008_timer_save_ok">Save the timer successfully </string>
+    <string name="info_008_timer_save_fail">Failed to save the timer </string>
+    <string name="edit_timer_title">Edit timer </string>
+    <string name="timer_input_desp">Please enter timer name </string>
+    <string name="timer_input_hint">Timer name </string>
+    <string name="timer_list_title">Outlet timer </string>
+    <string name="plug_time_add">Add timer </string>
+    <string name="plug_timer_list_title">Outlet timer </string>
+    <string name="plug_time_del">Delete the timer </string>
+    <string name="plug_on"> Open </string>
+    <string name="plug_off"> Close </string>
+    <string name="plug_null_timer">No any timer </string>
+    <string name="plug_timer_closed">All timer are closed </string>
+    <string name="plug_switch">Master switch </string>
+    <string name="plug_power">Electric statistics </string>
+    <string name="plug_timer">Set timer</string>
+    <string name="plug_current">Cur</string>
+    <string name="plug_voltage">Voltage </string>
+    <string name="plug_kwh">kWh</string>
+    <string name="plug_perio_power">Period</string>
+    <string name="plug_clean_power">Clear Electric Quantity </string>
+    <string name="plug_work">Working</string>
+    <string name="plug_rest">Sleep</string>
+    <string name="plug_power_on">Working</string>
+    <string name="plug_no_periar">No electric quantity</string>
+    <string name="plug_begin_ele">Begin electric quantity</string>
+    <string name="plug_timer_name">Name</string>
+    <string name="time_task">Timer Task</string>
+
+    <!-- 报警/推送 -->
+    <string name="tab_safe">Security</string>
+    <string name="alarm_action_edit">Modify alertor</string>
+    <string name="info_delete_alarm_phone">Delete this phone number ? </string>
+    <string name="err_input_phone_err">Wrong phone number</string>
+    <string name="alarm_phone_management">Phone number management</string>
+    <string name="alarm_log">Alarm logs</string>
+    <string name="add_alarm_phone">Add report phone number</string>
+    <string name="timeformat_day">&#160;d&#160;</string>
+    <string name="timeformat_days">&#160;d&#160;</string>
+    <string name="timeformat_hour">&#160;h&#160;</string>
+    <string name="timeformat_hours">&#160;h&#160;</string>
+    <string name="timeformat_min">&#160;m&#160;</string>
+    <string name="timeformat_mins">&#160;m&#160;</string>
+    <string name="timeformat_seconds">&#160;sec&#160;</string>
+    <string name="timeformat_second">&#160;sec&#160;</string>
+    <string name="delete_alarm_log">Delete the alarm log</string>
+    <string name="safe_detail_log_title">Alarm information</string>
+    <string name="safe_link_phone">Associate alarm report phone nunmber</string>
+    <string name="safe_push_unread_log_title">New alarm message </string>
+    <string name="safe_push_unread_log_remind">There is X unread alarm messages </string>
+    <string name="info_no_alarm_log">No alarm log </string>
+    <string name="info_no_alarm">No alertor, please add</string>
+    <string name="err_alarm_phone_exceed">Can\'t add phone number any more</string>
+    <string name="alarm_same_phone">This number has been added</string>
+    <string name="alarm_touched"> had trigged</string>
+    <string name="info_alarm_phone_add_success">Add successfully</string>
+
+    <!-- Http下载 -->
+    <string name="err_connection_fail">Server connection failed,try again later</string>
+    <string name="err_file_does_not_exist">Not found resource on server, failed to download </string>
+    <!-- 设置 -->
+    <string name="reboot_app_now">Restart the program?</string>
+    <string name="do_you_reboot_app_now">Changes will take effect after restart the program, sure to restart the program?</string>
+    <string name="info_home_page_ranking">You can drag and order the icon,  the first three will be show in main page </string>
+    <string name="config_save_ok">Saved setting</string>
+    <!-- 升级提醒 -->
+    <string name="update">Update prompt</string>
+    <string name="update_now">Update</string>
+    <string name="remind_later">Skip</string>
+    <string name="update_dialog">Never prompt</string>
+    <string name="start_download">Begin download</string>
+    <string name="downloading_update">Downloading</string>
+    <string name="download_complete">Download Complete</string>
+    <string name="file_download_complete">Download file completely</string>
+    <string name="lowerversion">Find a new version(v%s)</string>
+    <string name="lowerversion_desp">Update information&#160; </string>
+
+    <!-- 网关信息title -->
+    <string name="devinfo_title_route">Host Information</string>
+    <string name="devinfo_title_001">Remoter Information</string>
+    <string name="devinfo_title_003">Camera Information</string>
+    <string name="devinfo_title_008">Outlet Information</string>
+    <string name="devinfo_title_808">Socket Information</string>
+    <string name="devinfo_title_appli">Appliances Information</string>
+    <!-- 家电 -->
+    
+    <string name="appli_type_aircleaner">空气净化器</string>
+    <string name="appli_type_airconditioner">智能空调</string>
+    <string name="appli_type_airheater">Heater</string>
+    <string name="appli_type_airheaterOil">联创油汀</string>
+    <string name="appli_type_waterheater">热水器</string>
+    <string name="appli_type_waterheaterA9">前锋A9热水器</string>
+    <string name="appli_type_eletricfan">智能风扇</string>
+    
+    <string name="appli_state_working">Working</string>
+    <string name="appli_state_standby">Sleep</string>
+    <string name="appli_on"> Open </string>
+    <string name="appli_off"> Closed </string>
+    <string name="appli_on_first">please set this application on first</string>
+    <string name="appli_off_first">Please in the standby state first</string>
+    <string name="appli_on_already">The application is on already</string>
+    <string name="appli_off_already">The application is off already</string>
+    <string name="appli_timer_on"> open </string>
+    <string name="appli_timer_off">off</string>
+    <string name="appli_w_now">Current power</string>
+    <string name="appli_low">low</string>
+    <string name="appli_mid">middle</string>
+    <string name="appli_hi">high</string>
+    <string name="appli_no">No</string>
+    <string name="appli_timer">Set timer</string>
+    <string name="appli_timer_unit">hour</string>
+    <string name="appli_timer_title">Please set the time.</string>
+    <string name="appli_wind_title">Please set the wind speed.</string>
+    <string name="appli_gear_title">Please set the gear.</string>
+    <string name="appli_mode_title">Please set the mode</string>
+    <string name="appli_a9_settemp_title">Please set the heating temper.</string>
+    <string name="appli_temper_set">Set&#160; X℃</string>
+    <string name="appli_cur_temper">Current Temperature</string>
+    <string name="appli_timers_closed">All off timer</string>
+    <string name="appli_cur_roomtemper">room temper</string>
+    <string name="appli_cur_watertemper">water temper</string>
+    <string name="appli_fan_gear_title">Please set the wind.</string>
+    <string name="appli_mode_set">Mode&#160; X</string>
+    <string name="appli_mode_set_desp">mode</string>
+    <string name="appli_temp_title">Please set the temperature</string>
+    <string name="appli_gear_set">Gear&#160; X</string>
+    <string name="appli_watertemper_set">water temper&#160; X℃</string>
+    <string name="appli_water_set">Water&#160; X</string>
+    <string name="appli_shake_set">Shook&#160; X</string>
+    <string name="appli_wind_set">Wind&#160; X</string>
+    <string name="appli_center_desp_fan">Current wind</string>
+    <string name="appli_timer_cancle">Cancle</string>
+    <string name="appli_timer_hour">hour</string>
+    <string name="appli_timer_min">minute</string>
+    <string name="appli_oper_timer_on">Timer on</string>
+    <string name="appli_oper_timer_off">Timer off</string>
+    <string name="appli_aper_timer_period">Timer onoff</string>
+    <string name="appli_mode_ycyt_title">Please set the smart mode</string>
+    <string name="appli_time_ycyt_title">Please set shutdown time</string>
+    <string name="appli_timeon_ycyt_title">Please set shutup time</string>
+    <string name="appli_a9_goal">Goal</string>
+    <string name="appli_a9_goal_unit">m³</string>
+    
+    <string name="appli_fan_desp_sleep">Sleepy wind</string>
+    <string name="appli_fan_desp_low">Weak wind</string>
+    <string name="appli_fan_desp_mid">Mid Wind</string>
+    <string name="appli_fan_desp_hi">High Wind</string>
+    
+    
+    <string name="appli_aircondition_temp_16">16℃</string>
+    <string name="appli_aircondition_temp_21">21℃</string>
+    <string name="appli_aircondition_temp_26">26℃</string>
+    <string name="appli_aircondition_temp_32">32℃</string>
+    <string name="appli_airheater_temp_0">0℃</string>
+    <string name="appli_airheater_temp_15">15℃</string>
+    <string name="appli_airheater_temp_30">30℃</string>
+    <string name="appli_airheater_temp_45">45℃</string>
+    <string name="appli_aircleaner_pm0">0</string>
+    <string name="appli_aircleaner_pm50">50</string>
+    <string name="appli_aircleaner_pm100">100</string>
+    <string name="appli_aircleaner_pm150">150</string>
+    <string name="appli_aircleaner_pm200">200</string>
+    <string name="appli_aircleaner_pm300">300</string>
+    <string name="appli_aircleaner_pm500">500</string>
+    <string name="appli_aircleaner_pm0_desp">no pollution</string>
+    <string name="appli_aircleaner_pm50_desp">optimal</string>
+    <string name="appli_aircleaner_pm100_desp">fine</string>
+    <string name="appli_aircleaner_pm150_desp">Light</string>
+    <string name="appli_aircleaner_pm200_desp">Moderate</string>
+    <string name="appli_aircleaner_pm300_desp">High</string>
+    <string name="appli_aircleaner_pm500_desp">Serious</string>
+    <string name="appli_waterheater_temp_0">35℃</string>
+    <string name="appli_waterheater_temp_25">38℃</string>
+    <string name="appli_waterheater_temp_50">61℃</string>
+    <string name="appli_waterheater_temp_75">75℃</string>
+    <string name="appli_waterheater_a9_temp_35">35℃</string>
+    <string name="appli_waterheater_a9_temp_40">40℃</string>
+    <string name="appli_waterheater_a9_temp_45">45℃</string>
+    <string name="appli_waterheater_a9_temp_50">50℃</string>
+    <string name="appli_waterheater_a9_temp_55">55℃</string>
+    <string name="appli_waterheater_a9_temp_60">60℃</string>
+    <string name="appli_waterheater_a9_temp_65">65℃</string>
+    <string name="appli_airheater_ycytoil_temp_0">0℃</string>
+    <string name="appli_airheater_ycytoil_temp_17">17℃</string>
+    <string name="appli_airheater_ycytoil_temp_34">34℃</string>
+    <string name="appli_airheater_ycytoil_temp_51">51℃</string>
+    <string name="appli_aircleaner_center_desp">Current PM2.5</string>
+    <string name="appli_aircleaner_center_desp_defualt">0</string>
+    <string name="appli_aircleaner_center_unit">ug/m³</string>
+    <string name="appli_aircleaner_temper_desp">Temper</string>
+    <string name="appli_temper_unit">℃</string>
+    <string name="appli_aircleaner_weet_desp">Humidity</string>
+    <string name="appli_aircleaner_weet_unit">%</string>
+    <string name="appli_aircleaner_wind">Speed&#160; </string>
+    <string name="appli_aircleaner_ultr">uv&#160; </string>
+    <string name="appli_aircleaner_anion">anion&#160; </string>
+    <string name="appli_fan_gear_sleep">sleep</string>
+    <string name="appli_fan_gear_low">weak</string>
+    <string name="appli_fan_gear_mid">mid</string>
+    <string name="appli_fan_gear_hi">hi</string>
+    <string name="appli_fan_gear_center_low">low</string>
+    <string name="appli_fan_gear_center_mid">mid</string>
+    <string name="appli_fan_gear_center_hi">hi</string>
+    <string name="appli_fan_gear_center_auto">auto fan</string>
+    <string name="appli_air_mode_auto">auto</string>
+    <string name="appli_air_mode_cold">cool</string>
+    <string name="appli_air_mode_hot">heat</string>
+    <string name="appli_air_mode_dedum">Dehum</string>
+    <string name="appli_air_mode_wind">air</string>
+    <string name="appli_airheater_mode_temper_first">Please set to gear model</string>
+    <string name="appli_water_cap_half">Half</string>
+    <string name="appli_water_cap_all">aLL</string>
+    <string name="appli_water_a9_waterall">cumulative</string>
+    <string name="appli_water_a9_mode">mode</string>
+    <string name="appli_water_a9_fire">section</string>
+    <string name="appli_water_a9_mode_set">Mode</string>
+    <string name="appli_water_a9_water_clean">Clear cumulate</string>
+    <string name="appli_water_a9_fire_no">No-fuel</string>
+    <string name="appli_water_a9_fire_left">Left-fuel</string>
+    <string name="appli_water_a9_fire_right">Right-fuel</string>
+    <string name="appli_water_a9_fire_all">All-fuel</string>
+    <string name="appli_water_a9_mode_auto">Auto</string>
+    <string name="appli_water_a9_mode_bath">Bath</string>
+    <string name="appli_water_a9_mode_dishes">Dishes</string>
+    <string name="appli_water_a9_mode_vwge">Dish wash</string>
+    <string name="appli_water_a9_mode_cloth">clothes wash</string>
+    <string name="appli_airheater_mode_no">No</string>
+    <string name="appli_airheater_mode_sleep">sleep</string>
+    <string name="appli_airheater_mode_save">power saving</string>
+    <string name="appli_airheater_mode_comfot">comfort</string>
+    <string name="appli_airheater_mode_fasthot">quick heat</string>
+    <string name="appli_airheater_mode_temper">gear</string>
+    
+    <string name="appli_info_power_ok">Operation succeed</string>
+    <string name="appli_info_power_fail">Sorry operation failure</string>
+    <string name="appli_info_timer_ok">Timer set successfully</string>
+    <string name="appli_info_timer_fail">Timer settings failed</string>
+    <string name="appli_info_wind_ok">The wind set successfully</string>
+    <string name="appli_info_wind_fail">Wind speed setting failed</string>
+    <string name="appli_info_ultr_ok">Ultraviolet set successfully</string>
+    <string name="appli_info_ultr_fail">Ultraviolet set failed</string>
+    <string name="appli_info_anion_ok">Negative ion set successfully</string>
+    <string name="appli_info_anion_fail">Negative ion set failed</string>
+    <string name="appli_info_shark_ok">Set the shaking success</string>
+    <string name="appli_info_shark_fail">Set the shaking failure</string>
+    <string name="appli_info_mode_ok">Set the mode success</string>
+    <string name="appli_info_mode_fail">Set the mode failure</string>
+    <string name="appli_info_temp_ok">Set the temper success</string>
+    <string name="appli_info_temp_fail">Set the temper failure</string>
+    <string name="appli_info_gear_ok">Set the gear success</string>
+    <string name="appli_info_gear_fail">Set the gear failure</string>
+    <string name="appli_info_water_ok">Set the water yield success</string>
+    <string name="appli_info_water_fail">Set the water yield failure</string>
+    <string name="appli_info_water_clean_ok">Clear the amount of water statistics success</string>
+    <string name="appli_info_water_clean_fail">Clear the amount of water statistics failure</string>
+    <string name="appli_info_fire_ok">Set the segmented combustion success</string>
+    <string name="appli_info_fire_fail">Set the segmented combustion failure</string>
+    <string name="appli_info_timeron_ok">Set the timer on success</string>
+    <string name="appli_info_timeron_fail">Set the timer on failure</string>
+    <string name="appli_info_timeroff_ok">Set the timer off success</string>
+    <string name="appli_info_timeroff_fail">Set the timer off failure</string>
+    <string name="appli_info_ycyt_power_ok">power on success</string>
+    <string name="appli_info_ycyt_power_fail">power on failure</string>
+    <string name="appli_info_ycyt_power_off_ok">power off success</string>
+    <string name="appli_info_ycyt_power_off_fail">power off failure</string>
+    
+    <!-- 粉丝盒子 -->
+    <string name="my_inf">My Message</string>
+    <string name="fansbox">FansBox</string>
+    <string name="title_control">Please select</string>
+    <string name="shared_id">Check shared account number</string>
+    <string name="share_this_device">Share this device</string>
+    <string name="total_analysis">Total Analysis</string>
+    <string name="send_notice">Send</string>
+    <string name="share_receiver">receiver phone number</string>
+    <string name="business_analysis">Business analysis</string>
+    <string name="cancel_sharing">Delen opheffen </string>
+    <string name="own_device">own device</string>
+    <string name="share_device">share device</string>
+    <string name="all_device">Total devices</string>
+    <string name="device_details">Device details</string>
+    <string name="msg_detail">Message detail</string>
+    <string name="device_sn">Device_sn&#160; </string>
+    <string name="industry_main">Industry main ID&#160; </string>
+    <string name="industry_sub">Industry child ID&#160; </string>
+    <string name="province">Province ID&#160; </string>
+    <string name="city">City ID&#160; </string>
+    <string name="section">Section ID&#160; </string>
+    <string name="shop_name">Shop name&#160; </string>
+    <string name="detail_address">Detail address&#160; </string>
+    <string name="first_used_time">First used time&#160; </string>
+    <string name="last_update_time">Last update time&#160; </string>
+    <string name="address">Address&#160; </string>
+    <string name="init_addr">unknown</string>
+
+    <!-- 粉丝盒子相关提示或警告 -->
+    <string name="notification_new_msg">You have new message</string>
+    <string name="no_message">You have no news records</string>
+    <string name="no_limits">The equipment is from sharing, no permissions</string>
+    <string name="err_connect">Server connection error</string>
+    <string name="fail_receive">Failed to get the data</string>
+    <string name="not_shared">This device has not been Shared</string>
+    <string name="fail_receive_username">Fail to get user name</string>
+    <string name="err_open">Open database error</string>
+    <string name="check_msg_detail">Check the message details</string>
+    <string name="delete_this_msg">Delete this message</string>
+    <string name="delete_all">Delete all</string>
+    <string name="msg_num">messages</string>
+    <string name="system">System&#160; </string>
+    <string name="device">Device</string>
+    <string name="already_shared_to_user">Already shared to user&#160; </string>
+    <string name="handling">Logining&#8230;</string>
+    <string name="ishandling">Processing&#8230;</string>
+    <string name="error_url">Error url</string>
+    <string name="cancel_sharing_success">Success</string>
+    <string name="cancel_sharing_fail">Fail</string>
+    <string name="notifi_input_right">Please input right phone number</string>
+    <string name="notifi_input_content">Please input message content</string>
+    <string name="cant_find_device">Can not find device</string>
+    <string name="share_success">Share success</string>
+    <string name="share_fail">Share fail</string>
+    <string name="all_delete">Already all deleted</string>
+    <string name="cannot_share_to_self">Can not share to self</string>
+    <string name="get_list">Listing&#8230;</string>
+    <string name="cancel_operation">Cancle</string>
+    <string name="health_fail_get_list">Failed to get list</string>
+
+    <!-- 视频高级设置相关提示或警告 -->
+    <string name="vedio_advanced">Adv</string>
+    <string name="vedio_advanced_contrast">C(32)</string>
+    <string name="vedio_advanced_saturation">S(48)</string>
+    <string name="vedio_advanced_brightness">B(0)</string>
+    <string name="vedio_advanced_compensate">G(0)</string>
+    <string name="vedio_advanced_slow">S</string>
+    <string name="vedio_advanced_fast">F</string>
+    <string name="vedio_advanced_0">0</string>
+    <string name="vedio_advanced_64">64</string>
+    <string name="vedio_advanced_128">128</string>
+    <string name="vedio_advanced_neg64">-64</string>
+    <string name="vedio_advanced_100">100</string>
+    <string name="vedio_set_color_fault">Set saturation failed, please try it later</string>
+    <string name="vedio_set_roll_speed_fault">Set roll speed failed, please try it later</string>
+    <string name="vedio_set_color_ok">Set saturation successed</string>
+    <string name="vedio_set_roll_speed_ok">Set roll speed successed</string>
+    <string name="vedio_no_record">no Video</string>
+
+    <!-- 健康 -->
+    <string name="health">Health</string>
+    <string name="health_menber">Total X</string>
+    <string name="health_next">next one</string>
+    <string name="health_set_next">set to the next measurement</string>
+    <string name="health_edit">edit member</string>
+    <string name="health_delete">delete member</string>
+    <string name="health_add_member">add member</string>
+    <string name="health_del_member">edit member</string>
+    <string name="health_enter_name">please enter name</string>
+    <string name="health_name">name</string>
+    <string name="health_man">man</string>
+    <string name="health_woman">woman</string>
+    <string name="health_old">year old</string>
+    <string name="health_birth">birthday&#160; </string>
+    <string name="health_hight">hight&#160; </string>
+    <string name="health_weight">weight&#160; </string>
+    <string name="health_moth">month</string>
+    <string name="health_year">year</string>
+    <string name="health_to">To</string>
+    <string name="health_cm">cm</string>
+    <string name="health_kg">kg</string>
+    <string name="health_weight_unit">weight</string>
+    <string name="health_date_unit">date</string>
+    <string name="health_fat_unit">fat percentage</string>
+    <string name="health_water_unit">moisture content</string>
+    <string name="health_muscle_unit">muscle content</string>
+    <string name="health_v_fat_unit">visceral fat rating</string>
+    <string name="health_press_unit">blood pressure</string>
+    <string name="health_plus_unit">pulse</string>
+    <string name="health_plus_num">time/min</string>
+    <string name="health_l_press_unit">systolic pressure</string>
+    <string name="health_h_press_unit">diastolic pressure</string>
+    <string name="health_sugar_unit">blood glucose</string>
+    <string name="health_oxygn_unit">blood oxygen</string>
+    <string name="health_weight_data">weight</string>
+    <string name="health_fat_data">fat percentage</string>
+    <string name="health_water_data">moisture content</string>
+    <string name="health_mu_data">muscle content</string>
+    <string name="health_v_fat_data">visceral fat rating</string>
+    <string name="health_press_data">blood pressure</string>
+    <string name="health_plus_data">pulse</string>
+    <string name="health_weight_his">weight</string>
+    <string name="health_blood_sugar">blood glucose</string>
+    <string name="health_blood_oxygn">blood oxygen</string>
+    <string name="health_measure_his">measured data</string>
+    <string name="health_emputy_date">choose time</string>
+    <string name="health_do_data">operation</string>
+    <string name="health_del_data">delete</string>
+    <string name="health_no_member">no member</string>
+    <string name="health_enter_year">please enter birthday</string>
+    <string name="health_enter_hight">please enter hight</string>
+    <string name="health_enter_weight">please enter weight</string>
+    <string name="health_enter_right_year">please enter birthday(1~160)</string>
+    <string name="health_enter_right_height">please enter hight(50~300cm)</string>
+    <string name="health_enter_right_weight">please enter weight(3~200kg)</string>
+    <string name="health_enter_right_moth">please enter month(1~12)</string>
+    <string name="health_unsurport_health">nonsupport health</string>
+    <string name="health_full_member">at most 6 members</string>
+    <string name="health_no_data">failed to get data</string>
+    <string name="health_click_tip">click chart to view more</string>
+    
+    <!-- 设备受控升级 -->
+	<string name="dev_firmware_upgrade">Device Firmware Upgrade</string>
+	<string name="advlevel">Advlevel</string>
+	<string name="known">I known</string>
+	<string name="is_last_version">Up to date</string>
+	<string name="version_num">Version No.&#160; </string>
+	<string name="publish_time">Publish Date&#160;</string>
+	<string name="firmware_feature">Firmware new features&#160; </string>
+	<string name="upgrade_unknown_dev">Unknown Device</string>
+	<string name="warn">Warning</string>
+	<string name="warn_content">The firmware upgrade equipment, may cause some function are not available, please exercise caution . Equipment upgrade process, please don\'t disconnect the power supply of the equipment.</string>
+	<string name="can_not_auto_upgrade">Current device firmware does not support mobile remote upgrade!\nPlease login web interface, and upgrade manually.</string>
+	<string name="notice_server">Notifying  to server&#8230;</string>    
+	<string name="notice_device">Connecting to device&#8230;</string>
+	<string name="begin_upgrade">Begin upgrading</string>
+	<string name="command_error">Command error</string>
+	<string name="fail_notice_server">Notify server unsuccessfully</string>
+	<string name="fail_notice_device">Connect the device unsuccessfully</string>
+    
+	<!-- 图标自定义 -->
+	<string name="custom_icon">Custom Icon</string>
+	<string name="restore_icon">Icon restore</string>
+	<string name="choose_picture">Please choose the way to get picture</string>
+	<string name="take_photo">Take phone</string>
+	<string name="choose_photo">Choose picture</string>
+	<string name="timeout">Timeout, fail to custom icon</string>
+	
+	<!-- 小区公告 -->
+	<string name="cmt">Community bulletin</string>
+	<string name="no_cmt_message">No message record</string>
+	
+	<!-- v3插座 配置 -->
+	<string name="smart_socket_pageone_tips">1.Plug air conditioner into AC Socket\n\n2.Wait until the red light on Socket is flashing quickly\n\n3.Ensure the frequency of Wi-Fi network is [2.4GHz]</string>
+	<string name="smart_socket_pageone_tips1">Plug air conditioner into AC Socket</string>
+    <string name="smart_socket_pageone_tips2">Wait until the red light on Socket is flashing quickly</string>
+    <string name="smart_socket_pageone_tips3">Keep the frequency of Wi-Fi network at 2.4GHz</string>
+	<string name="input_wifi_name">SSID</string>
+	<string name="input_wifi_pwd">Wi-Fi password</string>
+	<string name="config_begin">Search</string>
+	<string name="configer_fail">Search failure</string>
+	<string name="configer_fail_content">Press-and-hold the Reset button on Socket until its red light is flashing quickly and search again.</string>
+	<string name="configer_fail_why">FAQ</string>
+	<string name="connect_socket">Search Device</string>
+	<string name="dev_handle_error">Wrong handler</string>
+	<string name="config_fail">Network configuration failed, please try again.</string>
+	<string name="finish_config">The network configuration completed</string>
+	<string name="add_new_air">New Device</string>
+	<string name="add_pluged_air">Device Configured</string>
+	<string name="kind_remind">Reminder </string>
+	<string name="pop_kind_remind">Reminder</string>
+
+    <string name="smart_config_null_pwd_msg_ssid_desp"></string>
+    <string name="smart_config_null_pwd_msg_ssid">SSID:&#160;</string>
+    <string name="smart_config_null_pwd_msg_pwd_desp">Password:&#160; None</string>
+    <string name="smart_config_pwd_msg_pwd_desp">Password:&#160;&#160;</string>
+    <string name="smart_config_null_pwd_msg_desp">Please input the Wi-Fi password if you have one</string>
+    
+    <string name="smart_config_null_pwd_positive">Search</string>
+    <string name="smart_config_null_pwd_negtivie">Re-enter</string>
+	<string name="positive_ok">OK</string>
+	<string name="please_choose">Please select</string>
+	<string name="add_air_success">Added</string>
+	<string name="add_air_failure">Failed to add</string>
+	
+	<string name="remind_content1_title">1.&#160;</string>
+    <string name="remind_content2_title">2.&#160;</string>
+    <string name="remind_content3_title">3.&#160;</string>
+	
+	<!-- v3插座 匹配 -->
+	<string name="smart_socket_defaut_pwd_msg">Default password is not safe, You had better change it now.</string>
+    <string name="smart_socked_defaut_pwd_positive">Ignore</string>
+    <string name="smart_socked_defaut_pwd_negtive">Modify</string>
+	<string name="socket_edit">Identify AC</string>
+	<string name="error_param">Error net connect</string>
+	<string name="smart_socket_sn">SN</string>
+	<string name="smart_socket_name">Socket Name</string>
+	<string name="cloud_analysis">Analyze your AC</string>
+	<string name="other_way_match">Other</string>
+	<string name="pass_and_next_match">Pair Later</string>
+	<string name="match_success">Paired! Let us enjoy the smart life brought by AC Socket.</string>
+	<string name="match_success_title">Paired</string>
+	<string name="match_success_ok">Start Now</string>
+	<string name="cloud_match_point">Press power button on your \n AC remote controller.</string>
+	<string name="cloud_match_recv_ir">Receive IR Signal from AC remote controller and handling</string>
+	<string name="all_code_match">It will take about two minutes to identify your AC.Please wait&#8230;&#8230;</string>
+	<string name="matching_dev">(Pairing%s&#8230;)</string>
+	<string name="match_warn">Stay connected to power and internet, don\'t press AC remote controller</string>
+	<string name="match_fail">Error. Please pair again.</string>
+	<string name="match_fail_reason">Please check&#160;</string>
+	<string name="match_fail_reason1">Your phone has Internet connection</string>
+    <string name="match_fail_reason2">You have pressed down button on your remote controller</string>
+	<string name="smart_config_mode_change">Reminder </string>
+	<string name="smart_config_mode_change_msg">Do not found device!\n1. Please confirm AC socket led is flickering in red color\n2. Please confirm inputted right password</string>
+    
+    <string name="smart_config_mode_change_msg_title">Do not found device</string>
+    <string name="smart_config_mode_change_msg1">Please confirm AC socket led is flickering in red color</string>
+    <string name="smart_config_mode_change_msg2">Please confirm inputted right password</string>
+    <string name="smart_config_mode_ap_title">Ap Mode</string>
+    <string name="smart_config_mode_ap_msg">AP mode will change your wifi status, please click "OK" when system permission dialog display.</string>
+    <string name="smart_config_mode_remind">Your mobile phone does not connect to the 2.4GHz wifi, please confirm, then try again</string>
+    <string name="smart_config_mode_change_positive">Start AP Mode</string>
+    <string name="smart_config_mode_change_negtivie">Give up</string>
+	<string name="match_try_again">Try Again</string>
+	<string name="smart_socket_default_name">AC Socket</string>
+	<string name="smart_sorket_default_pwd">Please input device controler password</string>
+	<string name="check_wifi">No Wi-Fi connection. Please check WLAN setting on your mobile and search again.</string>
+	<string name="wait_ir_timeout">Timeout. Press remote controller.</string>
+	<string name="process_matching">Pairing started&#8230;</string>
+	<string name="wait_server_code_timeout">Timeout. Failed to receive code from server.</string>
+	<string name="no_result">Error. No matched code is found in our library</string>
+	<string name="dev_not_connect_server">Socket can not connect to server.</string>
+	<string name="connect_dev_timeout">Timeout. Socket did not respond</string>
+	<string name="dev_net_err">Can not connect Internet</string>
+	<string name="init_data">Updating&#8230;</string>
+	<string name="connect_server">Connectting server&#8230;</string>
+	<string name="edit_connect_server">Connecting server(%s)</string>
+	<string name="modify_nickname">Is to modify the nickname&#8230;</string>
+	<string name="modify_nickname_failed">Failed to modify nickname</string>
+	<string name="prepare_data">Loading&#8230;</string>
+	
+	<string name="air_timer">Timer List</string>
+	<string name="air_timer_no_content">No timer. Please add</string>
+	<string name="v3_list_no_aplug">Search device</string>
+    <string name="time_repeat">Repeat </string>
+    <string name="close_air_condition">Turn off</string>
+    <string name="open_air_condition">Turn on</string>
+    <string name="timer_power">POWER</string>
+    <string name="timer_poweron">ON</string>
+    <string name="timer_poweroff">OFF</string>
+    <string name="code_info_id">ID&#160;</string>
+    <string name="match_results">Pair Results</string>
+    <string name="confirm_change_code">Whether to modify the pairing results</string>
+    <string name="add_air_rs_failure">Failed to add</string>
+	<string name="input_right_airplug_name">Invalid device type. Please enter an AC Socket SN.</string>
+
+	<string name="airplug_rc_not_match">Not Pair</string>
+    <string name="airplug_rc_match_stb">Pair STB</string>
+    <string name="airplug_rc_match_tv">Pair TV</string>
+    <string name="airplug_rc_match_remind_press">Press YY button on your XX remote controller.</string>
+    <string name="airplug_rc_match_remind_progress">It will take about two minutes to identify your XX.Please wait&#8230;&#8230;</string>
+    <string name="airplug_rcmatch_warn">Stay connected to power and internet, don\'t press XX remote controller</string>
+	
+    <string name="charging">charging</string>
+    
+	<!-- 空调插座v3 -->
+	<string name="v3_tab">AC Socket</string>
+	<string name="v3_tab_control">Panel</string>
+	<string name="v3_tab_eletric">Power Usage</string>
+	<string name="v3_tab_intell">Smart Mode</string>
+	
+	<string name="v3_list_back_title">My iWUHome </string>
+	<string name="v3_list_long_rename">Change Name</string>
+	<string name="v3_list_long_rename_eplug">Change Name</string>
+	<string name="v3_list_long_rename2">NickName</string>
+	<string name="v3_list_long_changpwd">Password</string>
+	<string name="v3_list_long_del_dev">Delete Device</string>
+	<string name="v3_list_long_changmatch">Identify AC</string>
+	
+	<string name="v3_electric_hight">On-peak</string>
+	<string name="v3_electric_low">Off-peak</string>
+	<string name="remind_content">Please make sure&#160; \n1. The red light is fast flashing when socket is resetting\n2. Entered correct Wi-Fi password\n3. The frequency of Wi-Fi network is 2.4GHz</string>
+	<string name="remind_content1">The red light is fast flashing when socket is resetting</string>
+    <string name="remind_content2">You have entered correct Wi-Fi password</string>
+    <string name="remind_content3">Keep the frequency of Wi-Fi network at 2.4GHz</string>
+	<string name="v3_electric_detail">Electricity Details</string>
+	<string name="v3_electric_hight_time">Set the on-peak time</string>
+	<string name="v3_electric_hight_price">Set the on-peak price</string>
+	<string name="v3_electric_low_time">Set the off-peak time</string>
+	<string name="v3_electric_low_price">Set the off-peak price</string>
+	<string name="v3_electric_begin_time">Set the start time</string>
+	<string name="v3_electric_end_time">Set the end time</string>
+	<string name="v3_electric_price">X$</string>
+	<string name="v3_electric_sum">Subtotal</string>
+	<string name="v3_electric_sum1">Result</string>
+	<string name="v3_electric_price_tip">price</string>
+	<string name="v3_electric_this_month">Today</string>
+	<string name="v3_electric_month">Month</string>
+	<string name="v3_electric_real_time">Real</string>
+	<string name="v3_electric_static">Total</string>
+	<string name="v3_electric_rmb">$</string>
+	<string name="v3_electric_hour_err">Please enter hour between 0 and 23</string>
+	<string name="v3_electric_min_err">Please enter minute between 0 and 59</string>
+	<string name="v3_electric_price_err">Please enter price between 0 and 10</string>
+	<string name="v3_electric_time_null">Please enter time</string>
+	<string name="v3_electric_time_err">Cannot set the same start time and end time</string>
+	<string name="v3_electric_ip">IP address</string>
+	<string name="v3_layout_temper">27℃</string>
+	<string name="v3_layout_timer">XY</string>
+	<string name="v3_layout_mode">Mode</string>
+	<string name="v3_timer_desp_on">Turn &#160;on &#160;</string>
+    <string name="v3_timer_desp_off">Turn &#160;Off &#160;</string>
+    
+    <string name="sys_settings_v3_led_off">Socket LED Light</string>
+    <string name="sys_settings_v3_led_on">Socket LED Light</string>
+    <string name="v3_intell_close">Auto Power-off</string> 
+    <string name="v3_board_timer_format">YX</string>
+    <string name="v3_board_timer_preposition">at&#160;</string>
+    <string name="v3_board_timer_tomorrow">&#160;tomorrow</string>
+    <string name="v3_board_timer_days_after">&#160;days later</string>
+    <string name="v3_board_power_down">OFF</string>
+    <string name="v3_board_temp_highest">Be the highest temperature</string>
+    <string name="v3_board_temp_lowest">Be the lowest temperature</string>
+    <string name="v3_board_control_successfully">OK</string>
+    <string name="v3_board_control_unsuccessfully">Sorry, failed to control</string>
+    <string name="v3_board_unmatch">need to pair first</string>
+    <string name="v3_board_unmatch_dialog_msg">Need to pair first, confirm to pair? </string>
+    <string name="v3_board_phoneuser_not_found">Unregistered phone number, please sign up first</string>
+    <string name="v3_board_modify_timer_failed">Failed to modify timer.</string>
+    <string name="v3_board_timer_confict">timer conflict!</string>
+    <string name="v3_board_del_timer_failed">Failed to delete timer.</string>
+    <string name="v3_board_max_timer">Timer Maximum is %d</string>
+    
+    <string name="v3_list_usephone_manage">Log In</string>
+    <string name="v3_list_prompt">Friendship prompt</string>
+    <string name="v3_list_phone_manage_content">It is recommended that you login by phone number, your socket will be saved on server, and no longer be lost. </string>
+    <string name="v3_list_userphone">OK</string>
+    <string name="v3_list_use_later">Later</string>
+    <string name="v3_list_input_pwd">Password</string>
+    <string name="v3_list_input_pwd_titile">Enter password</string>
+    <string name="v3_list_to_control_board">Soon jump to control page&#8230;</string>
+    <string name="v3_led_mode_ctl">Indicator Light</string>
+    <string name="v3_led_mode_ctl_desc">Your wish</string>
+    <string name="v3_led_mode_on">ON</string>
+    <string name="v3_led_mode_off">OFF</string>
+    <string name="v3_led_mode_smart">Auto</string>
+    <string name="v3_led_mode_on_desc">Always ON</string>
+    <string name="v3_led_mode_off_desc">Always OFF</string>
+    <string name="v3_led_mode_smart_desc">Light sensitive auto-mode-control</string>
+    
+    <string name="v3_airplug_timer_switch">AC Socket Power&#160; </string>
+    <string name="v3_airplug_timer_open">Start time&#160; </string>
+    <string name="v3_airplug_timer_choose_long">Select time</string>
+    <string name="v3_airplug_timer_set_repeat">Set repeat time</string>
+    <string name="v3_input_dev_sn">Please enter SN</string>
+    <string name="v3_input_right_dev_sn">Please enter right SN</string>
+    <string name="v3_electric_clearn">Clear</string>
+    <string name="v3_electric_now"> - Now</string>
+    <string name="sys_settings_led_mode_ok">OK</string>
+    <string name="sys_settings_led_mode_fail">Sorry, failed to control</string>
+    <string name="sys_dev_state_space">State&#160;</string>
+	<string name="v3_electric_all">Usage</string>
+    <string name="v3_electric_total_unit">Total usage</string>
+    <string name="v3_electric_today">Today</string>
+    <string name="v3_electric_yesday">Yesterday</string>
+    <string name="v3_electric_w">W</string>
+    <string name="v3_electric_perid">Power-on</string>
+    
+    <string name="v3_dev_advanced_info">Advanced Information&#160; </string>
+    <string name="v3_dev_advanced_info_phone_num">Phone connected&#160; </string>
+    <string name="v3_dev_advanced_info_svn_num">Device SVN&#160; </string>
+    <string name="v3_dev_advanced_info_light_ad">Light senor AD&#160; </string>
+    <string name="v3_dev_advanced_info_cur">Current&#160; </string>
+    <string name="v3_dev_advanced_info_cur_ad">Current AD&#160; </string>
+    <string name="v3_dev_advanced_info_cur_k">Current K&#160; </string>
+    <string name="v3_dev_advanced_info_cur_b">Current B&#160; </string>
+    <string name="v3_dev_advanced_info_vol">Voltage&#160; </string>
+    <string name="v3_dev_advanced_info_vol_ad">Voltage AD&#160; </string>
+    <string name="v3_dev_advanced_info_vol_k">Voltage K&#160; </string>
+    <string name="v3_dev_advanced_info_vol_b">Voltage B&#160; </string>
+    <string name="v3_dev_advanced_info_units_cur">&#160;A</string>
+    <string name="v3_dev_advanced_info_units_vol">&#160;V</string>
+    <string name="v3_dev_advanced_info_avg_ad">Standby average AD&#160; </string>
+	<string name="v3_dev_advanced_info_max_ad">Standby maximum AD&#160; </string>
+	<string name="v3_dev_advanced_info_delay_power_on_time">Sleep mutation on time&#160; </string>
+	<string name="v3_dev_advanced_info_delay_power_off_time">Sleep mutation off time&#160; </string>
+	<string name="v3_dev_advanced_info_no_load_ad">No-load AD value&#160; </string>
+	<string name="v3_dev_advanced_info_smt_soft_ver">MCU software version&#160; </string>
+	<string name="v3_dev_advanced_info_smt_hard_ver">MCU hardware version&#160; </string >
+	<string name="v3_dev_advanced_info_ir_lib_id">Infrared coding library ID&#160; </string>
+	<string name="v3_dev_advanced_info_cdpnt">Cooling on current mutation time&#160; </string>
+    <string name="v3_dev_advanced_info_cdpft">Cooling off current mutation time&#160; </string>
+    <string name="v3_dev_advanced_info_hdpnt">Heating on current mutation time&#160; </string>
+    <string name="v3_dev_advanced_info_hdpft">Heating off current mutation time&#160; </string>
+	<string name="v3_dev_advanced_more_info">More Information</string>
+	<string name="v3_dev_advanced_yesterday">Light sensor sampling yesterday&#160; </string>
+    <string name="v3_dev_advanced_today">Light sensor sampling today&#160; </string>
+    <string name="v3_dev_advanced_info_stm">MCU compiled information&#160; </string>
+    
+    <string name="plug_time_edit">Edit Timer</string>
+    <string name="plug_timer_none">--</string>
+    <string name="notice_content">Notice content</string>
+    <string name="input_notice">content of the notice</string>
+    <string name="v3_input_price">price</string>
+    <string name="v3_current_power">Current power&#160;</string>
+    
+    <string name="v3_smart_open">Auto Power-on</string>
+    <string name="v3_smart_sleep">Auto Sleep Mode</string>
+    <string name="v3_smart_open_des">Turn on AC automatically</string>
+    <string name="v3_smart_sleep_des">Have a good dream</string>
+    <string name="v3_electric_total">Total</string>
+    <string name="v3_electric_hight_unit">On-peak(kWh)</string>
+    <string name="v3_electric_low_unit">Off-peak(kWh)</string>
+    <string name="v3_electric_kw">kWh</string>
+    <string name="v3_electric_detail_price">Price</string>
+    <string name="v3_electric_money_unit">$</string>
+    
+    <string name="v3_modify_pwd_failed">Incorrect password</string>
+    
+    <string name="v3_setting_sound">Sound</string>
+    <string name="v3_setting_vibrate">Vibrate</string>
+    <string name="v3_edit_page_poor_connect">Timeout. Ensure your wireless router is connected to Internet.</string>
+    <string name="v3_style_blue">Sapphire</string>
+    <string name="v3_style_red">Flame red</string>
+    <string name="v3_style_set">Theme Settings</string>
+    <string name="v3_style_color_set">Light Color</string>
+    <string name="v3_style_color_select">Set Light Color</string>
+    <string name="v3_led_color_default">Default(Working&#160; Green   Sleep&#160; Blue)</string>
+    <string name="v3_led_current_color">Color&#160;&#160;</string>
+    <string name="v3_led_default">Default</string>
+    <string-array name="led_color_items">
+        <item>Default</item>
+        <item>Red</item>
+        <item>Green</item>
+        <item>Blue</item>
+        <item>Yellow</item>
+        <item>Violet</item>
+        <item>Cyan</item>
+        <item>White</item>
+    </string-array>
+    
+    <string-array name="month_list">
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>Mar</item>
+        <item>Apr</item>
+        <item>May</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Aug</item>
+        <item>Sep</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Dec</item>
+    </string-array>
+    <string name="month_suffix"></string>
+    
+    <string name="v3_logout_remind">You are using function of Auto Power-on,if exit,the function will not woking\nConfirm the exit?</string>
+    
+	<string name="smart_home_tips">Smart home</string>
+    <string name="smart_home_tips_click">Touch for details</string>
+	<string name="v3_timer_exist_same">Exist same timer</string>
+    <string name="v3_timer_exist_clash">Conflict with other timer</string>
+    <string name="v3_list_indoor_temp">&#160;&#160;&#160;&#160;Indoor %d</string>
+    <string name="v3_list_indoor_temp_no_space">Indoor %d</string>
+    <string name="v3_list_indoor_temp_no_int">Indoor</string>
+    <string name="v3_upgrate_process">Upgrading&#8230;(X%)</string>
+    <string name="v3_is_upgrating">Upgrading, please wait</string>
+    <string name="v3_upgrate_ok">Upgraded</string>
+    <string name="v3_upgrate_failed">Failed to send upgrade request to device</string>
+    <string name="v3_dev_upgrate">Upgrade</string>
+    <string name="v3_dev_upgrate_eplug">Upgrade</string>
+    <string name="v3_dev_account">My Account</string>
+    <string name="v3_app_switch_set">Feedback</string>
+    <string name="v3_app_lang_set">Language Settings</string>
+    <string name="v3_app_theme_set">Theme</string>
+    <string name="v3_app_about_msg">app controls the WuKong i8 Smart Socket, a socket working with all kinds of air conditioners. You can control your air conditioner and view its latest status from anywhere anytime.</string>
+    <string name="v3_app_about_intro">Function Introduce&#160;</string>
+    <string name="v3_app_about_connect_way">Connect Way:&#160;</string>
+    <string name="v3_app_about_phone_number">400&#8211;000&#8211;9879</string>
+    <string name="v3_app_about_qq_number">4000009879</string>
+    <string name="v3_app_about_phone_way">TEL:&#160;</string>
+    <string name="v3_app_about_qq_way">QQ:&#160;</string>
+    <string name="v3_app_about_local_connect_msg">Tel:&#160;400&#8211;000&#8211;9879&#160;&#160;&#160;QQ:&#160;4000009879</string>
+    <string name="v3_app_about_local_msg">&#160;&#160;&#160;iWUHome app controls the WuKong i8 Smart Socket, a socket working with all kinds of air conditioners. You can control your air conditioner and view its latest status from anywhere anytime.</string>
+    <string name="v3_app_about_local_copyright">Copyright©2016 GALAXYWIND Network \nSystems Co.,Ltd.\nAll rights reserved</string>
+    
+    <string name="v3_elec_unit">kWh</string>
+    <string name="v3_elec_month_unit">Month</string>
+    <string name="dev_info_title">Device Information</string>
+    
+    <string name="page_change_password_title">Modify Login Password</string>
+    <string name="mode_dev_pwd">Modify Device Password</string>
+    <string name="page_change_password_oldpwd_hint">Old password</string>
+    <string name="page_change_password_newpwd_hint">New password</string>
+    <string name="page_change_password_confirmpwd_hint">Confirm new password</string>
+    <string name="page_dev_reset_device_wifi">Change Device Wi-Fi Settings</string>
+    <string name="page_dev_reset_wifi_pwd_confirm">Device will be offline when its Wi-Fi is being changed</string>
+    
+    <!-- 通用一键配置 -->
+    <string name="smart_config_step1_title">SearchX</string>
+    <string name="smart_config_found_dev">Found device,but login failure</string>
+    <!-- 奥普浴霸 -->
+    <string name="oem_ia_bathheater_aupu">奥普智能浴霸</string>
+    
+    <!-- E宝 -->
+    <string name="e_plug_next_time">Schedule&#160;xx</string>
+    <string name="e_plug_del">delete</string>
+    <string name="e_plug_no_timer">No timer. Please add</string>
+    <string name="e_plug_safe">security warning</string>
+    <string name="e_plug_info">EPlug info</string>
+    <string name="e_plug_control_center">AC Socket</string>
+    <string name="e_plug_system_settings">System Settings </string>
+    <string name="e_plug_sys_dev_reroot">Reboot</string>
+    <string name="e_plug_sys_settings_about">About</string>
+    <string name="e_plug_return">My E Socket</string>
+    <string name="e_plug_info_title">Device Information</string>
+    <string name="e_plug_no_task"></string>
+    <string name="e_plug_task_pre_format">%s&#160;</string>
+    <string name="e_plug_task_day_later">&#160;days later&#160; at &#160;</string>
+    <string name="e_plug_task_tomorrow">tomorrow&#160; at &#160;</string>
+    <string name="eplug_power_on">Power on</string>
+    <string name="eplug_power_off">Power off</string>
+    
+    <string name="state_on">ON</string>
+    <string name="state_off">OFF</string>
+    <string name="eplug_smartconfig_modinfo">Please set your EPlug\'s nickname and password</string>
+    <string name="plug_modinfo_title">EPlug Info Modify</string>
+    <string name="eplug_input_nickname">Please enter nickname</string>
+    <string name="eplug_on_time">On time</string>
+    <string name="eplug_off_time">Off time</string>
+    <string name="airplug_on_time">On time</string>
+    <string name="airplug_off_time">Off time</string>
+    <string name="eplug_period_timer_same_on_off_time">Starting and ending time can not be same</string>
+    <string name="airplug_period_timer_same_on_off_time">Starting and ending time can not be same</string>
+    <string name="hint_nickname">Nickname</string>
+    <string name="hint_passwd">Password</string>
+    <string name="hint_stripe_code">Bar Code</string>
+    <string name="period_timer_cross_day">&#160;TMR</string>
+    <string name="eplug_modinfo_nickname_empty">Please enter nickname</string>
+    <string name="eplug_modinfo_nickname_invalid">Nickname invalid</string>
+    <string name="eplug_modinfo_nickname_toolong">Nickname is too long</string>
+    <string name="eplug_modinfo_passwd_empty">Please enter password</string>
+    <string name="eplug_modinfo_both_empty">Please enter nickname and password</string>
+    <string name="plug_modinfo_barcode_empty">Please enter bar code</string>
+    <string name="eplug_modinfo_passwd_is_def">The password is the default one, modify now?</string>
+    <string name="eplug_modinfo_dialog_yes">Modify</string>
+    <string name="eplug_modinfo_dialog_no">Later</string>
+    <string name="eplug_modinfo_dev_not_find">E Socket exception, return to home page</string>
+    <string name="temp_unit_centi">℃</string>
+    <string name="temp_unit_fah">℉</string>
+    
+    
+    <string name="about_local_wujia">Upholding the concept of technology changes life, iWUHome series manage to make a perfect combination of small practical product and big data service, which provides a series of intelligent and green hardware with affordable price. </string>
+    <string name="about_local_acpartner">AC Partner is a management software for intelligent devices, it may offer remote control for your AC at home , with many intelligent functions such as to turn on/off your AC at a set time and many other operations.</string>
+    <string name="about_local_ihome">i+Home is a management software for intelligent home devices. You may have remote control of all your intelligent home devices at anywhere, such as power plugs, lights, curtain, camera, TV, AC, Infrared security sensor, and etc. It will surely bring you an intelligent new life.</string>
+    <string name="about_local_smarthome">Super Intelligent Home is a management  software for intelligent home devices. You may have remote control of all your intelligent home devices at anywhere, such as power plugs, lights, curtain, camera, TV, AC, Infrared security sensor, and etc. It will surely bring you an intelligent new life.</string>
+    <string name="about_local_ifansbox">iFansBox series is developed independently by Shenzhen GALAXYWIND Network Systems Co., Ltd. It is the first in the industry that integrates network communication technology, mobile Internet technology, big data analysis technology and  internet cloud platform technology as the new generation of intelligent business gateway products.</string>
+    
+    <string name="appli_timer_units">hours</string>
+    
+    <string name="v3_dev_upgrate_htchp">升级热水泵</string>
+    <string name="v3_dev_upgrate_desc">Upgrade</string>
+    
+    <!-- 华天成热泵开始 -->
+    <string name="upgrade_tip">Upgrade</string>
+    <string name="htchp_control_title">控制面板</string>
+    <string name="htchp_detail_title">详情</string>
+    <string name="param_settings_title">参数设置</string>
+    <string name="htchp_breakdown_title">故障申报</string>
+    <string name="htchp_person_info_title">个人信息</string>
+    <string name="htchp_moremenu_version_check">新版本检测</string>
+    <string name="htchp_moremenu_product_introduce">产品推广</string>
+    <string name="htchp_mode_heat">制热</string>
+    <string name="htchp_ctrl_fail">控制失败</string>
+    <string name="htchp_heat_capacity_unit">立方米</string>
+    <string name="htchp_heat_time_unit">小时</string>
+    <string name="htchp_saving_power_unit">度</string>
+    <string name="htchp_breakdown_btn">故障申报</string>
+    <string name="htchp_personal_btn">申报</string>
+    <string name="htchp_personal_name_hint">姓名</string>
+    <string name="htchp_personal_phone_hint">电话</string>
+    <string name="htchp_personal_passwd_hint">密码</string>
+    <string name="htchp_personal_email_hint">邮箱</string>
+    <string name="htchp_personal_addr_hint">地址</string>
+    <string name="htchp_dev_type_unkown">未知类型设备</string>
+    <string name="htchp_firmware_update">设备升级</string>
+    <string name="htchp_host_system_update">上位机升级</string>
+    <string name="htchp_version_check_true">New</string>
+    <string name="htchp_param_set_fail">Param Set Failed</string>
+    <string name="htchp_breakdow_appl_fail">故障申请出错啦</string>
+    <string name="htchp_personal_unbind">设备未绑定条形码</string>
+    <string name="htchp_firmware_update_fail">Upgrade Failed</string>
+    <string name="htchp_firmware_update_begin">开始升级,请等待</string>
+    <string name="htchp_version_check_false">未知</string>
+    <!-- 华天成热泵结束 -->
+    
+    <!-- 悟家系列支持单品 -->
+    <string name="dev_reroot">Remote Restart</string>
+    <string name="dev_restore">Reset Device</string>
+    <string name="dev_reset_wifi">Change Wi-Fi</string>
+    <string name="dev_settings_rename">Rename device</string>
+    <string name="dev_settings_info">Device Information</string>
+    <string name="dev_name_replace">device</string>
+    <string name="settings">settings</string>
+    
+    <!-- 杰能宝国际版 -->
+    <string name="jnb_inter_tab_ctrl">Panel</string>
+    <string name="jnb_inter_tab_electric">Power Usage</string>
+    <string name="jnb_inter_tab_timer">Timer</string>
+    <string name="jnb_inter_reboot">Reboot</string>
+    
+    <!-- 杰能宝温控器 -->
+    <string name="dev_name_replaceto_tmc_jnb">Thermostat</string>
+    <string name="tmc_jnb_mode_off">Off</string>
+    <string name="tmc_jnb_mode_deforst">Defrost</string>
+    <string name="tmc_jnb_mode_economy">Economy</string>
+    <string name="tmc_jnb_mode_comfort">Comfortable</string>
+    <string name="tmc_jnb_mode_auto">Auto</string>
+    <string name="tmc_jnb_mode_holiday">Holiday</string>
+    <string name="tmc_jnb_temp">Temperature</string>
+    <string name="tmc_jnb_temp_eco">Economy</string>
+    <string name="tmc_jnb_temp_comfort">Comfortable</string>
+    <string name="tmc_jnb_temp_eco_frist">Please set the economic temperature first</string>
+    <string name="tmc_jnb_temp_comfort_frist">Please set the comfort temperature first</string>
+    <string name="tmc_jnb_holiday_day">day</string>
+    <string name="tmc_jnb_holiday_days">days</string>
+    <string name="tmc_jnb_holiday_remain_day">Remain&#160; </string>
+    <string name="tmc_jnb_holiday_set">Holiday Setting</string>
+    
+    <!-- 亿林温控器 -->
+    <string name="dev_name_replaceto_tmc_yilin">Thermostat</string>
+    <string name="tmc_yl_scene_hand">By Hand</string>
+    <string name="tmc_yl_scene_prog">Program</string>
+    <string name="tmc_yl_scene_comfort">Comfort</string>
+    <string name="tmc_yl_scene_save">Save Energy</string>
+    <string name="tmc_yl_scene_leave">Out</string>
+    <string name="tmc_yl_scene_smart">Auto</string>
+    
+    <string name="tmc_yl_scene_set">Scene Setting</string>
+    <string name="tmc_yl_temp_set">Temperature Setting</string>
+    <string name="tmc_yl_auto_set">Automatic Setting</string>
+    
+    <string name="tmc_yl_gear_low">Low</string>
+    <string name="tmc_yl_gear_mid">Middle</string>
+    <string name="tmc_yl_gear_hi">High</string>
+    <string name="tmc_yl_gear_auto">Auto</string>
+    
+    <!-- 金长信配电箱 -->
+    <string name="dev_name_replaceto_pdc_jcx">PDB</string>
+    <string name="pdc_jcx_tab_realtime">Real-time</string>
+    <string name="pdc_jcx_tab_err">Abnormal</string>
+    <string name="pdc_jcx_err_no">No Abnormal</string>
+    <string name="pdc_jcx_err">Abnormal</string>
+    <string name="pdc_jcx_ele_a">Current</string>
+    <string name="pdc_jcx_ele_v">Voltage</string>
+    <string name="pdc_jcx_ele_desp">Electricity Parameter</string>
+    <string name="pdc_jcx_rate">Frequency</string>
+    <string name="pdc_jcx_active_power">Active Power</string>
+    <string name="pdc_jcx_reactive_power">Reactive Power</string>
+    <string name="pdc_jcx_rate_factor">Power Factor</string>
+    <string name="pdc_jcx_active_energy">有功电能</string>
+    <string name="pdc_jcx_reactive_energy">无功电能</string>
+    <string name="ele_units_a">A</string>
+    <string name="ele_units_v">V</string>
+    <string name="ele_units_second">S</string>
+    <string name="ele_num_default">0.0</string>
+    <string name="ele_power">Power</string>
+    
+    <string name="pdc_jcx_info">Distribution Box Overview</string>
+    <string name="pdc_jcx_info_sn">Distribution Box SN.</string>
+    <string name="pdc_jcx_info_version_hare">Power Box Hardware Version</string>
+    <string name="pdc_jcx_info_version_soft">Power Box Software Version</string>
+    
+    <string name="pdc_jcx_info_wifi">WiFi Module Overview</string>
+    <string name="pdc_jcx_info_wifi_prefix">WiFi Module </string>
+    <string name="pdc_jcx_work_ok">Work Normal</string>
+    <string name="pdc_jcx_del_err">Clear Abnormal</string>
+    
+    <string name="err_6621_type_v_hi">Voltage Overtop</string>
+    <string name="err_6621_type_v_low">Voltage Overlow</string>
+    <string name="err_6621_type_a_hi">Current Overtop</string>
+    <string name="err_6621_type_a_rate_hi">Frequency Overtop</string>
+    <string name="err_6621_type_a_rate_low">Frequency Overlow</string>
+    <string name="err_6621_type_temper_hi">温度过高</string>
+    <string name="err_6621_type_temper_low">温度过低</string>
+    
+    <string name="push_switch">Push</string>
+    
+    <!-- lele调光灯 -->
+	<string name="lede_panel_title">Dimming Light</string>
+	<string name="lede_timer_set_color_title">Current Color</string>
+	<string name="lede_timer_set_power_on">ON</string>
+	<string name="lede_timer_set_power_off">OFF</string>
+	<string name="lede_timer_set_power">Switch Control</string>
+	<string name="lede_panel_current_color">Current Light Color</string>
+	<string name="lede_timer_current_color">Light Color Setting</string>
+	<string name="lede_panel_timer">Time Setting</string>
+	<string name="lede_tab_colorpanel">Color Disk</string>
+	<string name="lede_tab_picture">Photo</string>
+	<string name="lede_scence_1">Shinning Color</string>
+    <string name="lede_scence_2">Romantic</string>
+    <string name="lede_scence_3">Wake Up</string>
+    <string name="lede_scence_4">Sleep</string>
+    <string name="lede_scence_5">Party</string>
+    <string name="lede_scence_6">Reading</string>
+    <string name="lede_scence_7">Exercise</string>
+    <string name="lede_scence_8">Thinking</string>
+    <string name="lede_scence_9">Dining</string>
+    <string name="lede_pick_picture">Choose From Photo Album</string>
+    <string name="lede_take_photo">Take Photo</string>
+    <string name="lede_picture_fail">获取图片失败</string>
+	<string name="lede_picture_err">图片格式错误</string>
+	
+	<!-- 定时器 -->
+	<string name="not_support_timer">Not Support Timer</string>
+	<string name="select_on_or_off_time">请选择X或Y时间</string>
+	
+	<!-- 电量统计 -->
+	<string name="not_support_elec">Not Support Power Usage</string>
+	<string name="page_elec_month_title">Power Usage of This Month</string>
+	<string name="page_elec_month_title_format">Power Usage of</string>
+	<string name="elec_detail_title">Energy Statistics</string>
+	
+	
+	<string name="qp_control_title">悟能遥控面板</string>
+	<string name="unknown">unknown</string>
+	<string name="tag_id1">tag1</string>
+    <string name="tag_id2">tag2</string>
+    <string name="tag_id3">tag2</string>
+    <string name="period_timer_no_set">从不</string>
+    <string name="timer_list_time_test">18:25</string>
+    
+    <!-- 悟空新支持的学习 相关 -->
+    <string name="airplug_learn_key_learn_page_title">Key Learn</string>
+    <string name="airplug_learn_key_busy">Device is busy, please try later</string>
+	<string name="airplug_learn_key_ready">Ready</string>
+	<string name="airplug_learn_key_success">Success</string>
+	<string name="airplug_learn_key_stop_learn">Terminated</string>
+	<string name="airplug_learn_key_timeout">Time out</string>
+	<string name="airplug_learn_key_fail">failed</string>
+	<string name="airplug_learn_key_step1">1. Prepare the environment</string>
+	<string name="airplug_learn_key_sub1_step1">1. Ready for a remote control which is working OK, take it close to and aim at the device</string>
+	<string name="airplug_learn_key_sub1_step2">2. Click on \"Start\" button to learn</string>
+	<string name="airplug_learn_key_step2">2. Learning code</string>
+	<string name="airplug_learn_key_sub2_step1">1. Press the button of remote control, and confirm whether it is work</string>
+	<string name="airplug_learn_key_cur_power">Current Power    XXW</string>
+	<string name="airplug_learn_key_room_temp">Indoor Temperature</string>	
+	<string name="airplug_learn_key_learn_mode">Learning\nMode</string>
+	<string name="airplug_learn_key_to_control_page">To Control Panel</string>
+	<string name="airplug_learn_key_lcd">LCD</string>
+	<string name="airplug_learn_key_no_lcd">No LCD</string>
+	
+	<!-- 悟家引导页面 -->
+	<string name="airplug_giudepage_start_btn">Start My iWuHome</string>
+	
+	<!--     前锋壁挂器 -->
+	<string name="chiffo_mode_hotwater">热水\n模式</string>
+    <string name="chiffo_mode_floorheater">供暖\n模式</string>
+    <string name="slave_chiffo">前锋</string>
+    <string name="chiffo_timer_desp">X时开始</string>
+    <string name="chiffo_mode_water_desp">热水</string>
+    <string name="chiffo_mode_floor_desp">地暖</string>
+    
+	
+	<!-- 智能睡眠 -->
+	<string name="smart_sleep_description">The I8 built-in sensors, users will learn light sleep environment. At 22 in the evening to the 
+	    next day at 6, when the light environment is below the sleep light environment will trigger intelligent sleep. \n\n Trigger effect: \n
+	    1. Air conditioning is adjusted for the low air \n2. Air conditioning system heat over 28 degrees, the customer set temperature based 
+	    on the reduction of twice \n3. Refrigeration lower than 20 degrees temperature increase twice</string>
+	    
+		<!-- 悟空配置界面 -->
+	<string name="smart_open_des">Open, provide comfort and comfort for you.</string>
+	<string name="smart_sleep_des">Open, help you enjoy a beautiful dream.</string>
+	<string name="find_details">Details</string>
+	<string name="smart_tempe">Temperature Constant</string>
+	<string name="smart_tempe_des">Open, indoor temperature intelligent constant temperature control within the setting temperature.</string>
+	<string name="tempe_curve">Temperature Curve</string>
+	<string name="temp_curve_des">Open, Air conditioning will automatically set the temperature according to the curve.</string>
+	
+	<!-- 同码匹配 -->
+	<string name="smart_match_same_power_title">Power stat rectify</string>
+	<string name="smart_match_set_air_status">Choose the AC\'s power stat</string>
+	<string name="smart_match_set_power_on">On</string>
+	<string name="smart_match_set_power_off">Off</string>
+	
+	<!-- 智能开机 -->
+	<string name="smart_on_description">Open intelligent boot when you on the way home, if detection room temperature below 17 degrees, 
+	    trigger boot heating 24 degrees; when the detection room temperature is above 30 degrees, triggering starting refrigeration 24 degrees; 
+	    if detection at room temperature in 17-30, Goku I8 will not execute boot operation. (Note: first open smart boot need mobile app with Goku 
+	    I8 on the same LAN, in order to accurately positioning; also mobile positioning function permission need permission to open, 
+	    otherwise failure) \n\n1. Requirements of mobile phone and Goku in the same LAN can be identified WuKong position, thus the smart phone
+	     will come into effect \n2. If off the mobile phone positioning function, function failure (GPS apple, Android base station) \n3. 
+	     If client uninstall reinstall, location information will empty, need with Goku in the same LAN re positioning</string>
+	
+	<!-- 智能恒温start -->
+	<string name="temperature_keep_in">Room Temperature In</string>
+	<string name="period_setting">Period Setting</string>
+	<string name="mode">Mode</string>
+	<string name="date_repeate">Repeat the Date</string>
+	<string name="to">to</string>
+	<string name="degree_with_space">℃&#160;&#160;&#160;&#160;&#160;&#160;&#160;</string>
+	<string name="smart_thermostat_set_ok">Save successful!</string>
+	<string name="smart_thermostat_set_fail">Save failed!</string>
+	<string name="all_day">All day long</string>
+	<string name="intell_temp_nextday">TMR</string>
+	<!-- 智能恒温end -->
+	
+	<!--机顶盒遥控器start-->
+	<string name="stb_volume">VOL</string>
+	<string name="stb_channel">CH</string>
+	<string name="stb_tv">TV</string>
+	<string name="stb_control_fail">Sorry,control failed!</string>
+	<string name="stb_ok">OK</string>
+	<!--机顶盒遥控器end-->
+	    
+	<!-- 参数校正界面 -->
+	<string name="parameter_adjust">Adjust Parameters</string>
+	<string name="code_adjust">AC ON/OFF</string>
+	<string name="code_adjust_des">Incorrect power status for same ON and OFF code.</string>
+	<string name="windmode_adjust">Swing</string>
+	<string name="windmode_adjust_des">Incorrect swing status.</string>
+	<string name="wind_adjust">Adjust Wind Speed</string>
+	<string name="wind_adjust_des">Incorrect wind speed.</string>
+	<string name="tempe_adjust">Adjust Room Temperature</string>
+	<string name="tempe_adjust_des">Incorrect room temperature.</string>
+	<string name="air_on">ON</string>
+	<string name="air_off">OFF</string>
+	<string name="wind_on">ON</string>
+	<string name="wind_off">OFF</string>
+	
+	<!-- 电量修正 -->
+	<string name="ele_adjust">Adjust Electricity Usage</string>
+	<string name="ele_adjust_des">Usage will time the value you set. Adjust incorrect power usage for some special electronic components.</string>
+	<string name="ele_clear">Clear Power Usage</string>
+	<string name="alert_ele_clear">Clear all the power usage data?</string>
+	
+	<!-- 	温度曲线 -->
+	<string name="period_set">Period Setting</string>
+	<string name="temper_set">Temperature Setting</string>
+	<string name="temper_curve">Temperature Curve</string>
+	
+	<!-- 	定时器 -->
+	<string name="timer_type_appoint_on">Time On</string>
+	<string name="timer_type_appoint_off">Time Off</string>
+	<string name="timer_type_period">Time Onoff</string>
+	<string name="timer_type_period_min">Period of not less than five hours</string>
+	<string name="timer_type_period_set_temp">At least one set temperature</string>
+	<string name="timer_type_simple">Simple</string>
+	<string name="timer_type_advance">Advanced</string>
+	
+	
+	<!-- 	温湿度曲线图 -->
+	<string name="curve_title">24 Hours Curve</string>
+	<string name="cur_room_temper">Indoor</string>
+	<string name="cur_room_weet">Humidity</string>
+	
+	<!-- 车载悟空 -->	
+	<string name="slave_czwk">WuKong for car</string>
+	<string name="czwk">WuKong for car</string>
+	<string name="czwk_ac_time">AC run time(10~30Min)</string>
+	<string name="czwu_my_msg">My message</string>
+	<string name="czwk_find_car">Find car</string>
+	<string name="czwk_ac">A/C</string>
+	<string name="czwk_open_ac">Open AC</string>
+	<string name="czwk_close_ac">Close AC</string>
+	<string name="czwk_standby">OFF</string>
+	<string name="czwk_charge_ok">Charge finish</string>
+	<string name="czwk_charging">Charging</string>
+	<string name="czwk_power_low">Low battery</string>
+	<string name="czwk_start_engine_fail">Start engine failed</string>
+	<string name="czwk_open_ac_fail">Open AC failed</string>
+	<string name="czwk_battery_voltage_err">Battery voltage error</string>
+	<string name="czwk_car_temp">Car temp</string>
+	<string name="czwk_open_failed">Open failed</string>
+	<string name="czwk_close_failed">Close failed</string>
+	
+	<!-- 增强型悟空 -->
+	<string name="stb_add_key">Add key</string>
+	<string name="stb_mod_key">Modify name</string>
+	<string name="stb_learn_again">study key code</string>
+	<string name="stb_key_name_hint">Key name</string>
+	<string name="stb_input_key_name">Input the key name</string>
+	<string name="delete_custom_key">Delete</string>
+	<string name="stb_user_key_exceed">Sorry, custom key limit to %d</string>
+	
+	<!-- 童锁 -->
+	<string name="childlock_title">Child Lock</string>
+	<string name="childlock_desp">Prevent children from controlling the AC</string>
+	<string name="childlock_desp_off">Disable child safety lock</string>
+	<string name="childlock_desp_all">Lock all buttons</string>
+	<string name="childlock_desp_power">Lock all buttons except ON/OFF button</string>
+	<string name="childlock_desp_short_off">OFF</string>
+	<string name="childlock_desp_short_all">All buttons</string>
+	<string name="childlock_desp_short_power">Except ON/OFF</string>
+	
+	<string name="v3_upgrate_downprocess">Downloding&#8230;(X%)</string>
+	
+	<!-- 升级提示框 -->
+	<string name="upgrade_alert_tips_1">Check to device [%@] can be upgraded</string>
+	<string name="upgrade_alert_tips_n">Check to multiple device %@ can be upgraded</string>
+	<string name="upgrade_alert_start">Upgrade</string>
+	<string name="upgrade_alert_wait">Later tips</string>
+	<string name="upgrade_alert_noshow">No longer tips</string>
+	<string name="upgrade_guide_tips">You can upgrade through the following ways</string>
+	<string name="download_fail">Network connection failure</string>
+	
+	<!-- 排名 -->
+	<string name="rank_title">Aircon list</string>
+	<string name="rank_list">RankList</string>
+	<string name="rank_share_url">http://www.ifanscloud.com</string>
+	<string name="guide_list_slide">Swipe left to enjoy more!</string>
+	<!-- "左滑一下，可以编辑、快捷开关机、升级设备。"="Swipe left to edit, turn ON/OFF, or upgrade device"; -->
+	<string name="web_open_with_browser">Open with Browser</string>
+	
+	<!-- 沙特插座 -->
+	<string name="saudi_person_detect">Body Induction</string>
+	<string name="saudi_ensuprrot_person_detect">Does not support the human body induction</string>
+	<string name="saudi_power">Electric statistics</string>
+    
+	<!-- 门锁 -->
+	<string name="slave_gatelock">Lock</string>
+    <string name="gatelock_control">Panel</string>
+	<string name="gatelock_record">History</string>
+	<string name="gatelock_no_record">no history</string>
+	<string name="gatelock_alert_manager">提醒设置</string>
+	<string name="gatelock_panl_manager">遥控器管理</string>
+	<string name="gatelock_close_state">Closed</string>
+	<string name="gatelock_open_state">Open</string>
+	<string name="door_close">&#160;close</string>
+	<string name="door_open">&#160;open</string>
+	<string name="lock_open">Unlocked</string>
+	<string name="lock_close">Locked</string>
+	<string name="gatelock_close">&#160;lock</string>
+	<string name="gatelock_open">&#160;unlock</string>
+	<string name="gatelock_close_des">Door closed</string>
+    <string name="gatelock_person_break">Door is been breaking</string>
+	<string name="gatelock_open_des">Door open</string>
+	<string name="gatelock_alert">报警提醒</string>
+	<string name="gatelock_alert_des">开启后，手机推送报警提醒。</string>
+	<string name="gatelock_power_alert">电量不足提醒</string>
+	<string name="gatelock_power_alert_des">开启后，门锁电池电量不足时设备蜂鸣提醒。</string>
+	<string name="gatelock_panl_match">识别遥控器</string>
+	<string name="gatelock_panl_des">请按下遥控器按钮进行识别</string>
+	<string name="gatelock_success">识别成功</string>
+	<string name="gatelock_success_des">门锁遥控器识别成功</string>
+	<string name="gatelock_lose">挂失</string>
+	<string name="gatelock_dislose">解除挂失</string>
+	<string name="gatelock_rename_on">继续修改名称</string>
+	<string name="gatelock_panl_name">遥控器名称</string>
+	<string name="gatelock_input_panl_name">请输入遥控器名称</string>
+	<string name="gatelock_error">识别出错，请重新识别一次</string>
+	<string name="gatelock_error_des_1">检查你的网络情况</string>
+	<string name="gatelock_error_des_2">请确保按下了门锁遥控器</string>
+	
+	<!-- 新门锁(门栓) -->
+	<string name="push_warn_notify">Send Alarm</string>
+	<string name="warn_notify_unlock_door">Door Unlocked Alarm</string>
+	<string name="warn_notify_unlock_door_time">Door Unlocking Time Alarm</string>
+	<string name="remote_controller_manage">Remote Control Management</string>
+	<string name="press_recongnise_remote_controller">Press down Remote control button to identify</string>
+	<string name="recongnise_success">Identified</string>
+	<string name="recongnise_fail">Error Identified, Please Try Again</string>
+	<string name="try_again">Try Again</string>
+	<string name="recongnise_fail_reason">1. Check your network status\n2. Please press the remote control of the lock</string>
+	<string name="lock_auto_guard_des">Locking status, Safety information reminder is activated by default\nBattery status, battery status detecting and Low battery alarm are activated by default</string>
+	<string name="lock_unguard">Connect WiFi to unlock</string>
+	<string name="lock_unguard_des">8:00~24:00, Connect the same WiFi with mobile, Door is unlocked</string>
+	<string name="lock_guard">Disconnect WiFi, Locked down</string>
+	<string name="lock_guard_des">8:00~24:00, Disconnect mobile to the same WiFi, Door is automatically locked down</string>
+	<string name="lock_switch_proteced">Sliding lock</string>
+	<string name="lock_switch_unproteced">Sliding unlock</string>
+	<string name="lock_close_succ">Door Closed</string>
+	<string name="lock_close_fail">Door Opened</string>
+	<string name="lock_brokedown">Door Fault</string>
+	<string name="door_state_open">Door opened</string>
+	<string name="door_state_close">Door closed</string>
+	<string name="lock_state_open">Lock opened</string>
+	<string name="lock_state_close">Lock closed</string>
+	<string name="lock_tip_open_fail">Lock core is not in place, Try again</string>
+	<string name="lock_tip_close_fail">%s Unclosed</string>
+	<string name="lock_state_unexcp_vibrance">%s Abnormal Vibration</string>
+	<string name="rf_gatelock_dev">Door Bolt</string>
+	<string name="his_type_door_on">Open</string>
+	<string name="his_type_door_off">Close</string>
+	<string name="his_type_lock_on">Lock open</string>
+	<string name="his_type_lock_off">Lock close</string>
+	<string name="his_type_unexpected_vibrate">Vibrate</string>
+	<string name="his_type_low_power">Low Power</string>
+	<string name="guard_desp_app">APP&#160;</string>
+	<string name="guard_desp_wifi">Wi-Fi&#160;</string>
+	<string name="guard_desp_system">System&#160;</string>
+	<string name="guard_desp_physical">Manual &#160;</string>
+	<string name="guard_desp_remote">Remote Controller&#160;</string>
+	<string name="guard_desp_lock_open">Open Lock</string>
+	<string name="guard_desp_lock_close">Close Lock</string>
+	<string name="open_push_warn">Please open [Send Alarm] first</string>
+	<string name="lock_alarm_unlock_timeout">XX UnLock Long Time</string>
+	
+	<string name="com_alarm_unexpect_vibrate">XX Abnormal Vibrate</string>
+	<string name="com_alarm_open_door">XX Open Door</string>
+	<string name="com_alarm_close_door">XX Close Door</string>
+	<string name="com_alarm_open">XX Open</string>
+	<string name="com_alarm_close">XX Close</string>
+	<string name="com_alarm_force_open_lock">XX Breaking Lock</string>
+	<string name="com_alarm_low_power">XX Low Power</string>
+	<string name="com_alarm_force_open_door">XX Breaking Door</string>
+	
+	<string  name="rf_door">Door&#160;</string>
+	<string name="lock_state_closing">Lock Closing</string>
+	<string name="lock_state_opening">Lock Opening</string>
+	<string name="lock_time_unsynchronous">Time Unsynchronized </string>
+	<string name="lock_time">Time</string>
+	<string name="lock_unsynchronous">Non-synchro </string>
+	<string name="lock_device">Device</string>
+	
+	<!-- 网关 -->
+	<string name="list_tab_dev">Device</string>
+	<string name="list_tab_group">Group</string>
+	<string name="rf_gateway">gateway</string>
+	<string name="rf_gw_find_new_slave">Found XX new devices，bind it?</string>
+	<string name="rf_gw_find_new_single_slave">Found XX[YY], bind it?</string>
+	<string name="rf_gw_bind">Immediately bind</string>
+	<string name="rf_group_tyle_unkown">unkown type</string>
+	<string name="rf_group_empty">No Device</string>
+	<string name="rf_group_offline">No online device</string>
+	<string name="rf_group_gw_nolight">No online light</string>
+	<string name="rf_rmt_nolight">No online device in the Remote Control</string>
+	<string name="rf_group_login_status">Logining, please later! </string>
+	<string name="rf_group_edit">Modify</string>
+	<string name="rf_group_rename">Rename</string>
+	<string name="rf_group_del">Delete</string>
+	<string name="rf_select_title">SelectGateway</string>
+	<string name="add_group">Add Group</string>
+	<string name="modify_group">Modify</string>
+	<string name="input_group_name">Please input group name</string>
+	<string name="rf_no_group_info">No Group Information</string>
+	<string name="no_rfgw_type_dev">No Device</string>
+	<string name="group_type_led">Light Group</string>
+	<string name="group_type_door">Doorlock Group</string>
+	<string name="group_type_magnet">DoorSensor Group</string>
+	<string name="group_type_sf_switch">Switch Group</string>
+	<string name="group_empty_alert_toast">choose at least one device</string>
+	
+	<string name="group_list_device_type">&#160;</string>
+	<string name="group_list_device_unit">&#160;device</string>
+	<string name="group_list_device_unit_plu">&#160;devices</string>
+	<string name="group_list_belong_gw">&#160;&#160;belong&#160;to&#160;</string>
+	
+	<string name="rfgw_type_led">Light</string>
+	<string name="rfgw_type_dianwei_switch">SmartSwitch</string>
+	<string name="rfgw_type_nobind">unbind</string>
+	<string name="rfgw_type_online">online</string>
+	<string name="rfgw_type_unline">offline</string>
+	<string name="rf_light_neuter">neutral</string>
+	<string name="rf_light_white">white</string>
+	<string name="rf_light_warm">warm</string>
+	<string name="rf_unbind_dev">New device</string>	
+	<string name="rf_dhx_switch_all_on">Open All</string>
+	<string name="rf_dhx_switch_all_off">Close All</string>
+	<string name="rf_dhx_switch_on">Open</string>
+	<string name="rf_dhx_switch_off">Close</string>
+	<string name="rf_dhx_switch_whitch">path&#160;&#160;</string>
+	<string name="rf_dhx_page_title">Panel Switch</string>
+	<string name="rf_dhx_path_one">One</string>
+	<string name="rf_dhx_path_two">Two</string>
+	<string name="rf_dhx_path_three">Three</string>
+	<string name="rf_dhx_switch_slide_on">Turn On</string>
+	<string name="rf_dhx_switch_slide_off">Turn Off</string>
+	<string name="rf_bind_remind">Binding, please wait&#8230;</string>
+	<string name="rf_light_all">ALL</string>
+	<string name="rf_light_not_support_rgb">Not Support</string>
+	<string name="rf_light_alert_mode1">Mode 1</string>
+	<string name="rf_light_alert_mode2">Mode 2</string>
+	<string name="rf_light_alert_mode_sync">Sync Mode</string>
+	
+	<string name="rf_gw_auto_bind">Auto bind</string>
+	<string name="rf_gw_auto_bind_open">open auto bind</string>
+	<string name="rf_gw_auto_bind_close">close auto bind</string>
+	<string name="rf_gw_compat_def">Default</string>
+	<string name="rf_gw_compat_level">Level&#160;</string>
+	<string name="rf_gw_compat_switch">Compat Level</string>
+	<string name="rf_gw_deleteall">Delete all subsets</string>
+	<string name="rf_gw_deleteall_msg">Are you sure to delete all subsets now?</string>
+	<string name="rf_gw_remind_upgrading">Upgrading</string>
+	<string name="rf_gw_remind_upgrade">&#160;&#160;|&#160;&#160;slave need to be upgraded</string>
+	<string name="rf_slave_is_upgrading_try_latter">Upgrading, please try a later</string>
+	<string name="rf_slave_update_failed">Upgrade Failed</string>
+	<string name="rf_slave_upgrading">Upgrading</string>
+	<string name="rf_slave_click_update">Upgrade</string>
+	<string name="rf_slave_upgrade_failed">Product upgrade failure, you can try upgrading again or contact customer service.</string>
+	<string name="rf_ds_year_none"></string>
+	<string name="rf_ds_year_month">yyyy&#8211;MM</string>
+	<string name="rf_ds_month">-</string>
+	<string name="rf_ds_status_open">&#160;Open</string>
+	<string name="rf_ds_status_close">&#160;Close</string>
+	<string name="rf_ds_status_vib">Vibrations</string>
+	<string name="rf_ds_status_name"></string><!-- 用于控制页面历史记录的头部 不考虑英文 -->
+	<string name="rf_ds_switch_proteced">Arming</string>
+	<string name="rf_ds_switch_unproteced">Disarming</string>
+	<string name="rf_ds_protect_fail">Unsuccessful</string>
+	<string name="rf_ds_protect_msg">Can not protected on open Doorsensor</string>
+	<string name="rf_ds_protect_remind">XX is not closed</string>
+	
+	<string name="picture_pick_color_remind">Pick color on touch</string>
+	<string name="remote_control">RemoteControl</string>
+	
+	<string name="rf_alarm">iWuHome Alarm</string>
+	<string name="rf_alarm_info_open">open</string>
+	<string name="rf_alarm_info_close">close</string>
+	<string name="rf_alarm_info_destroy">&#160;vibrations</string>
+	
+	<string name="rf_alarm_info_destroy_door">Door Breaking</string>
+	<string name="rf_alarm_info_destroy_lock">Lock Breaking</string>
+	<string name="rf_alarm_info_power">Low Battery</string>
+	<string name="rf_alarm_info_body">Moving Object Detected</string>
+	<string name="rf_alarm_info_xx">&#160;XX&#160;</string>
+	
+	<string name="rf_smart_sos_sensor">Smart SOS</string>
+	<string name="rf_smart_smoke_sensor">Smart SmokeSensor</string>
+	<string name="rf_smart_co_sensor">Smart CoSensor</string>
+	<string name="rf_smart_water_sensor">Smart WaterSensor</string>
+	<string name="rf_light_sw_dev">Smart Switch</string>
+	<string name="rf_light_dev">Light</string>
+	<string name="rf_door_dev">Door Lock</string>
+	<string name="rf_magnet_dev">Doorsensor</string>
+	<string name="rf_switch_dev">Panel Switch</string>
+	<string name="rf_new_dev_num">[@]&#160;New</string>
+	<string name="rf_all_dev_bind">Configure</string>
+	<string name="rf_online_dev_num">[@]&#160;Online</string>
+	<string name="rf_offline_dev_num">[@]&#160;Offline</string>
+	
+	<string name="rf_light_mode_rgb">RGB Mode</string>
+	<string name="rf_light_mode_wc">Colour Temp Mode</string>
+	<string name="rf_light_mode_layer">Layer</string>
+	<string name="rf_light_mode_sync">Layer Sync</string>
+	
+	<!-- 门磁 -->
+	<string name="slave_magnet">Door Sensor</string>
+	<string name="guard_open">Protected</string>
+	<string name="guard_close">Unprotected</string>
+	<string name="is_guard_open">Protected</string>
+	<string name="is_guard_close">Unprotected</string>
+	
+	<string name="float_window_disable">Please set the floating window visible,or you cannot use the TV panel,set now?</string>
+	<string name="magnet_auto_guard_des">Armed state,the default is on the phone side safety information tips.\nBattery power,the power is turned on by default detection and low battery alarm.</string>
+	<string name="magnet_unguard">Wi-Fi access disarm</string>
+	<string name="magnet_unguard_des">Lift the phone connected to the same Wi-Fi network deployment</string>
+	<string name="magnet_guard">Disconnect the Wi-Fi deployment</string>
+	<string name="magnet_guard_des">Auto Arming one minute after the phone is disconnected Wi-Fi</string>
+	<string name="magnet_set">Smart settings</string>
+	<string name="magnet_ring_set">Alarm Sound</string>
+	<string name="magnet_local_ring">Local Sound</string>
+	<string name="magnet_default_ring">Default Sound</string>
+	<string name="magnet_system_default">System Default</string>
+	
+	<string name="magnet_left_slid_protect">Protect</string>
+	<string name="magnet_left_slid_unprotect">Unprotect</string>
+	
+	<string name="week"></string>
+    <string name="week_mon">Mon</string>
+    <string name="week_tues">Tues</string>
+    <string name="week_wedn">Wed</string>
+    <string name="week_thur">Thur</string>
+    <string name="week_fri">Fri</string>
+    <string name="week_sat">Sat</string>
+    <string name="week_sun">Sun</string>
+    <string name="timer_on">On</string>
+    <string name="timer_off">Off</string>
+    <string name="timer_all_day">All</string>
+    
+    <string name="timer_edit_period">Period Timer</string>
+    <string name="timer_edit_one_way">Onoff Timer</string>
+    <string name="timer_edit_timer_null">Sorry, parameter erro</string>
+    <string name="timer_edit_choose_color">Color &#038; Light select</string>
+    <string name="timer_style_onoff">Onoff time</string>
+    <string name="timer_style_period">Period timer</string>
+    <string name="timer_list_add_timer">Add Your timer</string>
+    <string name="timer_list_empty_title">Planning time</string>
+    <string name="timer_list_empty_sub_title">As your pleasure</string>
+    <string name="timer_week_select">Days selection</string>
+    
+    
+    <string name="title_hisrec">history</string>
+	
+	<string name="guard_desp_opened">The wife open positions</string>
+	<string name="guard_desp_closeed">The husband cancellation protection</string>
+	<string name="guard_desp_on">Open</string>
+	<string name="guard_desp_off">Close</string>
+	<string name="guard_desp_nonnormal_vibrate1"></string>
+	<string name="guard_desp_nonnormal_vibrate2">Vibration</string>
+	<string name="guard_desp_low_battery">Capacity is less than %d%%</string>
+	<string name="guard_desp_lower_battery">Low Power %d%%</string>
+	<string name="guard_desp_net_in">&#160;onlie</string>
+	<string name="guard_desp_net_off">&#160;offline</string>
+	
+	<string name="guard_title_opened">CANCEL</string>
+	<string name="guard_title_closeed">BUILD</string>
+	<string name="guard_title_on">ON</string>
+	<string name="guard_title_off">OFF</string>
+	<string name="guard_title_nonnormal_vibrate">DANGER</string>
+	<string name="guard_title_low_title_battery">ELC</string>
+	<string name="guard_title_net_title_in">ONLINE</string>
+	<string name="guard_title_net_title_off">OFFLINE</string>
+	
+	<string name="guard_title_pause">STOP</string>
+	<string name="guard_title_pause_canel">OPEN</string>
+	<string name="guard_title_low_power">LOW</string>
+	<string name="guard_title_normal_power">RESET</string>
+	<string name="guard_title_alarm">DANGER</string>
+	<string name="guard_title_safe">SAFE</string>
+	
+	<string name="guard_desp_pause">&#160;No-disturbing is opened</string>
+	<string name="guard_desp_pause_canel">&#160;No-disturbing is closed</string>
+	<string name="guard_desp_low_power">Low battery</string>
+	<string name="guard_desp_normal_power">Normal battery status</string>
+	<string name="guard_desp_alarm">&#160;send alarm</string>
+	<string name="guard_desp_safe">&#160;Safe</string>
+
+	<!-- 友泰门锁 -->
+	<string name="slave_yt_lock">友泰门锁</string>
+	<string name="youtai_lock_state">设备状态</string>
+	<string name="ytlock_power_alert">低电量报警提醒</string>
+	<string name="ytlock_password">开锁密码</string>
+	<string name="ytlock_set_password">设置开锁密码</string>
+	<string name="ytlock_mod_password">修改开锁密码</string>
+	<string name="ytlock_input_old_pwd">输入旧密码</string>
+	<string name="ytlock_input_pwd">请输入密码</string>
+    <string name="ytlock_input_pwd_again">请再次输入密码</string>
+    <string name="ytlock_set_pwd_ok">密码设置成功</string>
+    <string name="ytlock_set_pwd_fail">密码设置失败</string>
+    <string name="ytlock_old_pwd_err">原始密码错误</string>
+    <string name="ytlock_no_set_pwd">未设置控制密码</string>
+    <string name="ytlock_old_pwd_short">旧密码过短</string>
+    <string name="ytlock_new_pwd_short">新密码过短</string>
+    <string name="ytlock_more_menu_direct">操作说明</string>
+    <string name="ytlock_direct">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;打开APP后点击“搜索设备”或点击右上角的“+”并点击“新设备”，
+        	会弹出输出SSID和密码的页面，需要在该页面正确输入手机连接的无线路由器的SSID和密码。
+       		 然后点击“开始搜索”，等到最多2分钟后即可发现设备，此时需要输入设备的昵称和密码，即可完成设备的绑定。</string>
+	<string name="youtai_history_open">开门</string>
+    <string name="youtai_history_close">关门</string>
+    <string name="youtai_history_door">撬门</string>
+    <string name="youtai_history_lock">撬锁</string>
+    <string name="youtai_history_power">电量低于5%</string>
+    <string name="youtai_unlocking">正在关锁，请稍候\.\.\.</string>
+    <string name="youtai_locking">正在开锁，请稍候\.\.\.</string>
+    <string name="yt_guard_open">已布防</string>
+	<string name="yt_guard_close">已撤防</string>
+	<!-- 汇泰龙 -->
+	<string name="slave_hutlon_lock">Hutlon Lock</string>
+	<string name="htl_low_electric_alarm">Low battery alert</string>
+    <string name="htl_not_lock_alarm">XX Unlock Door</string>
+    <string name="htl_error_alarm">XX Fault Alaram</string>
+    <string name="htl_rob_alarm">XX Hijack Alarm</string>
+    <string name="htl_pry_alarm">XX Pry-Door Alarm</string>
+    <string name="htl_mechanical_lock_alarm">XX Mechanical Lock Alarm</string>
+     <string name="htl_open_door_alarm">XX Open Door</string>
+    <string name="htl_close_door_alarm">XX Close Door</string>
+    
+    <string name="history_opendoor">Door opening record</string>
+    <string name="history_warming">Alerting information</string>
+    
+    <string name="hutlon_usermanage">User management</string>
+    <string name="hutlon_history">History record</string>
+    <string name="hutlon_setting">Reminder setting</string>
+    
+    <string name="user_details">User Details</string>
+    <string name="icon_choose">Portrait selection</string>
+    <string name="system_icon">Default Portrait</string>
+    
+    <string name="hutlon_admin_pwd">Please Enter Administrator Password</string>
+    <string name="login_success">Login Success</string>
+    <string name="login_failed">Login Failed</string>
+    <string name="icon_change_ok">Icon Change Success</string>
+    <string name="name_change_ok">Name Change Success</string>
+    <string name="icon_change_fail">Icon Change Fail</string>
+    <string name="name_change_fail">Name Change Fail</string>
+    
+    <string name="notify_change_ok">Reminder Change Success</string>
+    <string name="notify_change_fail">Reminder Change Fail</string>
+    <string name="opendoor_remind_change_ok">Opendoor Reminder Change Success</string>
+    <string name="opendoor_remind_change_fail">Opendoor Reminder Change Fail</string>
+    
+    <string name="album_icon">Select from album</string>
+    <string name="open_close_door_notify">Closing Door Reminder</string>
+    <string name="opendoor_category_pwd">Password ID</string>
+    <string name="opendoor_category_finger">Fingerprint ID</string>
+    <string name="opendoor_category_card">Card ID</string>
+    <string name="alter_user_nickname">Edite User Name</string>
+    <string name="no_user_nickname">Unnamed</string>
+    
+    <string name="history_date">Date</string>
+    <string name="history_category">Category</string>
+    <string name="history_user_name">User Name</string>
+    
+    <string name="all">All</string>
+    <string name="finger_unlock">Fingerprint Unlock</string>
+    <string name="card_unlock">Card Unlock</string>
+    <string name="pwd_unlock">Password Unlock</string>
+    
+    <string name="all_notify">Total reminder</string>
+    <string name="low_electric_alarm">Low battery alert</string>
+    <string name="not_lock_alarm">Door unlocked alert</string>
+    <string name="error_alarm">False alert</string>
+    <string name="rob_alarm">Hijack alert</string>
+    <string name="pry_alarm">Pry-proof alert</string>
+    <string name="mechanical_lock_alarm">Mechanical lock alarm</string>
+    <string name="notify_alarm">Notification reminder</string>
+    <string name="phone_notify_alarm">Send message to warn</string>
+    <string name="do_not_notify">No reminder</string>
+    <string name="do_not_notify_forever">Never remind</string>
+     
+    <string name="htl_week_mon">Mon</string>
+    <string name="htl_week_tues">Tues</string>
+    <string name="htl_week_wed">Wed</string>
+    <string name="htl_week_thur">Thur</string>
+    <string name="htl_week_fri">Fri</string>
+    <string name="htl_week_sat">Sat</string>
+    <string name="htl_week_sun">Sun</string>
+     
+	<!-- 人体感应 -->
+	<string name="slave_rf_induction">PIR</string>
+	<string name="rf_induction_dev">PIR</string>	
+	<string name="rf_induction_count_title">Sensed</string>  
+	<string name="rf_induction_count_unit">times</string>
+	
+	<string name="slave_rf_temperhum">Humiture Sensor</string>
+	
+	<string name="slave_rf_hm_menci">Door Sensor</string>
+	
+	
+	<string name="slave_rf_gas">Gas Detector</string>
+	<string name="rf_induction_settime">Alarm time interval</string>	
+	<string name="rf_induction_settime_set">Alarm time interval setting</string>	
+	
+	<!--气感水感 -->
+	<string name="slave_rf_alarminfo_realarm">Safe</string>
+	<string name="slave_rf_alarminfo_alarm">Alarm</string>
+	
+	<string name="slave_rf_alarminfo_rebattery">Normal battery</string>
+	<string name="slave_rf_alarminfo_battery_low">Low battery</string>
+	     
+	<string name="slave_rf_alarminfo_restart">Disturbing</string>
+	<string name="slave_rf_alarminfo_pause">No-disturbing</string>
+	
+	<string name="hardware_version">RF Version</string>
+    <string name="software_version">Application Version</string>
+    
+    <string name="slave_rf_gas_smoke">&#160;&#160;Smoke</string>
+	<string name="slave_rf_gas_desp">&#160;&#160;Flammable Gas</string>
+	<string name="slave_rf_senser_desp_noti">Detected </string>
+	<string name="slave_rf_senser_desp_battery_low">Low battery</string>
+	<string name="slave_rf_senser_desp_noti_no">Undetected </string>
+	
+	<string name="slave_rf_recovery">Reset the alarm and data-delivery</string>
+	<string name="slave_rf_demo_desp">Alarm demo, not real alarm.</string>
+	<string name="slave_rf_pause">Pause alarm</string>
+	<string name="slave_rf_pause_desp">&#160;minutes before alarm again</string>
+    
+	<string name="slave_rf_water_alarm">Alarm</string>
+	<string name="slave_rf_water_detect">Water detected</string>
+	<string name="slave_rf_detect_nothing"> Not detected</string>
+	
+    <!-- 暖气阀 -->
+    <string name="slave_heating">HeaterValve</string>
+    
+    <string name="heating_control_title">Panel</string>
+    <string name="lime_protect">Lime protection</string>
+    <string name="lime_protect_desc">10:00~12:00 Every Sat,switch on auto for lime cleaning.</string>
+    <string name="frost_protect">Frost protection</string>
+    <string name="frost_protect_desc">Switch on auotmatically when Indoor temperature≤6℃,Swithc off auotmatically when temperature≥8℃ .</string>
+    <string name="open_window">Standby</string>
+    <string name="open_window_desc">Opening this function,when detecting room windows opened,automatic shut-off valve so as to achieve energy-saving purposes.</string>
+    <string name="heating_temp_min">OFF</string>
+    <string name="heating_temp_max">ON</string>
+    <string name="heating_dev_time">Dev Time</string>
+    <string name="heating_manual_mode">\nManual mode settings</string>
+    <string name="frost_lime_protect">\nAnti-frost state,default closed state open;when the temperature is below 5 ℃ automatically open the valve is heated to 5 ℃.\nAnti-lime protection, enabled by default under state protection valve.\n</string>
+    <string name="heating_temp_desc">\nFrom Mon to Sun, Preset set a heating temperature and economic temperature.</string>
+    <string name="heating_time_desc">\nMaximum 2 groups time setting which can not be repeated.</string>
+    <string name="heating_temp_set">Temp Set</string>
+    <string name="heating_hot_temp">&#160;&#160;hot</string>
+    <string name="heating_economic_temp">&#160;&#160;economic</string>
+    <string name="heating_group1">Group 1</string>
+    <string name="heating_group2">Group 2</string>
+    <string name="heating_dev_date">Date</string>
+    <string name="heating_time">Time</string>
+    <string name="heating_temp">&#160;&#160;temp</string>
+    <string name="heating_last_time">Remaining time quantum&#160;&#160;</string>
+    <string name="heating_timing">&#160;&#160;timer</string>
+    <string name="heating_end_time_tip">End time must be LATER than start time.</string>
+    <string name="heating_dialog_time_tip">Start at @,please set the end time.</string>
+    <string name="heating_auto_mode">Auto</string>
+    <string name="heating_manual">Manual</string>
+    
+	<!-- 二维码扫描添加相关 -->
+    <string name="add_scan_qr_code">Add by scanning QR code</string>
+	<string name="scan_invite_slide_txt">Invite</string>
+    <string name="scan_invite_dev_desc">iWukong</string>
+    <string name="scan_invite_count_def">Invited 0 family member</string>
+    <string name="scan_invite_count_formatter">Invited %d family member(s)</string>
+    <string name="scan_invite_tip">Let your family open iWUHome and scan the QR code above,\nthen enjoy controlling iWUHome with you.</string>
+    <string name="scan_invite_refresh">QR code invlid? Try another one</string>
+    <string name="scan_invite_list_name">Huawei H6-L01</string>
+    <string name="scan_invite_list_remark">Remark</string>
+    <string name="scan_invite_list_time">2015-9-29 10:09</string>
+    <string name="scan_invite_modify_remark">Modify Remark</string>
+    <string name="scan_invite_remark_empty_tip">Can not leave the remark empty</string>
+    <string name="scan_invite_remark_too_long">Remark is too long!</string>
+    <string name="scan_invite_del_invite">Delete Share</string>
+    <string name="scan_invite_del_invite_tip">This user will no longer control the device if you delete,\nare you sure to delete?</string>
+    <string name="scan_invite_title_scan_add">Add by Scanning QR Code</string>
+    <string name="scan_invite_title_invite">Invite Family</string>
+    <string name="scan_invite_title_invited">Invited</string>
+    <string name="scan_invite_scan_tip">Scan the shared QR code, can remote control</string>
+    <string name="scan_invite_disable_refresh_tip">You can try another after %d second(s)</string>
+    <string name="scan_invite_logining">Logining via QR code</string>
+    <string name="scan_invite_invalid_qr">Invalid QR code content</string>
+    <string name="scan_invite_login_fail">Login failed</string>
+    <string name="scan_invite_scan_success">Scan QR Code Success</string>
+    <string name="scan_invite_scan_success_tip">You received the invitation from your family, you can enjoy controling iWUHome with your family.</string>
+    <string name="scan_invite_scan_failed">Scan QR Code Failed</string>
+    <string name="scan_invite_scan_failed_tip">1.Please check your network status.\n2.The QR code is overdue.</string>
+    <string name="scan_invite_back_to_list">Back to device list</string>
+    <string name="scan_invite_already_exist">Already Exists in the device list</string>
+    
+    
+    <!-- APP 升级 -->
+    <string name="app_upgrade_finished">Finished upgrading</string>
+    <string name="app_upgrade_maintitle">Check the updating</string>
+    <string name="app_upgrade_title">New version is detected</string>
+    <string name="app_upgrade_no_new">New version is not found</string>
+    <string name="app_upgrade_find_new">New version is found</string>
+    <string name="app_upgrade_nowifi_msg">Wifi is not connected,whether to continue or not?</string>
+    
+    <!--     思博特 -->
+	<string name="slave_oem_sport">thermostat</string>
+    <string name="sport_close">Close</string>
+    
+    <string name="sport_standby">Standby</string>
+    
+    <string name="sport_settemp_default">set X℃</string>
+    <string name="sport_replce">X</string>
+    
+    <string name="sport_set_title">Parameter setting</string>
+    <string name="sport_points_title">Programming mode</string>
+    <string name="sport_points_time_title">Time point set</string>
+    
+    <string-array name="sport_set_titles">
+        <item>Fan Switch</item>
+        <item>Clock Setting</item>
+        <item>Temperature Compensation</item>
+        <item>Freezing Temperature</item>
+        <item>Return Temperature</item>
+        <item>Max Temperature Limit</item>
+        <item>Min Temperature Limit</item>
+    </string-array>
+    
+    <string-array name="sport_weeks">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
+    
+    <string-array name="sport_modes">
+        <item>Refrigeration</item>
+        <item>Heating</item>
+        <item>Ventilation</item>
+        <item>Energy Conservation</item>
+    </string-array>
+    
+    <string-array name="sport_point_time_type">
+        <item>Weekday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
+    
+    <string-array name="sport_point_time">
+        <item>Time One</item>
+        <item>Time Two</item>
+        <item>Time Three</item>
+        <item>Time Four</item>
+    </string-array>
+    
+    <!-- 中央空调 -->
+    <string name="slave_gwcd_thermost">air-conditioning</string>
+    
+    <string name="thermost_btn_water_hot">Floor Heat</string>
+    <string name="thermost_btn_fan_hot">Fan Heat</string>
+    <string name="thermost_btn_hot">Mixed Heat</string>
+    
+    <string name="thermost_panel_cold">Cold</string>
+    <string name="thermost_panel_water_hot">Floor\nHeat</string>
+    <string name="thermost_panel_fan_hot">Fan\nHeat</string>
+    <string name="thermost_panel_hot">Mixed\nHeat</string>
+    
+    <string name="rf_kate_dev">Kate Socket</string>	
+    
+    <!-- 门锁新界面 -->
+    <string name="lock_remote_ctrl_name">Remote control name</string>
+    <string name="lock_page_remote_ctrl_manage">Remote control management</string>
+    <string name="lock_remote_ctrl_edit_name">Change name</string>
+    <string name="lock_remote_ctrl_report_loss">Loss report</string>
+    <string name="lock_remote_ctrl_cancel_report_loss">Cancel the loss report</string>
+    <string name="lock_remote_ctrl_delete">Delete</string>
+    <string name="lock_alert_time_label">min</string>
+    <string name="lock_alert_time_setting_title">Door Unlocking Time Alarm</string>
+    <string name="lock_remote_ctrl_name_empty">Remote control name can not be empty.</string>
+    <string name="lock_remote_ctrl_name_too_long">Remote control name is too long, Please input another one.</string>
+    <string name="lock_report_for_loss_tip">Are you sure to report loss of %1$s?</string>
+    <string name="lock_cancel_report_for_loss_tip">Are you sure to cancel the loss report of %1$s?</string>
+    <string name="lock_del_ctrl_tip">Are you sure to delete %1$s?</string>
+    
+    <!-- i8-空调贴(任意贴)字符串 -->
+    <string name="rf_wukong_name">WuKong Paster</string>
+    <string name="study_tips">Please press the button to be setted\n Identify the staus of on/off,\nThe air-condition state shall prevail</string>
+    <string name="make_sure_signal">make sure signal</string>
+    <string name="cloud_match_fail_tips">1.Check your Network\n2.Sure to press button of remoter</string>
+    <string name="study_signal">Study Signal</string>
+    <string name="match_encode_type">Match Encoding Type</string>
+    <string name="conect_device">Device prepare into Study Status&#8230;</string>
+     <string name="download_code_lib">Downloading Enocding Lib&#8230;</string>
+    <string name="notify_dev">Updating The Device Encodeing Lib&#8230;</string>
+     <!-- 联动 -->
+    <string name="tab_linkage">Smart Linkage</string>
+    <string name="time_set">Time</string>
+    <string name="time_edit_set">Time setting</string>
+    <string name="light_set">Brightness</string>
+    <string name="dev_select">Devices selction</string>
+    <string name="modules_set">Linkage setting</string>
+    <string name="dev_all_select">All</string>
+    <string name="dev_all_unselect">Cancel</string>
+    <string name="linage_qrshare_desp">Share smart linkage to build an intelligent family, family member can be shared with others, but only the creator can delete family members.</string>
+    <string name="linage_qrshare_qrdesp">A invite you to join B</string>
+    <string name="linage_qrshare_qrtime">The aead time of the QR code </string>
+    <string name="linage_qrshare_qrchange">Change QR code</string>
+    <string name="linage_qrshare_title">Invite family to use</string>
+    <string name="linage_stagheader_add_title">No linked, please add</string>
+    <string name="linage_stagheader_add_desp">choose a linkage template</string>
+    <string name="linage_rule_exe">Operating</string>
+    <string name="linage_rule_exe_no">Stopped</string>
+    <string name="linage_qrshare_addto">Scan QR code</string>
+    <string name="linage_qrshare_scan_tip">Scan the shared QR code to join</string>
+    <string name="ple_select_if_dev">Select the trigger device</string>
+    <string name="ple_select_then_dev">Select the execution device</string>
+    <string name="module_des_if">If...</string>
+    <string name="module_des_then">Then...</string>
+    <string name="link_data_null">No linkage data</string>
+    <string name="module_des_split">,</string>
+    
+    <string name="linage_newlink_title">New linkage</string>
+    <string name="linage_des_if">If</string>
+    <string name="linage_des_if_eg">If someone at home</string>
+    <string name="linage_des_then">Then</string>
+    <string name="linage_des_then_eg">Disarm &amp; turn on lights</string>
+    
+    <string name="linkage_del_dev_dialog_desp">After deleting the XX device, all the related linkage will be affected.</string>
+    
+    <string name="menu_smart_home">My smart family</string>
+    <string name="menu_family_member">Family members</string>
+    <string name="linkage_menu_item_create_family">Create new family</string>
+    <string name="linkage_page_title_create_family">Create New Family</string>
+    <string name="linkage_page_title_edit_family_mem">Edit member</string>
+    <string name="linkage_edit_family_name">Edit Family Name</string>
+    <string name="family_role_new_member">New member</string>
+    <string name="family_role_father">Father</string>
+    <string name="family_role_mother">Mother</string>
+    <string name="family_role_elder_brother">Elder brother</string>
+    <string name="family_role_elder_sister">Elder sister</string>
+    <string name="family_role_littie_brother">Little brother</string>
+    <string name="family_role_little_sister">Little sister</string>
+    <string name="linkage_create_family_def_name">My family</string>
+    <string name="linkage_create_family_success">%1$s create success</string>
+    <string name="linkage_create_family_failed">%1$s create failed</string>
+    <string name="linkage_del_family_success">%1$s delete success</string>
+    <string name="linkage_del_family_failed">%1$s delete failed</string>
+    <string name="linkage_exit_family_failed">exit“%1$s”failed</string>
+    <string name="linkage_del_family_member">Delete family member</string>
+    <string name="linkage_del_family_member_success">Delete family member success</string>
+    <string name="linkage_del_family_member_failed">Delete family member failed</string>
+    <string name="linkage_edit_family_success">Edit %s success</string>
+    <string name="linkage_edit_family_failed">Edit %s failed</string>
+    <string name="linkage_edit_family_member_success">Edit family member success</string>
+    <string name="linkage_edit_family_member_failed">Edit family member failed</string>
+    <string name="linkage_exit_family_success_tip">You Exited “%1$s”</string>
+    <string name="linkage_del_family_creator_tip">You\'re the creator of %s, after deleting yourself the whole family and all the related devices will be deleted.</string>
+    <string name="linkage_del_family_member_tip">Delete the family members %1$s, the deletion information will be sent to %2$s.</string>
+    <string name="linkage_exit_family_tip">Quit %1$s, all the related family information will be deleted.</string>
+    <string name="linkage_family_name_empty_tip">Family name can not be empty.</string>
+    <string name="linkage_family_del_by_super_user">No family member information. Please try again later.</string>
+    <string name="linkage_family_mem_last_login_time">Last login time\n%1$s</string>
+    <string name="linkage_family_mem_join_time">Joining time\n%1$s</string>
+    <string name="linkage_family_def_name">My Family</string>
+    <string name="linkage_family_mem_me">(me)</string>
+    <string name="linkage_family_mem_no_info">No member information, please try again later.</string>
+    <string name="linkage_family_mem_name_empty">Member\'s name can not be empty.</string>
+    <string name="linkage_family_mem_exit_tip">%1$s exit “%2$s”</string>
+    <string name="linkage_family_mem_deleted_tip">Authorization of “%1$s” has been taken back by creator.</string>
+    
+    <string name="linkage_rule_last_exe_time">Recent\n%1$s</string>
+    
+    <string name="linage_home_adddev_fail">Add failure,the dev has joined other families.</string>
+    <string name="linage_qradd_success">Join the shared family success!</string>
+    <string name="linage_qradd_fail">Join the shared family failed!</string>
+    <string name="linage_qradd_already">The shared family already exists</string>
+    
+    <string name="linkage_rule_try">Try</string>
+    <string name="linkage_rule_lastexe_desp">Recent executed </string>
+    <string name="linkage_rule_exe">Ready to execute the linkage</string>
+    <string name="linkage_rule_exeing">Executing...</string>
+    <string name="linkage_rule_unenable">Not reach the trigger conditions</string>   
+    <string name="linkage_rule_exe_suceess">Execute the linkage success</string>
+    
+    <string name="input_button_name">you should input button name</string>
+    <string name="dev_err_trans_ir_fail">IR signal transport fail</string>
+    <string name="dev_err_waiting_dev_timeout">Waiting for device timeout</string>
+    <string name="retry_match">Re-Match</string>
+    <string name="match_fail_tips">Match Fail, Try Again?</string>
+    <string name="match_clouding">Cloud Match\.\.\.</string>
+    <string name="linage_color_title">Select color</string>
+    
+     <string name="linage_linkserver_err_time_out">Connection server timeout</string>
+     
+     <!--     海曼情景遥控器 -->
+    <string name="rf_hm_sceneremoter_name">Scene Remoter</string>
+    <!-- 海曼求救器 -->
+	<string name="sos_alarm_push">Notification</string>
+	<string name="sos_alarm_push_desp">Pushing message when sos is alarming</string>
+	<string name="sos_alarm_push_always">Push always</string>
+	<string name="sos_alarm_push_always_desp">Pushing alarm message until confirmed</string>
+	<string name="sos_alarm_push_once">Push once</string>
+	<string name="sos_alarm_push_once_desp">Push alarm message once</string>
+	<string name="sos_alarm_push_period">The same alarm\'s period</string>
+	
+	<string name="sos_alarm_push_once_short">Once</string>
+	<string name="sos_alarm_push_always_short">Always</string>
+	
+	<string name="sos_alarm_notification_desp">XX SOS alarm</string>
+     
+	<string name="info_add_device_no_slave">Add failed, please add terminal equipment through the gateway</string>
+	
+</resources>
+
+
+/*******************************  arrays.xml *******************************************/
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+     <string-array name="array_week">
+        <item>Sun</item>
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+    </string-array>
+    
+     <string-array name="week_array">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
+    
+    <string-array name="setting_items_label">
+        <item>风向模式选择</item>
+        <item>夏天/冬天/智能</item>
+        <item>制热热水温度设定值</item>
+        <item>回差温度设定值</item>
+        <item>制热除霜周期</item>
+        <item>制热除霜进入温度点</item>
+        <item>制热退出除霜温度条件</item>
+        <item>制热退出除霜时间条件</item>
+        <item>有/无温度补偿可选择</item>
+        <item>有无掉电保护</item>
+        <item>冷媒回收功能选择</item>
+        <item>水泵工作方式</item>
+        <item>背光灯延迟关闭时间</item>
+        <item>温度工况选择</item>
+    </string-array>
+    
+    <integer-array name="setting_items_range_min">
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+    </integer-array>
+    
+    <integer-array name="setting_items_range_max">
+        <item>100</item>
+        <item>100</item>
+        <item>100</item>
+        <item>100</item>
+        <item>100</item>
+        <item>100</item>
+        <item>100</item>
+        <item>100</item>
+        <item>100</item>
+        <item>100</item>
+        <item>100</item>
+        <item>100</item>
+        <item>100</item>
+        <item>100</item>
+    </integer-array>
+    
+    <string-array name="htchp_fan_modes">
+        <item>白天</item>
+        <item>黑夜</item>
+        <item>低风</item>
+        <item>高风</item>
+    </string-array>
+    
+    <string-array name="htchp_detail_group_labels">
+        <item>温度实测值</item>
+        <item>热泵工作详情</item>
+    </string-array>
+    
+    <string-array name="htchp_detail_group_temp_labels">
+        <item>进水温度</item>
+        <item>出水温度</item>
+        <item>环境温度</item>
+        <item>盘管温度</item>
+    </string-array>
+    
+    <string-array name="htchp_detail_group_work_labels">
+        <item>热水用量</item>
+        <item>热泵累计工作时间</item>
+        <item>节省电量</item>
+    </string-array>
+    
+    <string-array name="htchp_breakdown_labels">
+        <item>故障代码</item>
+        <item>故障名称</item>
+        <item>可能的故障原因</item>
+        <item>处理措施</item>
+    </string-array>
+    
+    <string-array name="htchp_load_states">
+        <item>压缩机</item>
+        <item>电加热</item>
+        <item>风机低</item>
+        <item>水泵</item>
+        <item>四通阀</item>
+        <item>风机高</item>
+        <item>循环阀</item>
+        <item>冲洗阀</item>
+        <item>直流水泵</item>
+    </string-array>
+    
+    <string-array name="htchp_breakdown_codes">
+        <item>E3</item>
+    </string-array>
+    
+    <string-array name="htchp_breakdown_names">
+        <item>水流或水压开关保护</item>
+    </string-array>
+
+    <string-array name="htchp_breakdown_reasons">
+        <item>水流或水压开关坏| 水流量不足| 循环进水管有空气| 循环泵损坏| 水箱缺水</item>
+    </string-array>
+    
+    
+    
+    <string-array name="htchp_breakdown_procedures">
+        <item>更换水流或水压开关| 清洗Y型过滤器，加大水流量| 把循环进水管内空气排出| 检查循环泵及电容，并进行修复| 确保水箱满水，保证进水压力≥0.15Mpa</item>
+    </string-array>
+    
+    <string-array name="htchp_work_modes">
+        <item>夏天</item>
+        <item>冬天</item>
+        <item>智能</item>
+        <item>经济</item>
+        <item>标准</item>
+        <item>高温</item>
+        <item>定时</item>
+    </string-array>
+    
+    <string-array name="htchp_dev_types">
+        <item>水箱</item>
+        <item>直热</item>
+    </string-array>
+    
+    <string-array name="htchp_run_states">
+        <item>压缩机</item>
+        <item>电加热</item>
+        <item>风机</item>
+        <item>水泵</item>
+        <item>四通阀</item>
+        <item>风机高</item>
+        <item>循环阀</item>
+        <item>冲洗阀</item>
+        <item>直流水泵</item>
+    </string-array>
+    
+    <string-array name="wk_eh_learn_steps_title">
+        <item>step1 Prepare the environment</item>
+        <item>step2 Learning</item>
+    </string-array>
+    
+    <string-array name="wk_eh_learn_steps_content">
+        <item >1.Prepare remote panel, arm it at WuKong\n\n2.Click \"start\"</item>
+        <item>1.Make sure your EA can be controled when panel button is pressed</item>
+    </string-array>
+    
+    <string-array name="wk_eh_fix_keys">
+        <item>Exit</item>
+        <item>Menu</item>
+        <item>Home</item>
+        <item>Power</item>
+        <item>Ok</item>
+        <item>Left</item>
+        <item>Up</item>
+        <item>Right</item>
+        <item>Down</item>
+        <item>Previous page</item>
+        <item>Next page</item>
+        <item>Vol+</item>
+        <item>Vol-</item>
+        <item>Ch+</item>
+        <item>Ch-</item>
+        <item>Mute</item>
+        <item>TV/AV</item>
+    </string-array>
+    
+    <string-array name="air_plug_rc_tv_btns">
+        <item>Power</item>
+        <item>Nicam</item>
+        <item>Audio</item>
+        <item>SYS</item>
+        <item>Sleep</item>
+        <item>NO.1</item>
+        <item>NO.2</item>
+        <item>NO.3</item>
+        <item>NO.4</item>
+        <item>NO.5</item>
+        <item>NO.6</item>
+        <item>NO.7</item>
+        <item>NO.8</item>
+        <item>NO.9</item>
+        <item>--/-</item>
+        <item>NO.0</item>
+        <item>ShowSwap</item>
+        <item>Swap</item>
+        <item>PIP</item>
+        <item>Normal</item>
+        <item>SCA</item>
+        <item>Image</item>
+        <item>CH-</item>
+        <item>CH+</item>
+        <item>Voice</item>
+        <item>Up</item>
+        <item>Down</item>
+        <item>Left</item>
+        <item>Right</item>
+        <item>Menu</item>
+        <item>SCT</item>
+        <item>TV/AV</item>
+        <item>OK</item>
+        <item>VOL+</item>
+        <item>VOL-</item>
+        <item>CH+</item>
+        <item>CH-</item>
+        <item>Quiet</item>
+    </string-array>
+    
+    <string-array name="air_plug_rc_stb_btns">
+    	<item>NO.1</item>
+    	<item>NO.2</item>
+    	<item>NO.3</item>
+    	<item>NO.4</item>
+    	<item>NO.5</item>
+    	<item>NO.6</item>
+    	<item>NO.7</item>
+    	<item>NO.8</item>
+    	<item>NO.9</item>
+    	<item>NO.0</item> 
+    	<item>List</item>
+    	<item>Last</item>
+    	<item>Standby</item>
+    	<item>CH+</item>
+    	<item>CH-</item>
+    	<item>VOL+</item>
+    	<item>VOL-</item>
+    	<item>Up</item>
+    	<item>Down</item>
+    	<item>Left</item>
+    	<item>Right</item>
+    	<item>OK</item>
+    	<item>Exit</item>
+    	<item>Menu</item>
+    	<item>Red</item>
+    	<item>Green</item>
+    	<item>Yellow</item>
+    	<item>Blue</item>
+    	<item>Back</item>
+    	<item>LastPage</item>
+    	<item>NextPage</item>
+    	<item>Voice</item>
+    	<item>Info</item>
+    	<item>Quiet</item>
+    	<item>Love</item>
+    	<item>Guide</item>
+    	<item>TV</item>
+    	<item>BD</item>
+    	<item>MSG</item>
+    	<item>Stock</item>
+    	<item>PickProgram</item>
+    	<item>Post</item>
+    	<item>Game</item>
+    	<item>List</item>
+    	<item>LastP</item>
+    	<item>Set</item>
+    	<item>Home</item>
+    	<item>Record●</item>
+    	<item>Stop■</item>
+    	<item>A</item>
+    	<item>B</item>
+    	<item>C</item>
+    	<item>D</item>
+    	<item>E</item>
+    	<item>F</item>
+    	<item>FB</item>
+    	<item>FF</item>
+    	<item>Start/Pause</item> 
+    </string-array>
+    
+    <string-array name="lede_light_scence">
+        <item>Shinning Color</item>
+        <item>Romantic</item>
+        <item>Wake Up</item>
+        <item>Sleep</item>
+        <item>Party</item>
+        <item>Reading</item>
+        <item>Exercise</item>
+        <item>Thinking</item>
+        <item>Dining</item>
+    </string-array>
+    
+    <string-array name="air_plug_rf_light_scence">
+         <item>Auto</item>
+         <item>Cool</item>
+         <item>Thinking</item>
+         <item>Meeting</item>
+         <item>Sonic</item>
+         <item>Flow</item>
+         <item>Neon</item>
+         <item>Bright</item>
+         <item>MoonLight</item>
+         <item>Reading</item>
+         <item>Coldness</item>
+         <item>Warmness</item>
+         <item>Charm</item>
+    </string-array> 
+    
+     <string-array name="warn_rings">
+         <item>System Default</item>
+        <item>1331</item>
+        <item>BB-Phone</item>
+        <item>Dinlinlin</item>
+        <item>Ah-Oh</item>
+        <item>Alarm</item>
+        <item>Car Alarm</item>
+        <item>Bicycle Ring</item>
+        <item>Electronic Alarm</item>
+        <item>Bark</item>
+        <item>Warning</item>
+        <item>Alarm Clock</item>
+        <item>Oh-No</item>
+        <item>Submarine Alarm</item>
+        <item>Submarine em-Alarm </item>
+     </string-array>
+</resources>
+
+
+/*******************************  eplug_ql_strings.xml *******************************************/
+
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ql_devname">晴乐插座</string>
+    <string name="ql_tab_dev">设备详情</string>
+    <string name="ql_tab_set">提醒设置</string>
+    <string name="ql_tab_time">定时器</string>
+    
+    <string name="ql_set_freez">防冻保护</string>
+    <string name="ql_set_safe">安全模式</string>
+    <string name="ql_set_alarm">报警提醒</string>
+    
+    <string name="ql_set_freez_desp">开启后，根据设置温度，自动通电、断电</string>
+    <string name="ql_set_safe_desp">开启后，当设备离线时可自动断电，防止意外发生</string>
+    <string name="ql_set_alarm_desp">开启后，室温高于设定温度时，设备推送报警给手机</string>
+    
+    <string name="ql_set_alarm_morethan">高于</string>
+    <string name="ql_set_alarm_push_title">报警历史记录</string>
+    
+    <string name="ql_about_info">公司简介：北京华阳舒适系统集成有限公司是一家专门从事家庭能源管理的智能家居创新产品研发和销售的互联网创业公司。我们致力于让您的家居更安全、更舒适、更节能。让您以最经济的方式享受更现代化的科技生活。
+\n\n我们的团队\n
+公司有强大的产品创新研发团队，包括产品研究、硬件设计、嵌入式开发、APP开发、物联网云平台等开发小组，分别由经验丰富的行业专家领衔。我们的目标是：智能生活触手可得！</string>
+    <string name="ql_about_name">产品名称：晴乐智能WI-FI能源管理插座</string>
+    <string name="ql_about_model">产品型号：QL-C101</string>
+    <string name="ql_about_company">公司全名：北京华阳舒适系统集成有限公司</string>
+    <string name="ql_about_adress">公司地址：北京市昌平区北七家镇高新技术工业园定泗路华阳</string>
+    <string name="ql_about_mail">客服邮箱：rcs@lucky34.com.cn</string>
+
+
+</resources>
+
+
+
+

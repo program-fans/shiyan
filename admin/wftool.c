@@ -22,6 +22,7 @@ void wftool_usage()
 		"wftool udp [send][recv][listen] [--ip] [--hport] [--dport] [--msg] [--pkt] [--resp-pkt] \n"
 		"wftool gethost [url] [url] [...] \n"
 		"wftool asc [-d] [-x] [-X] [-c] [-s] [--all] [--stage] \n"
+		"wftool wol [-i ip-address] [-p port] mac \n"
 		);
 }
 
@@ -602,6 +603,53 @@ int cmd_asc(int argc, char **argv)
 	return 0;
 }
 
+int cmd_wol(int argc, char **argv)
+{
+	int i=1, ret=0;
+	int port = 9;
+	char *ip = NULL, *pmac = NULL, broad[16]="255.255.255.255";
+	unsigned char mac[6] = {0};
+	unsigned char data[102] = {0};
+
+	while(argv[++i])
+	{
+		if( strcmp(argv[i], "-i") == 0 && argv[++i]){
+			ip = argv[i];
+			if(!ip_check(ip)){
+				printf("invalid ip: %s \n", argv[i]);
+				return -1;
+			}
+		}
+		else if( strcmp(argv[i], "-p") == 0 && argv[++i]){
+			port = atoi(argv[i]);
+			if(port <= 0 || port >= 65535){
+				printf("invalid port: %s \n", argv[i]);
+				return -1;
+			}
+		}
+		else{
+			pmac = argv[i];
+			if( str2mac(argv[i], mac) < 0){
+				printf("invalid mac: %s \n", argv[i]);
+				return -1;
+			}
+		}
+	}
+
+	memset(data, 0xff, 6);
+	for(i=6; i<102; i+=6){
+		memcpy(&data[i], mac, 6);
+	}
+
+	if(NULL == ip)
+		ip = &broad[0];
+	ret = udp_send_ip(ip, 0, port, data, 102);
+	printf("sending magic packet to %s:%d with %s %s%s \n", ip, port, pmac, ret<0 ? "[failed: " : "", ret<0 ? wf_socket_error(NULL) : "" );
+
+	return 0;
+}
+
+
 
 
 int main(int argc, char **argv)
@@ -622,6 +670,8 @@ int main(int argc, char **argv)
 			ret = cmd_gethost(argc, argv);
 		else if( strcmp(argv[1], "asc") == 0 )
 			ret = cmd_asc(argc, argv);
+		else if( strcmp(argv[1], "wol") == 0 )
+			ret = cmd_wol(argc, argv);
 		else
 			wftool_usage();
 	}

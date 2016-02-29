@@ -2,8 +2,8 @@
 #define WF_CHAR_H_
 
 
-
-
+extern char *str_skip_blank(char *str);
+extern int str_replace(char *str, char *substr, char *repace, char *out);
 
 extern int str_asc_num(char *str, int size);
 

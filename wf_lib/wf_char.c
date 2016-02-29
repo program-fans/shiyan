@@ -4,6 +4,64 @@
 
 #include "wf_char.h"
 
+char *str_skip_blank(char *str)
+{
+	char *s = str;
+	if(s == NULL)
+		return NULL;
+	while(*s != '\0')
+	{
+		if( *s == ' ' || *s == '\t' )
+			++s;
+		else
+			return s;
+	}
+}
+
+int str_replace(char *str, char *substr, char *repace, char *out)
+{
+	char *cur = str, *find = NULL, *pout = out;
+	int num = 0, sublen, replen;
+	unsigned int len;
+	
+	if(!substr || !repace)
+		goto CPY;
+	
+	sublen = strlen(substr);
+	replen = strlen(repace);
+	if(sublen <= 0 || replen <= 0)
+		goto CPY;
+	
+	while(*cur != '\0')
+	{
+		find = strstr(cur, substr);
+		if(find){
+			++num;
+			len = (unsigned int)(find-cur);
+			memcpy(pout, cur, len);
+			pout += len;
+			memcpy(pout, repace, replen);
+			pout += replen;
+			*pout = '\0';
+			cur = find + sublen;
+		}
+		else{
+			strcpy(pout, cur);
+			break;
+		}
+	}
+
+	return num;
+
+CPY:
+	if(str && out){
+		strcpy(out, str);
+		return 0;
+	}
+	else
+		return -1;
+}
+
 int str_asc_num(char *str, int size)
 {
 	int i=0, n=0;

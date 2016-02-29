@@ -14,16 +14,58 @@
 
 #include "libwf.h"
 
+void udp_usage()
+{
+	fprintf(stderr, "wftool udp usage: \n"
+		"wftool udp [send][recv][listen] [--ip] [--hport] [--dport] [--msg] [--pkt] [--resp-pkt] \n"
+		);
+}
+void gethost_usage()
+{
+	fprintf(stderr, "wftool gethost usage: \n"
+		"wftool gethost [url] [url] [...] \n"
+		);
+}
+void asc_usage()
+{
+	fprintf(stderr, "wftool asc usage: \n"
+		"wftool asc [-d] [-x] [-X] [-c] [-s] [--all] [--stage] \n"
+		);
+}
+void wol_usage()
+{
+	fprintf(stderr, "wftool wol usage: \n"
+		"wftool wol [-i ip-address] [-p port] mac \n"
+		);
+}
+
 void wftool_usage()
 {
 	fprintf(stderr, "wftool usage: \n"
-		"wftool ntorn [oldfile] [newfile] \n"
-		"wftool rnton [oldfile] [newfile] \n"
-		"wftool udp [send][recv][listen] [--ip] [--hport] [--dport] [--msg] [--pkt] [--resp-pkt] \n"
-		"wftool gethost [url] [url] [...] \n"
-		"wftool asc [-d] [-x] [-X] [-c] [-s] [--all] [--stage] \n"
-		"wftool wol [-i ip-address] [-p port] mac \n"
+		"\twftool [cmd] [option] [...] \n"
+		"cmd list: \n"
+		"  help \n"
+		"  udp \n"
+		"  gethost \n"
+		"  asc \n"
+		"  wol \n"
+		"note:\"wftool help <cmd>\" for help on a specific cmd \n"
 		);
+}
+void print_usage(char *cmd)
+{
+	if(cmd == NULL)
+		wftool_usage();
+	else if( strcmp(cmd, "udp") == 0 )
+		udp_usage();
+	else if( strcmp(cmd, "gethost") == 0 )
+		gethost_usage();
+	else if( strcmp(cmd, "asc") == 0 )
+		asc_usage();
+	else if( strcmp(cmd, "wol") == 0 )
+		wol_usage();
+	else
+		wftool_usage();
 }
 
 #define dprintf(fmt, ...)	do { \
@@ -340,7 +382,7 @@ struct gethost_stat
 	pthread_mutex_t lock; 
 };
 struct gethost_stat cmd_gethost_stat;
-int cmd_gethost_job(void *arg)
+int gethost_job(void *arg)
 {
 	int ret=0;
 	struct hostent *hptr;
@@ -391,7 +433,7 @@ JOG_END:
 	return ret;
 }
 
-void cmd_gethost_result()
+void gethost_result()
 {
 	cmd_gethost_stat.end = wf_getsys_uptime(NULL);
 	
@@ -406,10 +448,10 @@ void cmd_gethost_result()
 		printf("[stat] not finish \n");
 }
 
-void cmd_gethost_exit()
+void gethost_exit()
 {
 	threadpool_destroy(thread_pool);
-	cmd_gethost_result();
+	gethost_result();
 	exit(0);
 }
 
@@ -429,7 +471,7 @@ int cmd_gethost(int argc, char **argv)
 		return -2;
 	}
 
-	wf_registe_exit_signal(cmd_gethost_exit);
+	wf_registe_exit_signal(gethost_exit);
 	cmd_gethost_stat.start = wf_getsys_uptime(NULL);
 	while(1)
 	{
@@ -461,7 +503,7 @@ int cmd_gethost(int argc, char **argv)
 		}
 		
 		
-		if( threadpool_add_job(thread_pool, cmd_gethost_job, pjob, NULL) < 0)
+		if( threadpool_add_job(thread_pool, gethost_job, pjob, NULL) < 0)
 			goto fail_done;
 		else
 			continue;
@@ -476,7 +518,7 @@ int cmd_gethost(int argc, char **argv)
 
 	while(cmd_gethost_stat.valid_cnt != cmd_gethost_stat.ok_cnt + cmd_gethost_stat.fail_cnt)	sleep(1);
 	threadpool_destroy(thread_pool);
-	cmd_gethost_result();
+	gethost_result();
 	
 	return 0;
 }
@@ -660,6 +702,8 @@ int main(int argc, char **argv)
 	{
 		if( strcmp(argv[1], "-h") == 0 )
 			wftool_usage();
+		else if( strcmp(argv[1], "help") == 0 )
+			print_usage(argv[2]);
 		else if( strcmp(argv[1], "ntorn") == 0 )
 			ret = cmd_ntorn(argc, argv);
 		else if( strcmp(argv[1], "rnton") == 0 )

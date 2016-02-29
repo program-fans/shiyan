@@ -78,10 +78,10 @@ void ipc_test()
 	ret = ipc_client_call("/home/wolf_ipc", 0, 0);
 	WF_PVAR_INT(ret);
 }
-void char_test()
+void char_test(int argc, char **argv)
 {
-#define SWITCH_NUM  1
-
+#define SWITCH_NUM  2
+	int i=1;
 #if SWITCH_NUM == 0
 	printf("%s \n", time2str_pformat(time(NULL), NULL, "<now: %Y/%M/%D  ## %h:%m:%s >", 64));
 	printf("%s \n", timenow2str(NULL));
@@ -90,6 +90,15 @@ void char_test()
 	int len = strlen(buf);
 
 	printf("len: %d    asc: %d  \n", len, str_asc_num(buf, len));
+#elif SWITCH_NUM == 2
+	char out[2048]={'\0'};
+	char *buf = argv[++i], *sub = argv[++i], *rep = argv[++i];
+	int num;
+
+	num = str_replace(buf, sub, rep, out);
+	printf("in: %s \n", buf);
+	printf("out: %s \n", out);
+	printf("num: %d \n", num);
 #endif
 }
 void test()
@@ -331,7 +340,7 @@ int main(int argc, char **argv)
 	if(argc >= 2)
 	{
 		if( strcmp(argv[1], "char") == 0 )
-			char_test();
+			char_test(argc, argv);
 		else if( strcmp(argv[1], "ipc") == 0 )
 			ipc_test();
 		else if( strcmp(argv[1], "slist") == 0 )

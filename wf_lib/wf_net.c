@@ -213,8 +213,9 @@ int ip_check(char *ip)
 
 
 
-int wf_udp_socket(int port)
+int wf_udp_socket(int port, int is_broad, char *if_name)
 {
+	int optval = 1;
 	int sock = -1, ret = -1;
 	struct sockaddr_in addr;
 
@@ -223,6 +224,18 @@ int wf_udp_socket(int port)
 	sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if(sock < 0)
 		return sock;
+
+	if(is_broad){
+		ret = setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &optval, sizeof (optval));
+		if(ret)
+			goto ERR;
+	}
+	if(if_name){
+		ret = setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, if_name, strlen(if_name) + 1);
+		if(ret < 0)
+			goto ERR;
+	}
+	
 	if(port <= 0)
 		return sock;
 
@@ -233,6 +246,7 @@ int wf_udp_socket(int port)
 	ret = bind(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
 	if(ret < 0)
 	{
+ERR:
 		close(sock);
 		return ret;
 	}
@@ -472,7 +486,7 @@ int udp_send(void *to_addr, int hport, unsigned char *buf, int len)
 	if( !to_addr || hport < 0 || !buf || len <= 0 )
 		return -1;
 
-	sock = wf_udp_socket(hport);
+	sock = wf_udp_socket(hport, 0, NULL);
 	if(sock < 0)
 		return sock;
 
@@ -488,7 +502,7 @@ int udp_send_ip(char *ip, int hport, int dport, unsigned char *buf, int len)
 	if( !ip || hport < 0 || dport <=0 || dport >= 65535 || !buf || len <= 0 )
 		return -1;
 
-	sock = wf_udp_socket(hport);
+	sock = wf_udp_socket(hport, 0, NULL);
 	if(sock < 0)
 		return sock;
 
@@ -504,7 +518,7 @@ int udp_recv(int hport, unsigned char *buf, int size, void *addr_from)
 	if( hport < 0 || !buf || size <= 0 )
 		return -1;
 
-	sock = wf_udp_socket(hport);
+	sock = wf_udp_socket(hport, 0, NULL);
 	if(sock < 0)
 		return sock;
 
@@ -520,7 +534,7 @@ int udp_recv_ip(int hport, unsigned char *buf, int size, char *ip, int *sport)
 	if( hport < 0 || !buf || size <= 0 )
 		return -1;
 
-	sock = wf_udp_socket(hport);
+	sock = wf_udp_socket(hport, 0, NULL);
 	if(sock < 0)
 		return sock;
 

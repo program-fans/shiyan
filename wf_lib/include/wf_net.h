@@ -32,7 +32,7 @@ extern int ip_check(char *ip);
 // ------------------------  wf socket --------------------------------------
 #define wf_socket_error(errcode)	wf_std_error(errcode)
 
-extern int wf_udp_socket(int port);
+extern int wf_udp_socket(int port, int is_broad, char *if_name);
 
 extern int wf_tcp_socket(int port);
 

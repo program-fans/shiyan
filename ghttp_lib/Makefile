@@ -3,15 +3,18 @@ MAKELIB=ar
 CC=cc
 RM=rm
 
-TARGET=libghttp.a
-OBJ = ghttp.o http_base64.o http_date.o http_hdrs.o http_req.o http_resp.o \
-	http_trans.o http_uri.o
+src=$(wildcard *.c)
+obj=$(src:.c=.o)
+TARGET=libghttp
 
-all: $(TARGET)
+all: $(TARGET).a $(TARGET).so
 
-$(TARGET): $(OBJ)
-	$(MAKELIB) -rv $(TARGET) $(OBJ)
-	cp -f $(TARGET) include/
+$(TARGET).a: $(obj)
+	$(MAKELIB) -rv $@ $^
+	cp -f $(TARGET).a include/
+$(TARGET).so: $(obj)
+	$(CC) -o $@ -fPIC -shared $^
+#	cp -f $(TARGET).so include/
 %.o: %.c
 	$(CC) -c -Iinclude/ $< -o $@
 
@@ -20,5 +23,5 @@ pack:
 	zip -qr $(TARGET).zip ./
 
 clean:
-	$(RM) -f *.o $(TARGET)
+	$(RM) -f *.o $(TARGET).a $(TARGET).so
 

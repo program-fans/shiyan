@@ -1,0 +1,8 @@
+
+#cur_terminal_log>>/etc/profile
+export HISTORY_FILE=/tmp/cur_terminal.log
+if [ ! -f ${HISTORY_FILE} ]; then
+	touch ${HISTORY_FILE}
+fi
+export PROMPT_COMMAND='{ date "+%y-%m-%d %T ##### $(who am i) ## $LOGNAME@$(pwd) ## $(history 1 | { read x cmd; echo "$cmd"; })"; } >> $HISTORY_FILE'
+#cur_terminal_log>>/etc/profile

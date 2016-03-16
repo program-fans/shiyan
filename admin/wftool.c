@@ -35,7 +35,7 @@ void asc_usage()
 void wol_usage()
 {
 	fprintf(stderr, "wftool wol usage: \n"
-		"wftool wol [-i ip-address] [-p port] mac \n"
+		"wftool wol [-i ip-address] [-p port] [-o interface-dev-name] [--passwd xx-xx-xx-xx-xx-xx] mac \n"
 		);
 }
 
@@ -329,7 +329,7 @@ void cmd_udp(int argc, char **argv)
 					return;
 			}
 			
-			sock = wf_udp_socket(hport);
+			sock = wf_udp_socket(hport, 0, NULL);
 			if(sock < 0){
 				printf("error: %s \n", wf_socket_error(NULL));
 				return;
@@ -649,9 +649,11 @@ int cmd_wol(int argc, char **argv)
 {
 	int i=1, ret=0;
 	int port = 9;
-	char *ip = NULL, *pmac = NULL, broad[16]="255.255.255.255";
-	unsigned char mac[6] = {0};
-	unsigned char data[102] = {0};
+	char *ip = NULL, *pmac = NULL, *if_name = NULL;
+	char broad[16] = "255.255.255.255";
+	unsigned char mac[6] = {0}, pwd[6] = {0};
+	unsigned char data[108] = {0};
+	int sock, len=102, have_pwd = 0;
 
 	while(argv[++i])
 	{
@@ -669,6 +671,15 @@ int cmd_wol(int argc, char **argv)
 				return -1;
 			}
 		}
+		else if( strcmp(argv[i], "-o") == 0 && argv[++i]){
+			if_name = argv[i];
+		}
+		else if( strcmp(argv[i], "--passwd") == 0 && argv[++i]){
+			if( str2mac(argv[i], pwd) < 0){
+				printf("invalid pwd: %s \n", argv[i]);
+				return -1;
+			}
+		}
 		else{
 			pmac = argv[i];
 			if( str2mac(argv[i], mac) < 0){
@@ -682,10 +693,17 @@ int cmd_wol(int argc, char **argv)
 	for(i=6; i<102; i+=6){
 		memcpy(&data[i], mac, 6);
 	}
+	if(have_pwd){
+		memcpy(&data[102], pwd, 6);
+		len = 108;
+	}
 
 	if(NULL == ip)
 		ip = &broad[0];
-	ret = udp_send_ip(ip, 0, port, data, 102);
+
+	ret = sock = wf_udp_socket(0, 1, if_name);
+	if(sock > 0)
+		ret = wf_sendto_ip(sock, data, len, 0, ip, port);
 	printf("sending magic packet to %s:%d with %s %s%s \n", ip, port, pmac, ret<0 ? "[failed: " : "", ret<0 ? wf_socket_error(NULL) : "" );
 
 	return 0;

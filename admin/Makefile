@@ -18,10 +18,8 @@ wftool:wftool.c
 test:test.c
 	$(CC) -g test.c -I$(INCLUDE) -I$(GINCLUDE) -L$(LIB) -L$(GLIB) -o test
 
-pack:
-	rm -f *.o
-	#zip -qr wolf.zip ./
-	echo nothing
+pack: clean
+	#nothing
 
 clean:
 	rm -f *.o

@@ -5,9 +5,10 @@ RM=rm
 
 src=$(wildcard *.c)
 obj=$(src:.c=.o)
-TARGET=libghttp
+TARGET=libmxml
 
 all: $(TARGET).a $(TARGET).so
+	make -C test/
 
 $(TARGET).a: $(obj)
 	$(MAKELIB) -rv $@ $^
@@ -23,4 +24,5 @@ pack: clean
 
 clean:
 	$(RM) -f *.o $(TARGET).a $(TARGET).so
+	make -C test/ clean
 

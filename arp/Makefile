@@ -11,10 +11,8 @@ arp_cheat:arp_cheat.c
 arp_turn:arp_turn.c
 	$(CC) arp_turn.c -I$(INCLUDE) -L$(LIB) -o arp_turn
 
-pack:
-	rm -f *.o
-	#zip -qr arp.zip ./
-	echo nothing
+pack: clean
+	#nothing
 
 clean:
 	rm -f *.o

@@ -22,9 +22,7 @@ $(TARGET).so: $(OBJ)
 %.o: %.c
 	$(CC) -c -Iinclude/ $< -o $@
 
-pack:
-	$(RM) -f *.o
-	#$(RM) -r testlog
+pack: clean
 	zip -qr $(TARGET).zip ./
 
 clean:

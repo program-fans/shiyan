@@ -15,8 +15,7 @@ $(TARGET):$(OBJS)
 %.o:%.c
 	$(CC) -c -I$(INCLUDE) $< -o $@
 
-pack:
-	rm -f *.o
+pack: clean
 	rm -f log/*
 	zip -qr $(TARGET).zip ./
 

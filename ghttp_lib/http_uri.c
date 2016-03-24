@@ -113,7 +113,7 @@ int http_uri_parse(char *a_string, http_uri *a_uri)
 			a_uri->port = DEFAULT_PORT;
 		
 		if(source_s != NULL)
-			a_uri->resource = strdup(++source_s);
+			a_uri->resource = strdup(source_s);
 		else
 			a_uri->resource = strdup("/");
 		check_null(a_uri->resource);

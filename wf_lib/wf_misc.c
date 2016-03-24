@@ -8,6 +8,8 @@
 #include <errno.h>
 #include <sys/ipc.h>
 #include <dirent.h>
+#include <limits.h>
+#include <sys/param.h>
 
 #include "wf_misc.h"
 
@@ -76,6 +78,31 @@ int test_jmp()
 #endif
 
 
+
+void close_all_fd()
+{
+#ifdef OPEN_MAX
+	long open_max = OPEN_MAX;
+#else
+	long open_max = 0;
+#endif
+	int i=0, j=0;
+
+	if(open_max == 0)
+	{
+	#ifdef NOFILE		// <sys/param.h>
+		open_max = NOFILE;
+	#else
+		errno = 0;
+		open_max = sysconf(_SC_OPEN_MAX);
+		if(open_max < 0 || open_max == LONG_MAX)
+			open_max = 256;
+	#endif
+	}
+	j = (int)open_max;
+	for(i=0; i<open_max; i++)
+		close(i);
+}
 
 int close_fd_self()
 {

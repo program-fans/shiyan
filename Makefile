@@ -1,10 +1,11 @@
+app_list += modules
 app_list = wf_lib
 app_list += ghttp_lib
 app_list += mxml_lib
 app_list += sock_raw
 app_list += admin
 app_list += arp
-app_list += modules
+app_list += api_store
 
 all:
 	for d in $(app_list); do \

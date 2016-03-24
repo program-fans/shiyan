@@ -484,7 +484,10 @@ ghttp_get_status(ghttp_request *a_request)
 
 void ghttp_flush_response_buffer(ghttp_request *a_request)
 {
+	//ghttpDebug("a_request->proc: %d \n", a_request->proc);
 	if( a_request->proc == ghttp_proc_response || a_request->proc == ghttp_proc_none)
+		http_resp_flush(a_request->resp, a_request->conn);
+	else if(a_request->proc == ghttp_proc_done && a_request->conn->io_buf_alloc)
 		http_resp_flush(a_request->resp, a_request->conn);
 }
 
@@ -591,7 +594,8 @@ char *ghttp_get_body(ghttp_request *a_request)
 	if (!a_request)
 		return NULL;
 #if 1
-	if( a_request->proc == ghttp_proc_none || a_request->proc == ghttp_proc_response )
+	if( a_request->proc == ghttp_proc_none || a_request->proc == ghttp_proc_response ||
+		a_request->proc == ghttp_proc_done )
 		return a_request->resp->body;
 #else	
   if (a_request->proc == ghttp_proc_none)
@@ -619,7 +623,8 @@ int ghttp_get_body_len(ghttp_request *a_request)
 	if (!a_request)
 		return 0;
 #if 1
-	if( a_request->proc == ghttp_proc_none || a_request->proc == ghttp_proc_response )
+	if( a_request->proc == ghttp_proc_none || a_request->proc == ghttp_proc_response || 
+		a_request->proc == ghttp_proc_done )
 		return a_request->resp->body_len;
 #else	
 	if (a_request->proc == ghttp_proc_none)

@@ -741,6 +741,7 @@ static void flush_response_body(http_resp *a_resp, http_trans_conn *a_conn)
 
 void http_resp_flush(http_resp *a_resp, http_trans_conn *a_conn)
 {
+	//ghttpDebug("header_state: %d, io_buf_flush_en: %d \n", a_resp->header_state, a_conn->io_buf_flush_en);
 	if(a_resp->header_state == http_resp_header_end && a_conn->io_buf_flush_en)
 		flush_response_body(a_resp, a_conn);
 }

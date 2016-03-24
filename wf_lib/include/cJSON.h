@@ -69,8 +69,6 @@ extern void cJSON_InitHooks(cJSON_Hooks* hooks);
 
 /* Supply a block of JSON, and this returns a cJSON object you can interrogate. Call cJSON_Delete when finished. */
 extern cJSON *cJSON_Parse(const char *value);
-extern cJSON *cJSON_Parse_fromFile(char *file);
-
 /* Render a cJSON entity to text for transfer/storage. Free the char* when finished. */
 extern char  *cJSON_Print(cJSON *item);
 /* Render a cJSON entity to text for transfer/storage without any formatting. Free the char* when finished. */
@@ -127,8 +125,12 @@ extern void cJSON_ReplaceItemInObject(cJSON *object,const char *string,cJSON *ne
 #define cJSON_AddNumberToObject(object,name,n)	cJSON_AddItemToObject(object, name, cJSON_CreateNumber(n))
 #define cJSON_AddStringToObject(object,name,s)	cJSON_AddItemToObject(object, name, cJSON_CreateString(s))
 
+extern cJSON *cJSON_Parse_fromFile(char *file);
 #define json_load_file(filename)	cJSON_Parse_fromFile(filename)
+extern cJSON *cJSON_Parse_fromFp(FILE *fp);
 extern int json_dump_file(cJSON *json, char *filename, int fmt);
+extern char *cJSON_GetStringValue(cJSON *object, const char *key);
+extern int cJSON_GetDigitValue(cJSON *object, const char *key, int *value);
 
 #ifdef __cplusplus
 }

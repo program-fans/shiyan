@@ -258,43 +258,6 @@ cJSON *cJSON_Parse(const char *value)
 	if (!parse_value(c,skip(value))) {cJSON_Delete(c);return 0;}
 	return c;
 }
-cJSON *cJSON_Parse_fromFile(char *file)
-{
-	FILE *fp=NULL;
-	long size;
-	char *buf = NULL;
-	cJSON *root = NULL;
-	size_t r_read;
-
-	if(file == NULL)	return NULL;
-	fp = fopen(file,"r");
-	if(fp == NULL)		return NULL;
-	
-	fseek(fp, 0, SEEK_END);
-	size = ftell(fp);
-
-	buf = (char *)malloc(size+1);
-	if(buf == NULL)	goto ERR_END;
-	memset(buf, 0, size+1);
-
-	fseek(fp, 0, SEEK_SET);
-	r_read = fread(buf, 1, size, fp);
-	if( r_read <  0 )	goto ERR_END;
-	else if(r_read ==  0)	goto ERR_END;
-	buf[r_read] = '\0';
-
-	root = cJSON_Parse(buf);
-	if(root == NULL)	goto ERR_END;
-	
-	free(buf);
-	fclose(fp);
-	return root;
-
-ERR_END:
-	if(buf)	free(buf);
-	if(fp)	fclose(fp);
-	return NULL;
-}
 
 /* Render a cJSON item/entity/structure to text. */
 char *cJSON_Print(cJSON *item)				{return print_value(item,0,1);}
@@ -550,6 +513,77 @@ cJSON *cJSON_CreateFloatArray(float *numbers,int count)			{int i;cJSON *n=0,*p=0
 cJSON *cJSON_CreateDoubleArray(double *numbers,int count)		{int i;cJSON *n=0,*p=0,*a=cJSON_CreateArray();for(i=0;a && i<count;i++){n=cJSON_CreateNumber(numbers[i]);if(!i)a->child=n;else suffix_object(p,n);p=n;}return a;}
 cJSON *cJSON_CreateStringArray(const char **strings,int count)	{int i;cJSON *n=0,*p=0,*a=cJSON_CreateArray();for(i=0;a && i<count;i++){n=cJSON_CreateString(strings[i]);if(!i)a->child=n;else suffix_object(p,n);p=n;}return a;}
 
+cJSON *cJSON_Parse_fromFile(char *file)
+{
+	FILE *fp=NULL;
+	long size;
+	char *buf = NULL;
+	cJSON *root = NULL;
+	size_t r_read;
+
+	if(file == NULL)	return NULL;
+	fp = fopen(file,"r");
+	if(fp == NULL)		return NULL;
+	
+	fseek(fp, 0, SEEK_END);
+	size = ftell(fp);
+
+	buf = (char *)malloc(size+1);
+	if(buf == NULL)	goto ERR_END;
+	memset(buf, 0, size+1);
+
+	fseek(fp, 0, SEEK_SET);
+	r_read = fread(buf, 1, size, fp);
+	if( r_read <  0 )	goto ERR_END;
+	else if(r_read ==  0)	goto ERR_END;
+	buf[r_read] = '\0';
+
+	root = cJSON_Parse(buf);
+	if(root == NULL)	goto ERR_END;
+	
+	free(buf);
+	fclose(fp);
+	return root;
+
+ERR_END:
+	if(buf)	free(buf);
+	if(fp)	fclose(fp);
+	return NULL;
+}
+
+cJSON *cJSON_Parse_fromFp(FILE *fp)
+{
+	long size;
+	char *buf = NULL;
+	cJSON *root = NULL;
+	size_t r_read;
+
+	if(!fp)	return NULL;
+
+	fseek(fp, 0, SEEK_END);
+	size = ftell(fp);
+
+	buf = (char *)malloc(size+1);
+	if(buf == NULL)	goto ERR_END;
+	memset(buf, 0, size+1);
+
+	fseek(fp, 0, SEEK_SET);
+	r_read = fread(buf, 1, size, fp);
+	if( r_read <  0 )	goto ERR_END;
+	else if(r_read ==  0)	goto ERR_END;
+	buf[r_read] = '\0';
+
+	root = cJSON_Parse(buf);
+	if(root == NULL)	goto ERR_END;
+	
+	free(buf);
+	return root;
+
+ERR_END:
+	if(buf)	free(buf);
+	return NULL;
+}
+
 int json_dump_file(cJSON *json, char *filename, int fmt)
 {
 	FILE *fp;
@@ -574,6 +608,49 @@ int json_dump_file(cJSON *json, char *filename, int fmt)
 	free(out);
 	fclose(fp);
 
+	return 0;
+}
+
+char *cJSON_GetStringValue(cJSON *object, const char *key)
+{
+	cJSON *j = cJSON_GetObjectItem(object, key);
+	if(j && (j->type & 255) == cJSON_String)
+		return j->valuestring;
+	else
+		return NULL;
+}
+
+int cJSON_GetDigitValue(cJSON *object, const char *key, int *value)
+{
+	cJSON *j = cJSON_GetObjectItem(object, key);
+	int num = -1;
+	char *str;
+
+	if(!j)
+		return -1;
+	if( (j->type & 255) == cJSON_Number)
+		num = j->valueint;
+	else if( (j->type & 255) == cJSON_String)
+	{
+		str = j->valuestring;
+		if(!str)
+			return -1;
+		if( *str ==  '-' ){
+			++str;
+			if(*str == '\0')
+				return -1;
+		}
+		
+		while(*str){
+			if( !isdigit(*str) )
+				return -1;
+			++str;
+		}
+		num = atoi(j->valuestring);
+	}
+
+	if(value)
+		*value = num;
 	return 0;
 }
 

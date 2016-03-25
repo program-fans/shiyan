@@ -22,6 +22,7 @@ extern void wipe_off_blank(char *str_in, char *str_out, int out_size);
 extern int str2mac(char *str, unsigned char *mac);
 
 
+// only can be used array copy, dst must be array ptr
 #define strcpy_array(dst, src)	do{\
 	strncpy(dst, src, sizeof(dst)-1);\
 	dst[sizeof(dst)-1] = '\0';\

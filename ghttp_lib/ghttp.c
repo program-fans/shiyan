@@ -814,3 +814,138 @@ ghttp_proc ghttp_get_proc(ghttp_request *a_request)
 	return a_request ? a_request->proc : ghttp_proc_none;
 }
 
+
+int ghttp_download_file(char *path, char *url)
+{
+	ghttp_request *request = NULL;
+	FILE * pFile=NULL;
+	char *buf=NULL;
+	int ret = 0;
+
+	ghttp_status req_status;
+	ghttp_proc req_proc;
+	int bytes_read=0,recvbytes=0;
+	int status_code=0;
+	char *redirect = NULL;
+#if GHTTP_DEBUG
+	char *tmp_pchar = NULL;
+#endif
+
+	request = ghttp_request_new();
+	if( ghttp_set_uri(request, url) < 0 ){
+			ghttpDebug("invalid url: %s \n", url);
+       		ret = -1;
+			goto END;
+	}
+	
+	if(!path)
+		path = ghttp_get_resource_name(request);
+	if(!path)
+		path = "httpget.html";
+	
+	pFile = fopen ( path , "wb" );
+	if(pFile == NULL){
+		ghttpDebug("error: %s [%s]\n", wf_std_error(NULL), path);
+		ret = -2;
+		goto END;
+	}
+	ghttpDebug("host: %s \n", ghttp_get_host(request));
+	if( ghttp_set_type(request, ghttp_type_get) < 0 ){
+    		ret = -3;
+		goto END;
+	}
+	if (ghttp_set_sync(request, ghttp_async) < 0){
+		ret = -3;
+		goto END;
+	}
+	if( ghttp_prepare(request) < 0 ){
+		ret = -3;
+		goto END;
+	}
+
+	do
+	{
+		req_status = ghttp_process(request);
+		if( req_status == ghttp_error ){
+			ghttpDebug("%s \n", ghttp_get_error(request));
+			ret = -4;
+			goto END;
+		}
+		if (req_status != ghttp_error ) 
+		{
+			if( req_status == ghttp_done )
+			{
+				status_code = ghttp_status_code(request);
+				if(status_code != 200){
+					fclose(pFile);
+					pFile = NULL;
+					break;
+				}
+			}
+
+			req_proc = ghttp_get_proc(request);
+			if( req_proc == ghttp_proc_response || req_proc == ghttp_proc_done )
+			{
+			#if GHTTP_DEBUG
+				if( !tmp_pchar )
+				{
+					tmp_pchar = ghttp_get_header(request, "Content-Length");
+					ghttpDebug("Content-Length: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = ghttp_get_header(request, "Transfer-Encoding");
+					ghttpDebug("Transfer-Encoding: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = ghttp_get_header(request, "Content-Encoding");
+					ghttpDebug("Content-Encoding: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = (char *)1;
+					
+					ghttpDebug("recvbytes: ");
+				}
+			#endif
+			
+				ghttp_flush_response_buffer(request);
+				if(ghttp_get_body_len(request) > 0)
+				{
+					buf = ghttp_get_body(request);
+					bytes_read = ghttp_get_body_len(request);
+					recvbytes += bytes_read;
+					if(buf)
+						fwrite(buf,bytes_read,1,pFile);
+				}
+
+				ghttpDebug("%d", recvbytes);
+			}
+		}
+	}while (req_status == ghttp_not_done);
+
+	//ret = status_code;
+	switch(status_code)
+	{
+	case 200:
+	default:
+		break;
+	case 302:
+		buf = (char *)ghttp_get_header(request, "Location");
+		if(buf){
+			redirect = (char *)malloc(strlen(buf)+1);
+			if(redirect == NULL){
+				ret = -1;
+				goto END;
+			}
+			strcpy(redirect, buf);
+		}
+		break;
+	}
+	
+END:
+	ghttp_clean(request);
+	ghttp_request_destroy(request);
+    	if(pFile)
+		fclose(pFile);
+	if(redirect){
+		ghttpDebug("redirect: %s \n", redirect);
+		ret = ghttp_download_file(path, redirect);
+		free(redirect);
+	}
+	
+	return ret;
+}
+

@@ -1,6 +1,7 @@
 #ifndef WF_CHAR_H_
 #define WF_CHAR_H_
 
+extern int urlencode( unsigned char *src, unsigned char *dest );
 
 extern char *str_skip_blank(char *str);
 extern int str_replace(char *str, char *substr, char *repace, char *out);
@@ -20,6 +21,11 @@ extern void wipe_off_blank(char *str_in, char *str_out, int out_size);
 
 extern int str2mac(char *str, unsigned char *mac);
 
+
+#define strcpy_array(dst, src)	do{\
+	strncpy(dst, src, sizeof(dst)-1);\
+	dst[sizeof(dst)-1] = '\0';\
+	}while(0)
 
 // if <string.h> declare strupr, then don't use this function
 extern char *strupr_2(char *str);

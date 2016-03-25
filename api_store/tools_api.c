@@ -63,8 +63,9 @@ char *str_api_err(int api_error)
 
 struct key_value
 {
-	char key[16];
-	char value[128];
+	struct slist_node node;
+	char key[128];
+	char value[4096];
 };
 
 struct api_result
@@ -88,26 +89,35 @@ struct api_t
 	ghttp_type action;
 	char name[16];
 	char url[256];
-	struct key_value url_param[10];
-	struct key_value req_head[10];
-	int url_param_num;
-	int req_head_num;
+	struct slist_head url_param;
+	struct slist_head req_head;
 	int (*result_save_func)(ghttp_request *request, struct api_t *api);
 	struct api_result result;
+	void *private;
 	int api_error;
 };
 
 struct api_list
 {
 	int api_id;
-	int (*api_init)(struct api_t *api, void *param);	// init struct api_t
+	int (*api_init)(struct api_t *api, void *param);	// init struct api_t, and assign (struct api_t)->private
 	int (*api_parse)(struct api_t *api);				// parse the result of api
 	int (*api_deal)(struct api_t *api);				// deal the (struct api_t)->(struct api_result).(api_ret, api_code, api_data, api_msg)
+	void (*api_free)(struct api_t *api);				// free (struct api_t)->private
 };
 
 #define APIKEY_NAME		"apikey"
 #define APIKEY_VALUE	"8f10d134932f6886ad0d38295cc4a980"
 
+inline void free_key_value_list(struct slist_head *list)
+{
+	struct key_value *pos = NULL;
+
+	if(slist_empty(list))
+		return;
+	slist_while_get_head_entry(pos, list, node)
+		free(pos);
+}
 void free_api_result(struct api_result *result, int self)
 {
 	if(!result)
@@ -123,9 +133,40 @@ void free_api_t(struct api_t *api, int self)
 {
 	if(!api)
 		return;
+	free_key_value_list(&api->url_param);
+	free_key_value_list(&api->req_head);
 	free_api_result(&api->result, 0);
+	api->private = NULL;
 	if(self)
 		free(api);
+}
+
+int set_api_url_param(struct api_t *api, char *key, char *value)
+{
+	struct key_value *p = (struct key_value *)malloc(sizeof(struct key_value));
+	if(!p){
+		api->api_error = APIE_MALLOC_ERROR;
+		return -1;
+	}
+	memset(p, 0, sizeof(struct key_value));
+	strcpy_array(p->key, key);
+	strcpy_array(p->value, value);
+	slist_add(&api->url_param, &p->node);
+	return 0;
+}
+
+int set_api_req_head(struct api_t *api, char *key, char *value)
+{
+	struct key_value *p = (struct key_value *)malloc(sizeof(struct key_value));
+	if(!p){
+		api->api_error = APIE_MALLOC_ERROR;
+		return -1;
+	}
+	memset(p, 0, sizeof(struct key_value));
+	strcpy_array(p->key, key);
+	strcpy_array(p->value, value);
+	slist_add(&api->req_head, &p->node);
+	return 0;
 }
 
 int result_save_buff(ghttp_request *request, struct api_t *api)
@@ -235,21 +276,35 @@ void result_recv_finish(ghttp_request *request, struct api_t *api)
 
 int api_set_http_uri(ghttp_request *request, struct api_t *api)
 {
-	char url[1024] = {'\0'};
-	int i=0;
+	char *url = NULL;
+	int i=0, len=0;
+	struct key_value *pos = NULL;
 	
 	if(!request || !api)
 		return -1;
+
+	len = strlen(api->url);
+	slist_for_each_entry(pos, &api->url_param, node){
+		len += strlen(pos->key);
+		len += strlen(pos->value);
+		len += 2;
+	}
+	url = (char *)malloc(len+1);
+	if(!url){
+		api->api_error = APIE_MALLOC_ERROR;
+		return -1;
+	}
 	
 	strcpy(url, api->url);
-	for(i=0; i<api->url_param_num; i++){
+	slist_for_each_entry(pos, &api->url_param, node){
 		if(i==0)
 			strcat(url, "?");
 		else
 			strcat(url, "&");
-		strcat(url, api->url_param[i].key);
+		strcat(url, pos->key);
 		strcat(url, "=");
-		strcat(url, api->url_param[i].value);
+		strcat(url, pos->value);
+		++i;
 	}
 
 	if( ghttp_set_uri(request, url) < 0 ){
@@ -263,12 +318,13 @@ int api_set_http_uri(ghttp_request *request, struct api_t *api)
 int api_set_http_head(ghttp_request *request, struct api_t *api)
 {
 	int i=0;
+	struct key_value *pos = NULL;
 	
 	if(!request || !api)
 		return -1;
 
-	for(i=0; i<api->req_head_num; i++){
-		ghttp_set_header(request, api->req_head[i].key, api->req_head[i].value);
+	slist_for_each_entry(pos, &api->req_head, node){
+		ghttp_set_header(request, pos->key, pos->value);
 	}
 	return 0;
 }
@@ -397,6 +453,8 @@ enum{
 	APIID_IPLOOKUP,
 	APIID_IDCARD,
 	APIID_BANKCARD,
+	APIID_PHONE,
+	APIID_QRCODE,
 	APIID_DEF_MAX
 };
 
@@ -469,10 +527,16 @@ int api_deal_defualt(struct api_t *api)
 
 	return 0;
 }
+void api_free_defualt(struct api_t *api)
+{
+	if(api && api->private)
+		free(api->private);
+}
 
 int register_api(int api_id, int (*api_init)(struct api_t *api, void *param), 
 	int (*api_parse)(struct api_t *api), 
-	int (*api_deal)(struct api_t *api) )
+	int (*api_deal)(struct api_t *api), 
+	void (*api_free)(struct api_t *api) )
 {
 	if(api_id<0 || !api_init || g_api_num >= API_LIST_MAX_NUM)
 		return -1;
@@ -488,6 +552,11 @@ int register_api(int api_id, int (*api_init)(struct api_t *api, void *param),
 		g_api_list[api_id].api_deal = api_deal;
 	else
 		g_api_list[api_id].api_deal = api_deal_defualt;
+
+	if(api_free)
+		g_api_list[api_id].api_free= api_free;
+	else
+		g_api_list[api_id].api_free = api_free_defualt;
 	
 	++g_api_num;
 	return 0;
@@ -517,6 +586,7 @@ int exe_api(struct api_list *api, void *param)
 		goto END;
 	}
 	ret = api->api_deal(apiapi);
+	api->api_free(apiapi);
 
 END:
 	apiError("%s \n", str_api_err(apiapi->api_error));
@@ -526,41 +596,29 @@ END:
 }
 
 
-#define API_SET_APIKEY(j)	do{\
-	strcpy(api->req_head[j].key, APIKEY_NAME);\
-	strcpy(api->req_head[j].value, APIKEY_VALUE);\
-	++j;\
-	}while(0)
-	
 int api_init_iplookup(struct api_t *api, void *param)
 {
 	int i=0, j=0;
-	char *ip = (char *)param;
+	char *api_param = (char *)param;
 
-	if(!ip || !ip_check(ip)){
+	if(!api_param|| !ip_check(api_param)){
 		api->api_error = APIE_PARAM_ERROR;
 		return -1;
 	}
 
 	memset(api, 0, sizeof(struct api_t));
-	strcpy(api->url, "http://apis.baidu.com/apistore/iplookupservice/iplookup");
-	strcpy(api->name, "iplookup");
+	strcpy_array(api->url, "http://apis.baidu.com/apistore/iplookupservice/iplookup");
+	strcpy_array(api->name, "iplookup");
 	api->action = ghttp_type_get;
-	
-	strcpy(api->url_param[i].key, "ip");
-	strcpy(api->url_param[i].value, ip);
-	++i;
-	api->url_param_num = i;
-	strcpy(api->req_head[j].key, APIKEY_NAME);
-	strcpy(api->req_head[j].value, APIKEY_VALUE);
-	++j;
-	//strcpy(api->req_head[j].key, http_hdr_Accept);
-//	strcpy(api->req_head[j].value, "text/html");
-	//++j;
-	strcpy(api->req_head[j].key, http_hdr_Connection);
-	strcpy(api->req_head[j].value, "keep-alive");
-	++j;
-	api->req_head_num = j;
+
+	if(set_api_url_param(api, "ip", api_param) < 0)
+		goto ERR;
+	if(set_api_req_head(api, APIKEY_NAME, APIKEY_VALUE) < 0)
+		goto ERR;
+	//if(set_api_req_head(api, http_hdr_Accept, "text/html") < 0)
+	//	goto ERR;
+	if(set_api_req_head(api, (char *)http_hdr_Connection, "keep-alive") < 0)
+		goto ERR;
 
 	api->result_save_func = result_save_buff;
 
@@ -568,68 +626,71 @@ int api_init_iplookup(struct api_t *api, void *param)
 	api->result.buff_size = sizeof(api->result.data);
 	
 	return 0;
+ERR:
+	api->api_error = APIE_MALLOC_ERROR;
+	return -1;
 }
 		
 int api_init_idcard(struct api_t *api, void *param)
 {
 	int i=0, j=0;
-	char *idcard = (char *)param;
-	
-	if(!idcard || strlen(idcard)<16){
+	char *api_param = (char *)param;
+
+	if(!api_param || strlen(api_param) < 18){
 		api->api_error = APIE_PARAM_ERROR;
 		return -1;
 	}
-	
+
 	memset(api, 0, sizeof(struct api_t));
-	strcpy(api->url, "http://apis.baidu.com/apistore/idservice/id");
-	strcpy(api->name, "idcard");
+	strcpy_array(api->url, "http://apis.baidu.com/apistore/idservice/id");
+	strcpy_array(api->name, "idcard");
 	api->action = ghttp_type_get;
-	
-	strcpy(api->url_param[i].key, "id");
-	strcpy(api->url_param[i].value, idcard);
-	++i;
-	api->url_param_num = i;
-	strcpy(api->req_head[j].key, APIKEY_NAME);
-	strcpy(api->req_head[j].value, APIKEY_VALUE);
-	++j;
-	API_SET_APIKEY(j);
-	api->req_head_num = j;
+
+	if(set_api_url_param(api, "id", api_param) < 0)
+		goto ERR;
+	if(set_api_req_head(api, APIKEY_NAME, APIKEY_VALUE) < 0)
+		goto ERR;
 
 	api->result_save_func = result_save_buff;
 
 	api->result.buff = api->result.data;
 	api->result.buff_size = sizeof(api->result.data);
+	
+	return 0;
+ERR:
+	api->api_error = APIE_MALLOC_ERROR;
+	return -1;
 }
 
 int api_init_bankcard(struct api_t *api, void *param)
 {
 	int i=0, j=0;
-	char *bankcard = (char *)param;
-	
-	if(!bankcard || strlen(bankcard)<16){
+	char *api_param = (char *)param;
+
+	if(!api_param || strlen(api_param) < 16){
 		api->api_error = APIE_PARAM_ERROR;
 		return -1;
 	}
-	
+
 	memset(api, 0, sizeof(struct api_t));
-	strcpy(api->url, "http://apis.baidu.com/datatiny/cardinfo/cardinfo");
-	strcpy(api->name, "bankcard");
+	strcpy_array(api->url, "http://apis.baidu.com/datatiny/cardinfo/cardinfo");
+	strcpy_array(api->name, "bankcard");
 	api->action = ghttp_type_get;
-	
-	strcpy(api->url_param[i].key, "cardnum");
-	strcpy(api->url_param[i].value, bankcard);
-	++i;
-	api->url_param_num = i;
-	strcpy(api->req_head[j].key, APIKEY_NAME);
-	strcpy(api->req_head[j].value, APIKEY_VALUE);
-	++j;
-	API_SET_APIKEY(j);
-	api->req_head_num = j;
+
+	if(set_api_url_param(api, "cardnum", api_param) < 0)
+		goto ERR;
+	if(set_api_req_head(api, APIKEY_NAME, APIKEY_VALUE) < 0)
+		goto ERR;
 
 	api->result_save_func = result_save_buff;
 
 	api->result.buff = api->result.data;
 	api->result.buff_size = sizeof(api->result.data);
+	
+	return 0;
+ERR:
+	api->api_error = APIE_MALLOC_ERROR;
+	return -1;
 }
 
 int api_deal_bankcard(struct api_t *api)
@@ -664,11 +725,140 @@ int api_deal_bankcard(struct api_t *api)
 	return 0;
 }
 
+int api_init_phone(struct api_t *api, void *param)
+{
+	int i=0, j=0;
+	char *api_param = (char *)param;
+
+	if(!api_param || strlen(api_param) < 8){
+		api->api_error = APIE_PARAM_ERROR;
+		return -1;
+	}
+
+	memset(api, 0, sizeof(struct api_t));
+	strcpy_array(api->url, "http://apis.baidu.com/apistore/mobilenumber/mobilenumber");
+	strcpy_array(api->name, "phone");
+	api->action = ghttp_type_get;
+
+	if(set_api_url_param(api, "phone", api_param) < 0)
+		goto ERR;
+	if(set_api_req_head(api, APIKEY_NAME, APIKEY_VALUE) < 0)
+		goto ERR;
+
+	api->result_save_func = result_save_buff;
+
+	api->result.buff = api->result.data;
+	api->result.buff_size = sizeof(api->result.data);
+	
+	return 0;
+ERR:
+	api->api_error = APIE_MALLOC_ERROR;
+	return -1;
+}
+
+struct param_qrcode
+{
+	int size;
+	char jpg_path[256];
+	char qr_string[2048];
+};
+
+int api_init_qrcode(struct api_t *api, void *param)
+{
+	int i=0, j=0;
+	char size_str[4] = "8", qr_str[2560] = {'\0'};
+	int size = 8;
+	struct param_qrcode *api_param = (struct param_qrcode *)param;
+	
+	if(!api_param || strlen(api_param->qr_string)<=0){
+		api->api_error = APIE_PARAM_ERROR;
+		return -1;
+	}
+	if(api_param->size >= 1 && api_param->size <= 20)
+		size = api_param->size;
+	sprintf(size_str, "%d", size);
+	urlencode((unsigned char *)(api_param->qr_string), (unsigned char *)qr_str);
+	
+	memset(api, 0, sizeof(struct api_t));
+	strcpy_array(api->url, "http://apis.baidu.com/3023/qr/qrcode");
+	strcpy_array(api->name, "qrcode");
+	api->action = ghttp_type_get;
+
+	if(strlen(api_param->jpg_path) > 0){
+		api->private = (void *)strdup(api_param->jpg_path);
+		if(NULL == api->private)
+			goto ERR;
+	}
+	if(set_api_url_param(api, "size", size_str) < 0)
+		goto ERR;
+	if(set_api_url_param(api, "qr", qr_str) < 0)
+		goto ERR;
+	if(set_api_req_head(api, APIKEY_NAME, APIKEY_VALUE) < 0)
+		goto ERR;
+
+	api->result_save_func = result_save_buff;
+
+	api->result.buff = api->result.data;
+	api->result.buff_size = sizeof(api->result.data);
+	
+	return 0;
+ERR:
+	api->api_error = APIE_MALLOC_ERROR;
+	return -1;
+}
+int api_deal_qrcode(struct api_t *api)
+{
+	struct api_result *result = NULL;
+	cJSON *api_ret = NULL;
+	char *out = NULL, *qr_jpg_url = NULL, *qr_jpg_path = NULL;
+	char tmp[32] = "./api_qr.jpg";
+
+	if(!api){
+		api->api_error = APIE_ERROR;
+		return -1;
+	}
+	result = &api->result;
+
+	result->api_code = 0;
+	result->api_msg = NULL;
+	result->api_data = result->api_ret;
+	
+	apiDebug("http_code: %d \n", api->result.http_code);
+	apiDebug("api_code: %d \n", api->result.api_code);
+	apiDebug("api_msg: %s \n", api->result.api_msg?api->result.api_msg:"null");
+	if(api->result.api_data){
+		qr_jpg_url = cJSON_GetStringValue(api->result.api_data, "url");
+		if(qr_jpg_url){
+			if(api->private)
+				qr_jpg_path = (char *)api->private;
+			else
+				qr_jpg_path = &tmp[0];
+			if( ghttp_download_file(qr_jpg_path, qr_jpg_url) < 0)
+				printf("qr_jpg download failed \n");
+			else{
+				printf("qr_jpg download OK [%s] \n", qr_jpg_path);
+				return 0;
+			}
+		}
+		out = cJSON_Print(api->result.api_data);
+		if(out){
+			printf("%s \n", out);
+			free(out);
+		}
+	}
+	else
+		printf("[no result] \n");
+
+	return 0;
+}
+
 void registe_def_api()
 {
-	register_api(APIID_IPLOOKUP, api_init_iplookup, NULL, NULL);
-	register_api(APIID_IDCARD, api_init_idcard, NULL, NULL);
-	register_api(APIID_BANKCARD, api_init_bankcard, NULL, api_deal_bankcard);
+	register_api(APIID_IPLOOKUP, api_init_iplookup, NULL, NULL, NULL);
+	register_api(APIID_IDCARD, api_init_idcard, NULL, NULL, NULL);
+	register_api(APIID_BANKCARD, api_init_bankcard, NULL, api_deal_bankcard, NULL);
+	register_api(APIID_PHONE, api_init_phone, NULL, NULL, NULL);
+	register_api(APIID_QRCODE, api_init_qrcode, NULL, api_deal_qrcode, NULL);
 }
 
 
@@ -691,6 +881,18 @@ void bankcard_usage()
 		"tools_api bankcard [bank-card-code] \n"
 		);
 }
+void phone_usage()
+{
+	fprintf(stderr, "tools_api phone usage: \n"
+		"tools_api phone [phone-number] \n"
+		);
+}
+void qrcode_usage()
+{
+	fprintf(stderr, "tools_api qrcode usage: \n"
+		"tools_api qrcode [--qr qr-string] [--jpg qr-jpg-path] [--size 1-20] \n"
+		);
+}
 
 void api_usage()
 {
@@ -699,6 +901,9 @@ void api_usage()
 		"cmd list: \n"
 		"  iplookup \n"
 		"  idcard \n"
+		"  bankcard \n"
+		"  phone \n"
+		"  qrcode \n"
 		"note:\"tools_api help <cmd>\" for help on a specific cmd \n"
 		);
 }
@@ -712,6 +917,10 @@ void print_usage_api(char *cmd)
 		idcard_usage();
 	else if( strcmp(cmd, "bankcard") == 0 )
 		bankcard_usage();
+	else if( strcmp(cmd, "phone") == 0 )
+		phone_usage();
+	else if( strcmp(cmd, "qrcode") == 0 )
+		qrcode_usage();
 	else
 		api_usage();
 }
@@ -755,6 +964,45 @@ int cmd_api_bankcard(int argc, char **argv)
 	return exe_api(find_api(APIID_BANKCARD), bankcard);
 }
 
+int cmd_api_phone(int argc, char **argv)
+{
+	int i=1, ret=0;
+	char *phone = NULL;
+
+	if(argv[++i])
+		phone= argv[i];
+	else
+		phone_usage();
+		
+	return exe_api(find_api(APIID_PHONE), phone);
+}
+int cmd_api_qrcode(int argc, char **argv)
+{
+	int i=1, ret=0;
+	struct param_qrcode param;
+	char *phone = NULL;
+
+	while(argv[++i])
+	{
+		if( strcmp(argv[i], "--qr") == 0 && argv[++i]){
+			strcpy_array(param.qr_string, argv[i]);
+		}
+		else if( strcmp(argv[i], "--jpg") == 0 && argv[++i]){
+			strcpy_array(param.jpg_path, argv[i]);
+		}
+		else if( strcmp(argv[i], "--size") == 0 && argv[++i]){
+			sscanf(argv[i], "%x", &param.size);
+		}
+		else{
+			printf("invalid param: %s \n", argv[i]);
+			qrcode_usage();
+			return -1;
+		}
+	}
+	
+	return exe_api(find_api(APIID_QRCODE), &param);
+}
+
 int main(int argc, char **argv)
 {
 	int ret=0;
@@ -764,6 +1012,12 @@ int main(int argc, char **argv)
 	exe_api(find_api(APIID_IPLOOKUP), "117.89.35.58");
 	exe_api(find_api(APIID_IDCARD), "513030199310183212");
 	exe_api(find_api(APIID_BANKCARD), "6216613100005090934");
+	exe_api(find_api(APIID_PHONE), "13678165275");
+	struct param_qrcode param;
+	param.size = 8;
+	strcpy_array(param.qr_string, "http://www.baidu.com/index.php?ch=en&var=abc#frag2");
+	strcpy_array(param.jpg_path, "/mnt/hgfs/share/tmp/api_qr.jpg");
+	exe_api(find_api(APIID_QRCODE), &param);
 #else
 	if(argc >= 2)
 	{
@@ -777,6 +1031,10 @@ int main(int argc, char **argv)
 			ret = cmd_api_idcard(argc, argv);
 		else if( strcmp(argv[1], "bankcard") == 0 )
 			ret = cmd_api_bankcard(argc, argv);
+		else if( strcmp(argv[1], "phone") == 0 )
+			ret = cmd_api_phone(argc, argv);
+		else if( strcmp(argv[1], "qrcode") == 0 )
+			ret = cmd_api_qrcode(argc, argv);
 		else
 			api_usage();
 	}

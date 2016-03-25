@@ -17,7 +17,7 @@ enum{
 	GDB_httpget
 };
 
-int gdb_ctrl = OFF_GDB;
+int gdb_ctrl = GDB_slist;
 
 static unsigned char globel_buf[4096] = {0};
 
@@ -29,11 +29,17 @@ struct test_t
         struct slist_node slist;
 };
 	struct slist_head test_list, new_list;
-	struct test_t *p = NULL, *pos = NULL;
+	struct test_t *p = NULL, *pos = NULL, *n = NULL;
 	int i=0;
 		
 	INIT_SLIST_HEAD(&test_list); 
-	INIT_SLIST_HEAD(&new_list); 
+	INIT_SLIST_HEAD(&new_list);
+	p = slist_del_get_head_entry(&test_list, struct test_t, slist);
+	if(p){
+		printf("[%p] \n", p);
+		fflush(stdout);
+		free(p);
+	}
 	for(i=0; i<10; i++)
 	{
 		p = (struct test_t *)malloc(sizeof(struct test_t));
@@ -45,8 +51,12 @@ struct test_t
 		p->a = i;
 		slist_add(&test_list, &p->slist);
 	}
-	slist_del_head(&test_list); 
-	slist_del_head(&test_list); 
+	p = slist_del_get_head_entry(&test_list, struct test_t, slist);
+	if(p)
+		free(p);
+	p = slist_del_get_head_entry(&test_list, struct test_t, slist);
+	if(p)
+		free(p);
 
 	for(i=10; i<15; i++)
 	{
@@ -63,12 +73,24 @@ struct test_t
 	slist_splice_init(&new_list, &test_list);
 
 	slist_for_each_entry(pos, &test_list, slist)
-		printf("%d ", pos->a);
+		printf("%d[%p]  ", pos->a, pos);
 	printf("\n");
 
 	slist_for_each_entry(pos, &new_list, slist)
 		printf("%d ", pos->a);
 	printf("\n");
+
+	slist_while_get_head_entry(pos, &test_list, slist)
+	{
+		printf("[%p]  ", pos);
+		fflush(stdout);
+		free(pos);
+	}
+	printf("\n");
+	//slist_while_get_head_entry(pos, &test_list, slist)
+	//	free(pos);
+	slist_while_get_head_entry(pos, &new_list, slist)
+		free(pos);
 }
 
 void ipc_test()
@@ -80,7 +102,7 @@ void ipc_test()
 }
 void char_test(int argc, char **argv)
 {
-#define SWITCH_NUM  2
+#define SWITCH_NUM  3
 	int i=1;
 #if SWITCH_NUM == 0
 	printf("%s \n", time2str_pformat(time(NULL), NULL, "<now: %Y/%M/%D  ## %h:%m:%s >", 64));
@@ -99,6 +121,14 @@ void char_test(int argc, char **argv)
 	printf("in: %s \n", buf);
 	printf("out: %s \n", out);
 	printf("num: %d \n", num);
+#elif SWITCH_NUM == 3
+	char src[128]="http://www.baidu.com/index.php?ch=en&var=abc#frag2";
+	char src2[128]="how are you ? OK!";
+	char dest[128]={'\0'};
+	urlencode((unsigned char *)src, (unsigned char *)dest);
+	printf("%%3A%%2F\n[%d] %s \n[%d] %s \n", strlen(src), src, strlen(dest), dest);
+	urlencode((unsigned char *)src2, (unsigned char *)dest);
+	printf("%%3A%%2F\n[%d] %s \n[%d] %s \n", strlen(src2), src2, strlen(dest), dest);
 #endif
 }
 void test()
@@ -276,11 +306,17 @@ int test_httpget(int argc, char **argv)
 			break;
 		}
 	}
-
+#if 1
+	if(gdb_ctrl == GDB_httpget)
+		ret = ghttp_download_file("httpget_gdb.html", "http://www.baidu.com");
+	else
+		ret = ghttp_download_file(path, url);
+#else
 	if(gdb_ctrl == GDB_httpget)
 		ret = ghttp_get_file("httpget_gdb.html", "http://www.baidu.com");
 	else
 		ret = ghttp_get_file(path, url);
+#endif
 	if(ret < 0)
 		printf("failed get [%d] \n", ret);
 	else if(ret == 0 || ret == 200)
@@ -330,6 +366,10 @@ int main(int argc, char **argv)
 	{
 	case GDB_httpget:
 		ret = test_httpget(argc, argv);
+		return ret;
+		break;
+	case GDB_slist:
+		slist_test();
 		return ret;
 		break;
 	case OFF_GDB:

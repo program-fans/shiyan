@@ -4,6 +4,38 @@
 
 #include "wf_char.h"
 
+
+int urlencode( unsigned char *src, unsigned char *dest )
+{
+#define char_to_hex(x)	(x > 9 ? x + 55: x + 48)
+	char ch;
+	int  len = 0;
+
+	while (*src)
+	{
+		ch = (char)*src;
+		if (*src == ' ')
+		{
+			*dest++ = '+';
+		}
+		else if( (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || 
+			(ch >= '0' && ch <= '9') || strchr("-_.!~*'()", ch) )
+		{
+			*dest++ = *src;
+		}
+		else
+		{
+			*dest++ = '%';
+			*dest++ = char_to_hex( (unsigned char)(ch >> 4) );
+			*dest++ = char_to_hex( (unsigned char)(ch & 0x0F) );
+		} 
+		++src;
+		++len;
+	}
+	*dest = 0;
+	return len;
+}
+
 char *str_skip_blank(char *str)
 {
 	char *s = str;

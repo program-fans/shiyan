@@ -264,6 +264,7 @@ char *ghttp_get_resource_name(ghttp_request *a_request);
 
 ghttp_proc ghttp_get_proc(ghttp_request *a_request);
 
+extern int ghttp_download_file(char *path, char *url);
 
 #ifdef __cplusplus
 }

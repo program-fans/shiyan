@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if 0
-#include <sys/stat.h>
-#endif
+
 #include "wf_base64.h"
 
+#if	1
 static char base64_table[64] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 
 							'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 
 							'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'};
@@ -17,6 +16,37 @@ static unsigned char base64_decode_table[123] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 											14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 
 											0, 0, 0, 0, 0, 0, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 
 											37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51};
+#else
+static char base64_table[64] = {'\0'};
+static unsigned char base64_decode_table[123] = {0};
+
+void base64_init()
+{
+	int i=0, j=0;
+
+	for(i=0; i<26; i++)
+		base64_table[j++] = (char)('A' + i);
+	for(i=0; i<26; i++)
+		base64_table[j++] = (char)('a' + i);
+	for(i=0; i<10; i++)
+		base64_table[j++] = (char)('0' + i);
+	base64_table[j++] = '+';
+	base64_table[j++] = '/';
+
+	base64_decode_table[43] = 62;
+	base64_decode_table[47] = 63;
+
+	j=52;
+	for(i=48; i<=57; i++)
+		base64_decode_table[i] = (unsigned char)(j++);
+	j=0;
+	for(i=65; i<=90; i++)
+		base64_decode_table[i] = (unsigned char)(j++);
+	j=26;
+	for(i=97; i<=122; i++)
+		base64_decode_table[i] = (unsigned char)(j++);
+}
+#endif
 
 static inline char base64_look_table(unsigned char in)
 {
@@ -476,6 +506,7 @@ int main(int argc, char **argv)
 	argv[3] = str_3;
 #endif
 
+	//base64_init();
 	if(!argv[1])
 		return 1;
 	base64_encode(argv[1], strlen(argv[1]), out, sizeof(out));

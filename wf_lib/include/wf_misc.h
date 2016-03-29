@@ -45,6 +45,11 @@
 
 
 
+
+
+#define is_exist_file(file)		access(file, F_OK)
+
+
 extern int close_fd_self();
 #define close_fd_parent()	close_fd_self()
 

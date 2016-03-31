@@ -224,11 +224,11 @@ int ghttp_get_file(char *path, char *url)
 				if( !tmp_pchar )
 				{
 					default_cursor();
-					tmp_pchar = ghttp_get_header(request, "Content-Length");
+					tmp_pchar = (char *)ghttp_get_header(request, "Content-Length");
 					printf("Content-Length: %s \n", tmp_pchar ? tmp_pchar : "null");
-					tmp_pchar = ghttp_get_header(request, "Transfer-Encoding");
+					tmp_pchar = (char *)ghttp_get_header(request, "Transfer-Encoding");
 					printf("Transfer-Encoding: %s \n", tmp_pchar ? tmp_pchar : "null");
-					tmp_pchar = ghttp_get_header(request, "Content-Encoding");
+					tmp_pchar = (char *)ghttp_get_header(request, "Content-Encoding");
 					printf("Content-Encoding: %s \n", tmp_pchar ? tmp_pchar : "null");
 					tmp_pchar = (char *)1;
 					

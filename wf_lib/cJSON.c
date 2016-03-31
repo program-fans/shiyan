@@ -611,9 +611,21 @@ int json_dump_file(cJSON *json, char *filename, int fmt)
 	return 0;
 }
 
+char *cJSON_GetObjectName(cJSON *object)
+{
+	if(object)
+		return object->string;
+	else
+		return NULL;
+}
+
 char *cJSON_GetStringValue(cJSON *object, const char *key)
 {
-	cJSON *j = cJSON_GetObjectItem(object, key);
+	cJSON *j;
+	if(!key && object && (object->type & 255) == cJSON_String)
+		return object->valuestring;
+	
+	j = cJSON_GetObjectItem(object, key);
 	if(j && (j->type & 255) == cJSON_String)
 		return j->valuestring;
 	else
@@ -622,16 +634,29 @@ char *cJSON_GetStringValue(cJSON *object, const char *key)
 
 int cJSON_GetDigitValue(cJSON *object, const char *key, int *value)
 {
-	cJSON *j = cJSON_GetObjectItem(object, key);
+	cJSON *j;
 	int num = -1;
 	char *str;
 
+	if(object && !key){
+		if((object->type & 255) == cJSON_Number){
+			num = j->valueint;
+			goto RET;
+		}
+		else if((object->type & 255) == cJSON_String){
+			j = object;
+			goto STR;
+		}
+	}
+
+	j = cJSON_GetObjectItem(object, key);
 	if(!j)
 		return -1;
 	if( (j->type & 255) == cJSON_Number)
 		num = j->valueint;
 	else if( (j->type & 255) == cJSON_String)
 	{
+STR:
 		str = j->valuestring;
 		if(!str)
 			return -1;
@@ -649,6 +674,7 @@ int cJSON_GetDigitValue(cJSON *object, const char *key, int *value)
 		num = atoi(j->valuestring);
 	}
 
+RET:
 	if(value)
 		*value = num;
 	return 0;

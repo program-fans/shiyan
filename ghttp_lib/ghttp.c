@@ -529,12 +529,9 @@ void ghttp_set_header(ghttp_request *a_request, const char *a_hdr, const char *a
 	http_hdr_set_value(a_request->req->headers, a_hdr, a_val);
 }
 
-const char *
-ghttp_get_header(ghttp_request *a_request,
-		 const char *a_hdr)
+const char *ghttp_get_header(ghttp_request *a_request, const char *a_hdr)
 {
-  return http_hdr_get_value(a_request->resp->headers,
-			    a_hdr);
+  return http_hdr_get_value(a_request->resp->headers, a_hdr);
 }
 
 int

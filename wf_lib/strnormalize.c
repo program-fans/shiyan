@@ -1,5 +1,8 @@
-#include "strnormalize.h"
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+
+#include "strnormalize.h"
 
 #define SWAPBYTE(x) (((unsigned short)(x) >> 8) | (unsigned short)(x) << 8)
 #define COMPBYTE(x, y) ((unsigned char)(x) << 8 | (unsigned char)(y))
@@ -48,6 +51,14 @@ void str_normalize_init()
 	_pPlain             = _initPlain();
 	_pGbk2Utf16       = _initGbk2Utf16();
 	_pUtf162Gbk       = _initUtf162Gbk();
+}
+
+static void str_normalize_init_check()
+{
+	if(!_pTns || !_pGbk2utf16_2 || !_pGbk2utf16_3 || !_pTrad2Simp_gbk || !_pTrad2Simp_utf16 
+		|| !_pPlain_gbk || !_pPlain_utf16 || !_pUpper2Lower || !_pLower2Upper || !_pPlain 
+		|| !_pGbk2Utf16 || !_pUtf162Gbk)
+		str_normalize_init();
 }
 
 const unsigned short *_initTns()
@@ -16490,6 +16501,10 @@ void str_normalize_utf8(char *text, unsigned options)
 	const unsigned short *pTransTable_utf16 =
 	    (options & SNO_TO_SIMPLIFIED) ? _pTrad2Simp_utf16 : _pPlain_utf16;
 	unsigned i_from = 0, i_to = 0;
+	
+	if(!text)
+		return;
+	str_normalize_init_check();
 
 	while (text[i_from])
 	{
@@ -16553,6 +16568,10 @@ void str_normalize_gbk(char *text, unsigned options)
 	    (options & SNO_TO_SIMPLIFIED) ? _pTrad2Simp_gbk : _pPlain_gbk;
 	unsigned int i_from = 0, i_to = 0, flag = 0;
 
+	if(!text)
+		return;
+	str_normalize_init_check();
+
 	for (; text[i_from]; i_from ++)
 	{
 		if (flag && (options & SNO_TO_HALF))
@@ -16603,12 +16622,16 @@ int gbk_to_utf8(const char *from, unsigned int from_len, char **to, unsigned int
 	{
 		return -1;
 	}
+	str_normalize_init_check();
 
 	for (i_from = 0; i_from < from_len; i_from ++)
 	{
 		if (flag)
 		{
 			flag = 0;
+			//printf("%02x  %02x  compbyte: %02x  [& ~0x8000]-> %02x \n", from[i_from - 1], from[i_from], 
+			//	COMPBYTE(from[i_from - 1], from[i_from]), 
+			//	(COMPBYTE(from[i_from - 1], from[i_from]) & ~0x8000));
 			unsigned short tmp =
 			    _pGbk2Utf16[COMPBYTE(from[i_from - 1], from[i_from]) & ~0x8000];
 
@@ -16637,7 +16660,8 @@ int gbk_to_utf8(const char *from, unsigned int from_len, char **to, unsigned int
 	}
 
 	result[i_to] = 0;
-	*to_len = i_to;
+	if(to_len)
+		*to_len = i_to;
 	return 0;
 }
 
@@ -16652,6 +16676,7 @@ int utf8_to_gbk(const char *from, unsigned int from_len, char **to, unsigned int
 	{
 		return -1;
 	}
+	str_normalize_init_check();
 
 	for (i_from = 0; i_from < from_len; )
 	{
@@ -16700,8 +16725,21 @@ int utf8_to_gbk(const char *from, unsigned int from_len, char **to, unsigned int
 	}
 
 	result[i_to] = 0;
-	*to_len = i_to;
+	if(to_len)
+		*to_len = i_to;
 	return 0;
 }
 
 // vim: foldmethod=marker
+
+#if	0
+int main(int argc, char **argv)
+{
+	char gbk[128] = "gbk×ª»»utf8";
+	char buf[128]={'\0'}, *name = &buf[0];
+	str_normalize_init();
+	printf("%s\n", gbk);
+	gbk_to_utf8(gbk, strlen(gbk), &name, NULL);
+	printf("%s\n", buf);
+}
+#endif

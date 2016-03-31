@@ -26,4 +26,5 @@ clean:
 	for d in $(app_list); do \
                 make -C $$d clean; \
 	done
+	rm -f *.order *.symvers
 

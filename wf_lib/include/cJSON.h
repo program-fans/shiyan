@@ -125,10 +125,12 @@ extern void cJSON_ReplaceItemInObject(cJSON *object,const char *string,cJSON *ne
 #define cJSON_AddNumberToObject(object,name,n)	cJSON_AddItemToObject(object, name, cJSON_CreateNumber(n))
 #define cJSON_AddStringToObject(object,name,s)	cJSON_AddItemToObject(object, name, cJSON_CreateString(s))
 
+/***add by wolf-lone ****/
 extern cJSON *cJSON_Parse_fromFile(char *file);
 #define json_load_file(filename)	cJSON_Parse_fromFile(filename)
 extern cJSON *cJSON_Parse_fromFp(FILE *fp);
 extern int json_dump_file(cJSON *json, char *filename, int fmt);
+extern char *cJSON_GetObjectName(cJSON *object);
 extern char *cJSON_GetStringValue(cJSON *object, const char *key);
 extern int cJSON_GetDigitValue(cJSON *object, const char *key, int *value);
 

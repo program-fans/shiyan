@@ -23,6 +23,7 @@
 #define APIE_INVALID_URL		52
 #define APIE_JSON_ERROR			101
 #define APIE_NOT_RESULT			102
+#define APIE_RESULT_PARSE		103
 #define APIE_HTTP_ERROR			151
 
 char *str_api_err(int api_error)
@@ -46,10 +47,13 @@ char *str_api_err(int api_error)
 		strcpy(str, "invalid url");
 		break;
 	case APIE_JSON_ERROR:
-		strcpy(str, "json error");
+		strcpy(str, "result parse json error");
 		break;
 	case APIE_NOT_RESULT:
 		strcpy(str, "no result");
+		break;
+	case APIE_RESULT_PARSE:
+		strcpy(str, "result parse error");
 		break;
 	case APIE_HTTP_ERROR:
 		strcpy(str, "http error");
@@ -77,7 +81,7 @@ struct api_result
 	unsigned int buff_size;
 	char path[256];
 	unsigned char data[2048];
-	unsigned int bytes;
+	unsigned int bytes;		// the size of result that saved in buff or fp
 	int finish;
 	cJSON *api_ret;
 	cJSON *api_data;			// the private data of api_ret
@@ -394,14 +398,14 @@ int call_api(struct api_t *api)
 			#if API_DEBUG_EN
 				if( !tmp_pchar )
 				{
-					tmp_pchar = ghttp_get_header(request, http_hdr_Content_Length);
-					apiDebug("%s: %s \n", http_hdr_Content_Length, tmp_pchar ? tmp_pchar : "null");
-					tmp_pchar = ghttp_get_header(request, http_hdr_Transfer_Encoding);
-					apiDebug("%s: %s \n", http_hdr_Transfer_Encoding, tmp_pchar ? tmp_pchar : "null");
-					tmp_pchar = ghttp_get_header(request, http_hdr_Content_Encoding);
-					apiDebug("%s: %s \n", http_hdr_Content_Encoding, tmp_pchar ? tmp_pchar : "null");
-					tmp_pchar = ghttp_get_header(request, http_hdr_Content_Type);
-					apiDebug("%s: %s \n", http_hdr_Content_Type, tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = (char *)ghttp_get_header(request, "Content-Length");
+					apiDebug("Content-Length: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = (char *)ghttp_get_header(request, "Transfer-Encoding");
+					apiDebug("Transfer-Encoding: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = (char *)ghttp_get_header(request, "Content-Encoding");
+					apiDebug("Content-Encoding: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = (char *)ghttp_get_header(request, "Content-Type");
+					apiDebug("Content-Type: %s \n", tmp_pchar ? tmp_pchar : "null");
 					tmp_pchar = (char *)1;
 				}
 			#endif
@@ -450,11 +454,12 @@ END:
 
 
 enum{
-	APIID_IPLOOKUP,
-	APIID_IDCARD,
-	APIID_BANKCARD,
-	APIID_PHONE,
-	APIID_QRCODE,
+	APIID_IPLOOKUP,		// ip 归属地查询
+	APIID_IDCARD,			// 身份证信息查询
+	APIID_BANKCARD,		// 银行卡信息查询
+	APIID_PHONE,			// 手机号码信息查询
+	APIID_QRCODE,			// 二维码生成
+	APIID_QQ,				// QQ 信息查询
 	APIID_DEF_MAX
 };
 
@@ -480,8 +485,9 @@ int api_parse_defualt(struct api_t *api)
 		return -1;
 	}
 	result = &(api->result);
-		
-	if(result->buff_size)
+
+	apiDebug("result->bytes: %u \n", result->bytes);
+	if(result->bytes)
 	{
 		if(result->buff)
 			result->api_ret = cJSON_Parse((const char *)api->result.buff);
@@ -544,7 +550,7 @@ int register_api(int api_id, int (*api_init)(struct api_t *api, void *param),
 	g_api_list[api_id].api_init = api_init;
 	
 	if(api_parse)
-		g_api_list[api_id].api_parse = api_deal;
+		g_api_list[api_id].api_parse = api_parse;
 	else
 		g_api_list[api_id].api_parse = api_parse_defualt;
 	
@@ -586,10 +592,10 @@ int exe_api(struct api_list *api, void *param)
 		goto END;
 	}
 	ret = api->api_deal(apiapi);
-	api->api_free(apiapi);
-
+	
 END:
 	apiError("%s \n", str_api_err(apiapi->api_error));
+	api->api_free(apiapi);
 	free_api_t(apiapi, 0);
 
 	return 0;
@@ -852,6 +858,126 @@ int api_deal_qrcode(struct api_t *api)
 	return 0;
 }
 
+int api_init_qq(struct api_t *api, void *param)
+{
+	int i=0, j=0;
+	char *api_param = (char *)param;
+
+	if(!api_param || strlen(api_param) < 5){
+		api->api_error = APIE_PARAM_ERROR;
+		return -1;
+	}
+
+	memset(api, 0, sizeof(struct api_t));
+	strcpy_array(api->url, "http://apis.baidu.com/3023/qq/qq");
+	strcpy_array(api->name, "qq");
+	api->action = ghttp_type_get;
+
+	if(set_api_url_param(api, "uins", api_param) < 0)
+		goto ERR;
+	if(set_api_req_head(api, APIKEY_NAME, APIKEY_VALUE) < 0)
+		goto ERR;
+
+	api->result_save_func = result_save_buff;
+
+	api->result.buff = api->result.data;
+	api->result.buff_size = sizeof(api->result.data);
+	
+	return 0;
+ERR:
+	api->api_error = APIE_MALLOC_ERROR;
+	return -1;
+}
+
+int api_parse_qq(struct api_t *api)
+{
+	char *json_str = NULL;
+	struct api_result *result = NULL;
+	if(!api){
+		api->api_error = APIE_ERROR;
+		return -1;
+	}
+	result = &(api->result);
+
+	apiDebug("result->bytes: %u \n", result->bytes);
+	if(result->bytes && result->buff){
+		json_str = strchr((char *)result->buff, '(');
+		if(json_str){
+			++json_str;
+			result->api_ret = cJSON_Parse(json_str);
+		}
+		else{
+			api->api_error = APIE_RESULT_PARSE;
+			return -1;
+		}
+
+		if(result->api_ret == NULL){
+			api->api_error = APIE_JSON_ERROR;
+			return -1;
+		}
+	}
+
+	return 0;
+}
+
+int api_deal_qq(struct api_t *api)
+{
+	int i=0, j=0;
+	char *tmp, *name, png_path[128], nickname[32]={'\0'};
+	cJSON *obj;
+	struct api_result *result = NULL;
+	if(!api){
+		api->api_error = APIE_ERROR;
+		return -1;
+	}
+	result = &(api->result);
+
+	result->api_code = 0;
+	result->api_msg = NULL;
+	result->api_data = result->api_ret;
+	
+	apiDebug("http_code: %d \n", api->result.http_code);
+	apiDebug("api_code: %d \n", api->result.api_code);
+	apiDebug("api_msg: %s \n", api->result.api_msg?api->result.api_msg:"null");
+
+	if(result->api_data)
+	{
+		j = cJSON_GetArraySize(result->api_data);
+		printf("QQ  [%d] \n", j);
+		for(i=0; i<j; i++)
+		{
+			obj = cJSON_GetArrayItem(result->api_data, i);
+			if(obj){
+				name = cJSON_GetObjectName(obj);
+				printf("%s\n", name ? name : "unknown QQ");
+				tmp = cJSON_GetStringValue(cJSON_GetArrayItem(obj, 0), NULL);
+				if(tmp && name){
+					sprintf(png_path, "%s.png", name);
+					if(ghttp_download_file(png_path, tmp) < 0)
+						printf("\ticon: download failed [%s]\n", tmp);
+					else
+						printf("\ticon: %s [download OK]\n", png_path);
+				}
+				else
+					printf("\ticon: %s\n", tmp ? tmp : "null");
+
+				tmp = cJSON_GetStringValue(cJSON_GetArrayItem(obj, 6), NULL);
+				if(tmp){
+					name = &nickname[0];
+					gbk_to_utf8(tmp, strlen(tmp), &name, NULL);
+					printf("\tnickname: %s\n", nickname);
+				}
+				else
+					printf("\tnickname: null \n");
+			}
+		}
+	}
+	else
+		printf("[no result] \n");
+
+	return 0;
+}
+
 void registe_def_api()
 {
 	register_api(APIID_IPLOOKUP, api_init_iplookup, NULL, NULL, NULL);
@@ -859,6 +985,7 @@ void registe_def_api()
 	register_api(APIID_BANKCARD, api_init_bankcard, NULL, api_deal_bankcard, NULL);
 	register_api(APIID_PHONE, api_init_phone, NULL, NULL, NULL);
 	register_api(APIID_QRCODE, api_init_qrcode, NULL, api_deal_qrcode, NULL);
+	register_api(APIID_QQ, api_init_qq, api_parse_qq, api_deal_qq, NULL);
 }
 
 
@@ -893,6 +1020,12 @@ void qrcode_usage()
 		"tools_api qrcode [--qr qr-string] [--jpg qr-jpg-path] [--size 1-20] \n"
 		);
 }
+void qq_usage()
+{
+	fprintf(stderr, "tools_api qq usage: \n"
+		"tools_api \"qq\" [qq-number,qq-number,...] \n"
+		);
+}
 
 void api_usage()
 {
@@ -904,6 +1037,7 @@ void api_usage()
 		"  bankcard \n"
 		"  phone \n"
 		"  qrcode \n"
+		"  qq \n"
 		"note:\"tools_api help <cmd>\" for help on a specific cmd \n"
 		);
 }
@@ -921,6 +1055,8 @@ void print_usage_api(char *cmd)
 		phone_usage();
 	else if( strcmp(cmd, "qrcode") == 0 )
 		qrcode_usage();
+	else if( strcmp(cmd, "qq") == 0 )
+		qq_usage();
 	else
 		api_usage();
 }
@@ -937,7 +1073,6 @@ int cmd_api_iplookup(int argc, char **argv)
 
 	return exe_api(find_api(APIID_IPLOOKUP), ip);
 }
-
 int cmd_api_idcard(int argc, char **argv)
 {
 	int i=1, ret=0;
@@ -950,7 +1085,6 @@ int cmd_api_idcard(int argc, char **argv)
 		
 	return exe_api(find_api(APIID_IDCARD), idcard);
 }
-
 int cmd_api_bankcard(int argc, char **argv)
 {
 	int i=1, ret=0;
@@ -963,7 +1097,6 @@ int cmd_api_bankcard(int argc, char **argv)
 		
 	return exe_api(find_api(APIID_BANKCARD), bankcard);
 }
-
 int cmd_api_phone(int argc, char **argv)
 {
 	int i=1, ret=0;
@@ -1002,14 +1135,26 @@ int cmd_api_qrcode(int argc, char **argv)
 	
 	return exe_api(find_api(APIID_QRCODE), &param);
 }
+int cmd_api_qq(int argc, char **argv)
+{
+	int i=1, ret=0;
+	char *qq = NULL;
+
+	if(argv[++i])
+		qq= argv[i];
+	else
+		phone_usage();
+		
+	return exe_api(find_api(APIID_QQ), qq);
+}
 
 int main(int argc, char **argv)
 {
 	int ret=0;
 
 	registe_def_api();
-#if 1		 //for gdb 
-	exe_api(find_api(APIID_IPLOOKUP), "117.89.35.58");
+#if 0		 //for gdb 
+/*	exe_api(find_api(APIID_IPLOOKUP), "117.89.35.58");
 	exe_api(find_api(APIID_IDCARD), "513030199310183212");
 	exe_api(find_api(APIID_BANKCARD), "6216613100005090934");
 	exe_api(find_api(APIID_PHONE), "13678165275");
@@ -1017,7 +1162,8 @@ int main(int argc, char **argv)
 	param.size = 8;
 	strcpy_array(param.qr_string, "http://www.baidu.com/index.php?ch=en&var=abc#frag2");
 	strcpy_array(param.jpg_path, "/mnt/hgfs/share/tmp/api_qr.jpg");
-	exe_api(find_api(APIID_QRCODE), &param);
+	exe_api(find_api(APIID_QRCODE), &param);*/
+	exe_api(find_api(APIID_QQ), "897319259,1129231447");
 #else
 	if(argc >= 2)
 	{
@@ -1035,6 +1181,8 @@ int main(int argc, char **argv)
 			ret = cmd_api_phone(argc, argv);
 		else if( strcmp(argv[1], "qrcode") == 0 )
 			ret = cmd_api_qrcode(argc, argv);
+		else if( strcmp(argv[1], "qq") == 0 )
+			ret = cmd_api_qq(argc, argv);
 		else
 			api_usage();
 	}

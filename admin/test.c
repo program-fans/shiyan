@@ -17,7 +17,7 @@ enum{
 	GDB_httpget
 };
 
-int gdb_ctrl = GDB_slist;
+int gdb_ctrl = OFF_GDB;
 
 static unsigned char globel_buf[4096] = {0};
 
@@ -358,6 +358,142 @@ int json_test(int argc, char **argv)
 	return 0;
 }
 
+char *time_period_2_str(struct wf_time_period *time)
+{
+	static char time_period_str[32] = {'\0'};
+	char buf[20] = {'\0'};
+	int i=0, m=0;
+	for(i=0; i<7; i++){
+		if(i == 0 && time->week_flags & 0x01){
+			buf[m] = 7 + '0';
+			++m;
+			buf[m] = ' ';
+			++m;
+		}
+		else if(time->week_flags & (1 << i)){
+			buf[m] = i + '0';
+			++m;
+			buf[m] = ' ';
+			++m;
+		}
+	}
+	buf[m] = '\0';
+	
+	sprintf(time_period_str, "[%s  %d:%d -- %d:%d]", buf, 
+		time->start_hour, time->start_min, time->end_hour, time->end_min);
+	return &time_period_str[0];
+}
+void time_set(unsigned char week_flags, int start_hour, int start_min, int end_hour, int end_min, 
+	struct wf_time_period *time)
+{
+	time->week_flags = week_flags;
+	time->start_hour = start_hour;
+	time->start_min = start_min;
+	time->end_hour = end_hour;
+	time->end_min = end_min;
+}
+int time_cmp(int hour, int min, int start_hour, int start_min, int end_hour, int end_min)
+{
+	struct tm src;
+	struct wf_time_period dst;
+
+	memset(&src, 0, sizeof(src));
+	memset(&dst, 0, sizeof(dst));
+	src.tm_hour = hour;
+	src.tm_min = min;
+	time_set(0x7F, start_hour, start_min, end_hour, end_min, &dst);
+	printf("cmp %d:%d   %s \n", hour, min, time_period_2_str(&dst));
+
+	return wf_time_period_cmp(&src, &dst);
+}
+int time_overlap(struct wf_time_period *time_new, struct wf_time_period *time_old)
+{
+	printf("overlap %s  ", time_period_2_str(time_new));
+	printf("%s\n", time_period_2_str(time_old));
+	return wf_time_period_is_overlap(time_new, time_old);
+}
+int time_test(int argc, char **argv)
+{
+	time_t t = time(NULL);
+	struct tm *now = localtime(&t);
+	printf("%d  %d:%d \n", now->tm_wday, now->tm_hour, now->tm_min);
+
+	printf("cmp result: %d \n", time_cmp(23, 54, 23, 55, 0, 5));
+	printf("cmp result: %d \n", time_cmp(23, 55, 23, 55, 0, 5));
+	printf("cmp result: %d \n", time_cmp(23, 56, 23, 55, 0, 5));
+	printf("cmp result: %d \n", time_cmp(0, 4, 23, 55, 0, 5));
+	printf("cmp result: %d \n", time_cmp(0, 5, 23, 55, 0, 5));
+	printf("cmp result: %d \n", time_cmp(0, 6, 23, 55, 0, 5));
+
+	printf("cmp result: %d \n", time_cmp(23, 59, 23, 55, 0, 0));
+	printf("cmp result: %d \n", time_cmp(0, 0, 23, 55, 0, 0));
+	printf("cmp result: %d \n", time_cmp(0, 1, 23, 55, 0, 0));
+
+	printf("cmp result: %d \n", time_cmp(3, 39, 3, 40, 3, 50));
+	printf("cmp result: %d \n", time_cmp(3, 40, 3, 40, 3, 50));
+	printf("cmp result: %d \n", time_cmp(3, 41, 3, 40, 3, 50));
+	printf("cmp result: %d \n", time_cmp(3, 49, 3, 40, 3, 50));
+	printf("cmp result: %d \n", time_cmp(3, 50, 3, 40, 3, 50));
+	printf("cmp result: %d \n\n", time_cmp(3, 51, 3, 40, 3, 50));
+
+	struct wf_time_period time_new, time_old;
+
+	time_set(0x7F, 10, 5, 17, 35, &time_new);
+	time_set(0x7F, 11, 0, 18, 0, &time_old);
+	printf("overlap result: %d [1]\n", time_overlap(&time_new, &time_old));
+	time_set(0x7F, 10, 5, 12, 35, &time_new);
+	time_set(0x7F, 14, 0, 18, 0, &time_old);
+	printf("overlap result: %d [0]\n", time_overlap(&time_new, &time_old));
+	time_set(0x04, 10, 5, 16, 35, &time_new);
+	time_set(0x20, 14, 0, 18, 0, &time_old);
+	printf("overlap result: %d [0]\n", time_overlap(&time_new, &time_old));
+
+	time_set(0x51, 20, 0, 18, 0, &time_new);
+	time_set(0x61, 10, 0, 21, 0, &time_old);
+	printf("overlap result: %d [1]\n", time_overlap(&time_new, &time_old));
+	time_set(0x51, 20, 0, 18, 0, &time_old);
+	time_set(0x61, 10, 0, 21, 0, &time_new);
+	printf("overlap result: %d [1]\n", time_overlap(&time_new, &time_old));
+	time_set(0x51, 20, 0, 18, 0, &time_new);
+	time_set(0x51, 10, 0, 21, 0, &time_old);
+	printf("overlap result: %d [1]\n", time_overlap(&time_new, &time_old));
+	time_set(0x51, 20, 0, 18, 0, &time_new);
+	time_set(0x51, 10, 0, 15, 0, &time_old);
+	printf("overlap result: %d [1]\n", time_overlap(&time_new, &time_old));
+
+	time_set(0x51, 17, 0, 14, 0, &time_new);
+	time_set(0x61, 19, 0, 15, 0, &time_old);
+	printf("overlap result: %d [1]\n", time_overlap(&time_new, &time_old));
+	time_set(0x51, 17, 0, 12, 0, &time_new);
+	time_set(0x61, 14, 0, 20, 0, &time_old);
+	printf("overlap result: %d [1]\n", time_overlap(&time_new, &time_old));
+
+	time_set(0x2A, 20, 0, 18, 0, &time_new);
+	time_set(0x54, 10, 0, 21, 0, &time_old);
+	printf("overlap result: %d [1]\n", time_overlap(&time_new, &time_old));
+	time_set(0x2A, 20, 0, 18, 0, &time_new);
+	time_set(0x54, 19, 0, 23, 0, &time_old);
+	printf("overlap result: %d [0]\n", time_overlap(&time_new, &time_old));
+	time_set(0x2A, 20, 0, 18, 0, &time_old);
+	time_set(0x54, 10, 0, 21, 0, &time_new);
+	printf("overlap result: %d [1]\n", time_overlap(&time_new, &time_old));
+	time_set(0x2A, 20, 0, 18, 0, &time_new);
+	time_set(0x2A, 10, 0, 21, 0, &time_old);
+	printf("overlap result: %d [1]\n", time_overlap(&time_new, &time_old));
+	time_set(0x2A, 20, 0, 18, 0, &time_new);
+	time_set(0x2A, 10, 0, 15, 0, &time_old);
+	printf("overlap result: %d [0]\n", time_overlap(&time_new, &time_old));
+
+	time_set(0x2A, 17, 0, 14, 0, &time_new);
+	time_set(0x54, 19, 0, 15, 0, &time_old);
+	printf("overlap result: %d [0]\n", time_overlap(&time_new, &time_old));
+	time_set(0x2A, 17, 0, 12, 0, &time_new);
+	time_set(0x54, 14, 0, 20, 0, &time_old);
+	printf("overlap result: %d [0]\n", time_overlap(&time_new, &time_old));
+
+	return 0;
+}
+
 int main(int argc, char **argv)
 {
 	int ret=0;
@@ -389,6 +525,8 @@ int main(int argc, char **argv)
 			ret = test_httpget(argc, argv);
 		else if( strcmp(argv[1], "json") == 0 )
 			ret = json_test(argc, argv);
+		else if( strcmp(argv[1], "time") == 0 )
+			ret = time_test(argc, argv);
 		else
 			test();
 	}

@@ -78,6 +78,135 @@ int test_jmp()
 #endif
 
 
+static unsigned char wf_week_flags_tomorrow(unsigned char day_flags)
+{
+	unsigned char tomorrow_flags = 0;
+
+	if(!day_flags)
+		return tomorrow_flags;
+
+	tomorrow_flags = day_flags << 1;
+	if(tomorrow_flags & 0x80){
+		tomorrow_flags = tomorrow_flags | 0x01;
+		tomorrow_flags = tomorrow_flags & 0x7F;
+	}
+	return tomorrow_flags;
+}
+
+int wf_time_period_is_overlap(struct wf_time_period *time_new, struct wf_time_period *time_old)
+{
+	int new_start, new_end, old_start, old_end;
+	//int hour_24 = 1440;	// 24 * 60;
+	unsigned char tomorrow_flags;
+
+	if(!time_new || !time_old)
+		return 0;
+	if(!time_new->week_flags || !time_new->week_flags)
+		return 0;
+
+	new_start = time_new->start_hour * 60 + time_new->start_min;
+	new_end = time_new->end_hour * 60 + time_new->end_min;
+	old_start = time_old->start_hour * 60 + time_old->start_min;
+	old_end = time_old->end_hour * 60 + time_old->end_min;
+	
+	if(new_start <= new_end && old_start <= old_end){
+		if(time_new->week_flags & time_old->week_flags){
+			if(new_start <= old_end && new_end >= old_start)
+				return 1;
+		}
+	}
+
+	if(new_start > new_end){
+		tomorrow_flags = wf_week_flags_tomorrow(time_new->week_flags);
+		if(time_new->week_flags & time_old->week_flags){
+			//printf("---new_start > new_end----today---\n");
+			if(new_start <= old_end)
+				return 1;
+			if(old_start > old_end)
+				return 1;
+		}
+		if(tomorrow_flags & time_old->week_flags){
+			//printf("---new_start > new_end----tomorrow---\n");
+			if(new_end >= old_start)
+				return 1;
+		}
+	}
+
+	if(old_start > old_end){
+		tomorrow_flags = wf_week_flags_tomorrow(time_old->week_flags);
+		if(time_new->week_flags & time_old->week_flags){
+			//printf("---old_start > old_end----today---\n");
+			if(new_end >= old_start)
+				return 1;
+			if(new_start > new_end)
+				return 1;
+		}
+		if(tomorrow_flags & time_new->week_flags){
+			//printf("---old_start > old_end----tomorrow---\n");
+			if(new_start <= old_end)
+				return 1;
+		}
+	}
+	
+	return 0;
+}
+
+int wf_time_period_check(struct wf_time_period *time_period)
+{
+	if(!time_period->week_flags)
+		return 0;
+	if(time_period->start_hour > 23 || time_period->end_hour > 23)
+		return 0;
+	if(time_period->start_min > 59 || time_period->end_min > 59)
+		return 0;
+
+	return 1;
+}
+
+int wf_time_period_cmp(struct tm *time, struct wf_time_period *time_period)
+{
+	int tm_day = time->tm_wday;
+	int yesterday = 0;
+	int start;
+	int end;
+	int now;
+
+	if (tm_day < 0 || tm_day > 6)
+		return 0;
+	if (time_period->week_flags == 0)
+		return 1;
+
+	if (tm_day == 0)
+		yesterday = 6;
+	else 
+		yesterday = tm_day - 1;
+
+	if ((time_period->week_flags & (0x1 << tm_day | 0x1 << yesterday)) == 0) 
+		return 0;
+
+	start = time_period->start_hour * 60 + time_period->start_min;
+	end  = time_period->end_hour * 60 + time_period->end_min;
+	now = time->tm_hour * 60 + time->tm_min;
+
+	/*  nomal time : like 8:00-12:00 */
+	if (end >= start)
+		goto compare;
+
+	/* start < end. accoss day. like 22:00-3:00*/
+	if (time_period->week_flags & 1 << yesterday) {
+		if (now <= end)
+			return 1;
+	}
+
+	if (time_period->week_flags & 1 << tm_day) 
+		end = 24 * 60;
+compare:
+	if (!(time_period->week_flags & 1 << tm_day))
+		return 0;
+	if (now >= start && now <= end)
+		return 1;
+	return 0;
+}
 
 void close_all_fd()
 {

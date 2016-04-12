@@ -43,11 +43,21 @@
 
 
 
+#include <time.h>
+struct wf_time_period
+{
+	unsigned char week_flags;	// 0x01:sunday; 0x02:monday; ...; 0x40:saturday; 0x7F:all day
+	unsigned char start_hour;
+	unsigned char start_min;
+	unsigned char end_hour;
+	unsigned char end_min;
+};
+extern int wf_time_period_is_overlap(struct wf_time_period *time_new, struct wf_time_period *time_old);
+extern int wf_time_period_check(struct wf_time_period *time_period);
+extern int wf_time_period_cmp(struct tm *time, struct wf_time_period *time_period);
 
 
-
-
-#define is_exist_file(file)		access(file, F_OK)
+//#define is_exist_file(file)		access(file, F_OK)
 
 
 extern int close_fd_self();

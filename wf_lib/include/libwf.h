@@ -10,13 +10,14 @@
 #include "wf_kv.h"					// no include 
 #include "wf_log.h"					// no include 
 #include "wf_memory.h"				// no include 
-#include "wf_misc.h"				// no include 
+#include "wf_misc.h"				// include <time.h> <signal.h> 
 #include "wf_net.h"				// no include 
 #include "wf_threadpool.h"			// include <pthread.h>
 #include "wf_tree.h"				// no include 
 #include "wf_param.h"				// include "linux_list.h"
 #include "strnormalize.h"			// no include 
 #include "md5.h"					// include <inttypes.h>  <basetsd.h>
+#include "wf_base64.h"
 
 //#include "pal_time.h"
 //#include "libpx_thread.h"

@@ -25,8 +25,8 @@
 
 #ifndef exit_error
 #define exit_error(str)	do { \
-	pprint("%s\n", str); \
-	pprint("exit: %s [%d] \n", __FILE__, __LINE__); \
+	printf("%s\n", str); \
+	printf("exit: %s [%d] \n", __FILE__, __LINE__); \
 	exit(0); \
 } while (0)
 #endif
@@ -91,43 +91,18 @@ extern int exe_exist_check(char *name);
 extern void wf_check_exit(int semkey, char *name);
 
 
+extern char *wf_std_error(int *errcode);
+
+
 // -------------------------------------------------------------------
 #ifndef WF_CURSOR
 #define WF_CURSOR
-
 #define save_cursor()			printf("\033[s")		// 保存光标位置
 #define hide_cursor()			printf("\033[?25l")		// 隐藏光标
 #define recover_cursor()		printf("\033[u")		// 恢复光标位置
 #define show_cursor()		printf("\33[?25h")		// 显示光标
 #define default_cursor()		printf("\033[0m\n")		// 关闭所有属性
 #define setBlueWhite()		printf("\033[44;37m")	// 设置蓝底白字
-
-#endif
-// -------------------------------------------------------------------
-
-// -------------------------------------------------------------------
-extern char *wf_std_error(int *errcode);
-
-#ifndef WF_ERROR
-#define WF_ERROR
-
-#define WF_SUCCESS					0
-// 1 ~ 10
-#define WF_FAILED					-1
-#define WF_ERROR_PARAM			-2
-#define WF_ERROR_MALLOC			-3
-#define WF_ERROR_SOURCE_LACK		-4			// 资源缺乏
-#define WF_ERROR_SPACE_LACK		-5			// 空间缺乏，程序设计上所限定的空间
-												// 区别于WF_ERROR_MALLOC
-#define WF_ERROR_OPEN				-6
-#define WF_ERROR_CLOSE				-7
-#define WF_ERROR_READ				-8
-#define WF_ERROR_WRITE				-9
-#define WF_ERROR_UNKNOW			-10
-// 11 ~ 20	
-
-extern char *get_wf_error_str(int ret);
-
 #endif
 // -------------------------------------------------------------------
 

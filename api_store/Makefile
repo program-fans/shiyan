@@ -15,4 +15,4 @@ pack: clean
 	#nothing
 
 clean:
-	rm -f *.o
+	rm -f *.oi tools_api

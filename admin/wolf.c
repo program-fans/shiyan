@@ -48,7 +48,8 @@ void kill_app(char *name)
 	if( find_app(name) == NULL )
 		return;
 
-	sprintf(g_cmg_buf, "kill -9 `pidof %s`", name);
+	sprintf(g_cmg_buf, "kill -2 `pidof %s`", name);
+	//sprintf(g_cmg_buf, "kill -9 `pidof %s`", name);
 	ret = system(g_cmg_buf);
 	printf("ret of system: %d \n", ret);
 }
@@ -66,7 +67,7 @@ void damen_process()
 	char buf[2048]={'\0'};
 	struct sockaddr_in addr_from;
 
-	sock = wf_udp_socket(48480);
+	sock = wf_udp_socket(48480, 0, NULL);
 	if(sock < 0){
 		printf("%s \n", wf_socket_error(NULL));
 		return;

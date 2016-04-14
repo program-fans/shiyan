@@ -15,4 +15,4 @@ pack: clean
 	#nothing
 
 clean:
-	rm -f *.o
+	rm -f *.o arp_cheat arp_turn

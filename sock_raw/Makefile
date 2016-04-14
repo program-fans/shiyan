@@ -20,4 +20,4 @@ pack: clean
 	zip -qr $(TARGET).zip ./
 
 clean:
-	rm -f *.o
+	rm -f *.o $(TARGET)

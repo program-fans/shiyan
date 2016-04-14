@@ -491,6 +491,10 @@ int time_test(int argc, char **argv)
 	time_set(0x54, 14, 0, 20, 0, &time_old);
 	printf("overlap result: %d [0]\n", time_overlap(&time_new, &time_old));
 
+	time_set(0x01, 0, 56, 0, 12, &time_new);
+	time_set(0x7F, 0, 34, 0, 33, &time_old);
+	printf("overlap result: %d [1]\n", time_overlap(&time_new, &time_old));
+
 	return 0;
 }
 

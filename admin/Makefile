@@ -22,4 +22,4 @@ pack: clean
 	#nothing
 
 clean:
-	rm -f *.o
+	rm -f *.o wolf wftool test

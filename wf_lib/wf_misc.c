@@ -13,34 +13,7 @@
 
 #include "wf_misc.h"
 
-#define WF_ERROR_NUM_MAX		(~WF_ERROR_UNKNOW+2)
-static char wf_error[WF_ERROR_NUM_MAX][128]={
-	"success",
-// 1 ~ 10
-	"failed",
-	"param error",
-	"malloc error",
-	"source lack",
-	"space lack",
-	"open error",
-	"close error",
-	"read error",
-	"write error",
-	"unknow error"
-// 11 ~ 20
-};
 
-char *get_wf_error_str(int ret)
-{
-	return wf_error[~ret+1];
-}
-
-char *wf_std_error(int *errcode)
-{
-	if(errcode)
-		*errcode = errno;
-	return strerror(errno);
-}
 
 #if 0
 /*
@@ -375,14 +348,15 @@ struct sysinfo
 	return info.uptime;
 }
 
+// void (*exit_call)(void)    void (*exit_call)(int)
 void wf_registe_exit_signal(__sighandler_t exit_call)
 {
 	signal(SIGINT, exit_call);/*register signal handler #include <signal.h>*/
 	signal(SIGTERM, exit_call);/*register signal handler*/
-	signal(SIGKILL, exit_call);/*register signal handler*/
+	//signal(SIGQUIT, exit_call);/*register signal handler*/
 }
 
-// void (*exit_call)(void)
+// void (*exit_call)(void)    void (*exit_call)(int)
 void wf_demon(__sighandler_t exit_call)
 {
 	if(fork()!= 0)
@@ -391,7 +365,7 @@ void wf_demon(__sighandler_t exit_call)
 
 	signal(SIGINT, exit_call);/*register signal handler #include <signal.h>*/
 	signal(SIGTERM, exit_call);/*register signal handler*/
-	signal(SIGKILL, exit_call);/*register signal handler*/
+	//signal(SIGQUIT, exit_call);/*register signal handler*/
 }
 
 int getSysCmd_output(char *cmd,char *output, unsigned int size)
@@ -441,6 +415,13 @@ void wf_check_exit(int semkey, char *name)
 			}
 		}
 	}
+}
+
+char *wf_std_error(int *errcode)
+{
+	if(errcode)
+		*errcode = errno;
+	return strerror(errno);
 }
 
 #if 0

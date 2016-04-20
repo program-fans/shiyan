@@ -43,6 +43,37 @@
 
 
 
+
+
+
+
+
+
+
+#include <unistd.h>
+extern pid_t record_lock_test(int fd, int type, off_t offset, int whence, off_t len);
+
+#define record_lock_rtest(fd, offset, whence, len) \
+	record_lock_test((fd), F_RDLCK, (offset), (whence), (len))
+#define record_lock_wtest(fd, offset, whence, len) \
+	record_lock_test((fd), F_WRLCK, (offset), (whence), (len))
+
+#include <fcntl.h>
+extern int record_lock(int fd, int cmd, int type, off_t offset, int whence, off_t len);
+
+#define record_lock_read(fd, offset, whence, len) \
+	record_lock((fd), F_SETLK, F_RDLCK, (offset), (whence), (len))
+#define record_lock_readw(fd, offset, whence, len) \
+	record_lock((fd), F_SETLKW, F_RDLCK, (offset), (whence), (len))
+#define record_lock_write(fd, offset, whence, len) \
+	record_lock((fd), F_SETLK, F_WRLCK, (offset), (whence), (len))
+#define record_lock_writew(fd, offset, whence, len) \
+	record_lock((fd), F_SETLKW, F_WRLCK, (offset), (whence), (len))
+#define record_unlock(fd, offset, whence, len) \
+	record_lock((fd), F_SETLK, F_UNLCK, (offset), (whence), (len))
+
+
+
 #include <time.h>
 struct wf_time_period
 {
@@ -85,6 +116,8 @@ extern long wf_getsys_uptime(unsigned long *up_time);
 extern void wf_registe_exit_signal(__sighandler_t exit_call);
 // void (*exit_call)(void)
 extern void wf_demon(__sighandler_t exit_call);
+
+extern void wf_daemon_action(int close_stdio, __sighandler_t exit_call);
 
 extern int getSysCmd_output(char *cmd,char *output, unsigned int size);
 extern int exe_exist_check(char *name);

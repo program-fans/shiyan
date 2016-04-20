@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/sysinfo.h>
 #include <signal.h>
 #include <setjmp.h>
@@ -10,6 +9,9 @@
 #include <dirent.h>
 #include <limits.h>
 #include <sys/param.h>
+#include <sys/stat.h>		// umask
+#include <sys/resource.h>	// getrlimit
+#include <fcntl.h>
 
 #include "wf_misc.h"
 
@@ -30,9 +32,13 @@
 应用: 可以配合alarm闹钟实现函数超时返回
 */
 static sigjmp_buf jmp_env;
+static volatile sig_atomic_t canjump = 0;
 static void connect_alarm(int)
 {
-    siglongjmp(jmp_env, 1);
+	if(canjump == 0) // 在sigjmp_buf 被sigsetjmp初始化完成之前，防止调用siglongjmp
+		return;
+	canjump = 0;
+	siglongjmp(jmp_env, 1);
 }
 int test_jmp()
 {
@@ -42,6 +48,7 @@ int test_jmp()
 		printf("timeout\n");
 		return 1;
 	}
+	canjump = 1;
 	alarm(3);
 
 	sleep(5); // 执行可能超时的任务
@@ -49,6 +56,72 @@ int test_jmp()
 	return 0;
 }
 #endif
+#if 0
+void abort()			// POSIX-style abort() function
+{
+	sigset_t mask;
+	struct sigaction action;
+
+	// caller can't ignore SIGABRT, if so reset to default
+	sigaction(SIGABRT, NULL, &action);
+	if(action.sa_handler == SIG_IGN){
+		action.sa_handler = SIG_DFL;
+		sigaction(SIGABRT, &action, NULL);
+	}
+	if(action.sa_handler == SIG_DFL)
+		fflush(NULL);				// flush all open stdio streams
+
+	// caller can't block SIGABRT; make sure it's unblocked.
+	sigfillset(&mask);
+	sigdelset(&mask, SIGABRT);
+	sigprocmask(SIG_SETMASK, &mask, NULL);
+
+	kill(getpid(), SIGABRT);
+
+	// if we're here, process caught SIGABRT and returned.
+	fflush(NULL);				// flush all open stdio streams
+	action.sa_handler = SIG_DFL;
+	sigaction(SIGABRT, &action, NULL); // reset to default
+
+	sigprocmask(SIG_SETMASK, &mask, NULL);
+	kill(getpid(), SIGABRT);
+	exit(1);
+}
+#endif
+
+
+
+
+
+
+pid_t record_lock_test(int fd, int type, off_t offset, int whence, off_t len)
+{
+	struct flock lock;
+
+	lock.l_type = type;	// F_RDLCK,  F_WRLCK
+	lock.l_start = offset;
+	lock.l_whence = whence;	// SEEK_SET,  SEEK_CUR, SEEK_END
+	lock.l_len = len;
+
+	if( fcntl(fd, F_GETLK, &lock) < 0 )
+		return (pid_t)0;
+	if(lock.l_type == F_UNLCK)
+		return (pid_t)0;
+
+	return lock.l_pid;
+}
+
+int record_lock(int fd, int cmd, int type, off_t offset, int whence, off_t len)
+{
+	struct flock lock;
+
+	lock.l_type = type;	// F_RDLCK,  F_WRLCK,  F_UNLCK
+	lock.l_start = offset;
+	lock.l_whence = whence;	// SEEK_SET,  SEEK_CUR, SEEK_END
+	lock.l_len = len;
+
+	return fcntl(fd, cmd, &lock);
+}
 
 
 static unsigned char wf_week_flags_tomorrow(unsigned char day_flags)
@@ -181,14 +254,14 @@ compare:
 	return 0;
 }
 
-void close_all_fd()
+void close_all_fd(int close_std)
 {
 #ifdef OPEN_MAX
 	long open_max = OPEN_MAX;
 #else
 	long open_max = 0;
 #endif
-	int i=0, j=0;
+	int i = 0, j=0;
 
 	if(open_max == 0)
 	{
@@ -202,7 +275,7 @@ void close_all_fd()
 	#endif
 	}
 	j = (int)open_max;
-	for(i=0; i<open_max; i++)
+	for(i = close_std ? 0 : 3; i<open_max; i++)
 		close(i);
 }
 
@@ -360,12 +433,61 @@ void wf_registe_exit_signal(__sighandler_t exit_call)
 void wf_demon(__sighandler_t exit_call)
 {
 	if(fork()!= 0)
-		exit(1);
+		exit(0);
 	setsid();
 
 	signal(SIGINT, exit_call);/*register signal handler #include <signal.h>*/
 	signal(SIGTERM, exit_call);/*register signal handler*/
 	//signal(SIGQUIT, exit_call);/*register signal handler*/
+}
+
+void wf_daemon_action(int close_stdio, __sighandler_t exit_call)
+{
+	int i, fd0, fd1, fd2;
+	pid_t pid;
+	struct rlimit rl;
+	struct sigaction sa;
+
+	// clear file creation mask
+	umask(0);
+
+	if(getrlimit(RLIMIT_NOFILE, &rl) < 0)
+		rl.rlim_max = 0;
+
+	pid = fork();
+	if(pid < 0)
+		exit(1);
+	else if(pid == 0)
+		exit(0);
+	else
+		setsid();
+
+	sa.sa_handler = SIG_IGN;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGHUP, &sa, NULL);
+
+	if(fork()!= 0)
+		exit(0);
+	chdir("/");
+
+	if(rl.rlim_max == 0)
+		close_all_fd(close_stdio);
+	else{
+		if(rl.rlim_max == RLIM_INFINITY)
+			rl.rlim_max = 1024;
+		for(i = close_stdio ? 0 : 3; i<rl.rlim_max; i++)
+			close(i);
+	}
+
+	if(close_stdio){
+		fd0 = open("/dev/null", O_RDWR);
+		fd1 = dup(0);
+		fd2 = dup(0);
+	}
+
+	signal(SIGINT, exit_call);
+	signal(SIGTERM, exit_call);
 }
 
 int getSysCmd_output(char *cmd,char *output, unsigned int size)
@@ -385,6 +507,7 @@ int getSysCmd_output(char *cmd,char *output, unsigned int size)
 	return chars_read;
 }
 
+// <0: error;  0: not exist;  >0: number of process
 int exe_exist_check(char *name)
 {
 	char buf[32]={'\0'}, cmd[256];

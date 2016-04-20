@@ -254,8 +254,9 @@ ERR:
 	return sock;
 }
 
-int wf_tcp_socket(int port)
+int wf_tcp_socket(int port, int keepalive)
 {
+	int optval = 1;
 	int sock = -1, ret = -1;
 	struct sockaddr_in addr;
 
@@ -270,9 +271,16 @@ int wf_tcp_socket(int port)
 	addr.sin_family =AF_INET;
 	addr.sin_port=htons(port);
 
+	if(keepalive){
+		ret = setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof (optval));
+		if(ret)
+			goto ERR;
+	}
+
 	ret = bind(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
 	if(ret < 0)
 	{
+ERR:
 		close(sock);
 		return ret;
 	}
@@ -320,11 +328,11 @@ int wf_connect(int clientSock, char *serverName, int serverPort)
 	return connect(clientSock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
 }
 
-int wf_connect_socket(char *serverName, int serverPort, int clientPort)
+int wf_connect_socket(char *serverName, int serverPort, int clientPort, int keepalive)
 {
 	int sock = -1, ret = -1;
 	
-	sock = wf_tcp_socket(clientPort);
+	sock = wf_tcp_socket(clientPort, keepalive);
 	if(sock < 0)
 		return sock;
 	
@@ -341,7 +349,7 @@ int wf_listen_socket(int port, int listen_num)
 {
 	int sock = -1, ret = -1;
 
-	sock = wf_tcp_socket(port);
+	sock = wf_tcp_socket(port, 0);
 	if(sock < 0)
 		return sock;
 

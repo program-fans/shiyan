@@ -10,7 +10,7 @@
 #include "wf_kv.h"					// no include 
 #include "wf_log.h"					// no include 
 #include "wf_memory.h"				// no include 
-#include "wf_misc.h"				// include <time.h> <signal.h> 
+#include "wf_misc.h"				// include <time.h> <signal.h>  <fcntl.h> <unistd.h>
 #include "wf_net.h"				// no include 
 #include "wf_threadpool.h"			// include <pthread.h>
 #include "wf_tree.h"				// no include 

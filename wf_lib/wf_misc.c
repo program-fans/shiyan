@@ -441,7 +441,7 @@ void wf_demon(__sighandler_t exit_call)
 	//signal(SIGQUIT, exit_call);/*register signal handler*/
 }
 
-void wf_daemon_action(int close_stdio, __sighandler_t exit_call)
+void wf_daemon_action(int nochdir, int noclose, __sighandler_t exit_call)
 {
 	int i, fd0, fd1, fd2;
 	pid_t pid;
@@ -469,18 +469,20 @@ void wf_daemon_action(int close_stdio, __sighandler_t exit_call)
 
 	if(fork()!= 0)
 		exit(0);
-	chdir("/");
+	
+	if(!nochdir)
+		chdir("/");
 
 	if(rl.rlim_max == 0)
-		close_all_fd(close_stdio);
+		close_all_fd(!noclose);
 	else{
 		if(rl.rlim_max == RLIM_INFINITY)
 			rl.rlim_max = 1024;
-		for(i = close_stdio ? 0 : 3; i<rl.rlim_max; i++)
+		for(i = noclose ? 3 : 0; i<rl.rlim_max; i++)
 			close(i);
 	}
 
-	if(close_stdio){
+	if(!noclose){
 		fd0 = open("/dev/null", O_RDWR);
 		fd1 = dup(0);
 		fd2 = dup(0);

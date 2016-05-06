@@ -19,9 +19,11 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 #include "ghttp.h"
 #include "http_uri.h"
 #include "http_hdrs.h"
@@ -66,6 +68,40 @@ ghttp_request_new(void)
   l_return->resp = http_resp_new();
   l_return->conn = http_trans_conn_new();
   return l_return;
+}
+
+ghttp_request *ghttp_request_new2(ghttp_type action, char *url, ghttp_sync_mode mode)
+{
+	ghttp_request *request = NULL;
+
+	request = ghttp_request_new();
+	if(!request)
+		return NULL;
+	if( ghttp_set_uri(request, url) < 0)
+		goto ERR;
+	ghttp_set_type(request, action);
+	ghttp_set_sync(request, mode);
+	
+	return request;
+ERR:
+	ghttp_request_destroy(request);
+	return NULL;
+}
+
+ghttp_request *ghttp_request_new_url(char *url)
+{
+	ghttp_request *request = NULL;
+
+	request = ghttp_request_new();
+	if(!request)
+		return NULL;
+	if( ghttp_set_uri(request, url) < 0)
+		goto ERR;
+	
+	return request;
+ERR:
+	ghttp_request_destroy(request);
+	return NULL;
 }
 
 void
@@ -427,6 +463,8 @@ ghttp_status ghttp_process(ghttp_request *a_request)
 				a_request->connected = 0;
 			return ghttp_error;
 		}
+		if (l_rv == HTTP_TRANS_NEXT)
+			return ghttp_next;
 		if (l_rv == HTTP_TRANS_NOT_DONE)
 			return ghttp_not_done;
 		if (l_rv == HTTP_TRANS_DONE)
@@ -812,6 +850,8 @@ ghttp_proc ghttp_get_proc(ghttp_request *a_request)
 }
 
 
+
+#if	GHTTP_EXTEND
 int ghttp_download_file(char *path, char *url)
 {
 	ghttp_request *request = NULL;
@@ -842,7 +882,7 @@ int ghttp_download_file(char *path, char *url)
 	
 	pFile = fopen ( path , "wb" );
 	if(pFile == NULL){
-		ghttpDebug("error: %s [%s]\n", wf_std_error(NULL), path);
+		ghttpDebug("error: %s [%s]\n", strerror(errno), path);
 		ret = -2;
 		goto END;
 	}
@@ -868,7 +908,7 @@ int ghttp_download_file(char *path, char *url)
 			ret = -4;
 			goto END;
 		}
-		if (req_status != ghttp_error ) 
+		else
 		{
 			if( req_status == ghttp_done )
 			{
@@ -886,11 +926,11 @@ int ghttp_download_file(char *path, char *url)
 			#if GHTTP_DEBUG
 				if( !tmp_pchar )
 				{
-					tmp_pchar = ghttp_get_header(request, "Content-Length");
+					tmp_pchar = (char *)ghttp_get_header(request, "Content-Length");
 					ghttpDebug("Content-Length: %s \n", tmp_pchar ? tmp_pchar : "null");
-					tmp_pchar = ghttp_get_header(request, "Transfer-Encoding");
+					tmp_pchar = (char *)ghttp_get_header(request, "Transfer-Encoding");
 					ghttpDebug("Transfer-Encoding: %s \n", tmp_pchar ? tmp_pchar : "null");
-					tmp_pchar = ghttp_get_header(request, "Content-Encoding");
+					tmp_pchar = (char *)ghttp_get_header(request, "Content-Encoding");
 					ghttpDebug("Content-Encoding: %s \n", tmp_pchar ? tmp_pchar : "null");
 					tmp_pchar = (char *)1;
 					
@@ -933,7 +973,6 @@ int ghttp_download_file(char *path, char *url)
 	}
 	
 END:
-	ghttp_clean(request);
 	ghttp_request_destroy(request);
     	if(pFile)
 		fclose(pFile);
@@ -945,4 +984,481 @@ END:
 	
 	return ret;
 }
+
+static ghttp_request *ghttp_request_redirect(ghttp_request *cur_request, char *new_url)
+{
+	ghttp_request *request = NULL;
+	
+	if (!cur_request || !cur_request->req || !cur_request->conn)
+		return NULL;
+
+	request = ghttp_request_new();
+	if(!request)
+		return NULL;
+
+	if( ghttp_set_uri(request, new_url) < 0)
+		goto ERR;
+	ghttp_set_type(request, cur_request->req->type);
+	ghttp_set_sync(request, cur_request->conn->sync);
+
+	return request;
+ERR:
+	ghttp_request_destroy(request);
+	return NULL;
+}
+
+void ghttp_result_destroy(struct ghttp_result *result, int self, int freebuff)
+{
+	if(!result)
+		return;
+	if(freebuff && result->buff && (result->buff != (&result->data[0])) )
+		free(result->buff);
+	if(self)
+		free(result);
+}
+
+struct ghttp_result *ghttp_result_clean(struct ghttp_result *result)
+{
+	if(!result)
+		return NULL;
+	if(result->fp){
+		fclose(result->fp);
+		result->fp = NULL;
+	}
+	if(strlen(result->file_path) > 0){
+		result->fp = fopen(result->file_path , "wb");
+		if(NULL == result->fp){
+			return NULL;
+		}
+	}
+
+	if(result->buff)
+		memset(result->buff, 0, result->buff_size);
+	memset(result->data, 0, sizeof(result->data));
+	result->http_code = 0;
+	result->bytes = 0;
+	result->finish = 0;
+
+	return result;
+}
+
+static int ghttp_result_save_buff(ghttp_request *request, struct ghttp_result *result)
+{
+	char *buf = NULL;
+	int bytes_read = 0;
+	int tmp = 0;
+	
+	if(!request || !result)
+		return -1;
+
+	if(result->finish){
+		return 0;
+	}
+
+	ghttp_flush_response_buffer(request);
+	if(ghttp_get_body_len(request) > 0)
+	{
+		buf = ghttp_get_body(request);
+		bytes_read = ghttp_get_body_len(request);
+		//ghttpDebug("buf: %p, bytes_read: %d \n", buf, bytes_read);
+		if(buf){
+			tmp = result->bytes + bytes_read;
+			if(tmp >= result->buff_size){
+				bytes_read = tmp - result->bytes;
+				result->finish = 1;
+			}
+			memcpy(result->buff + result->bytes, buf, bytes_read);
+			result->bytes += bytes_read;
+		}
+	}
+
+	return 0;
+}
+
+static int ghttp_result_save_file(ghttp_request *request, struct ghttp_result *result)
+{
+	char *buf = NULL;
+	int bytes_read = 0;
+	
+	if(!request || !result)
+		return -1;
+
+	if(result->finish){
+		fclose(result->fp);
+		result->fp = NULL;
+		return 0;
+	}
+
+	ghttp_flush_response_buffer(request);
+	if(ghttp_get_body_len(request) > 0)
+	{
+		buf = ghttp_get_body(request);
+		bytes_read = ghttp_get_body_len(request);
+		
+		if(buf){
+			if( fwrite(buf, bytes_read, 1, result->fp) == bytes_read)
+				result->bytes += bytes_read;
+		}
+	}
+
+	return 0;
+}
+
+int ghttp_result_set(struct ghttp_result *result, char *filepath, void *buff, unsigned int buff_size)
+{
+	if(!result)
+		return -1;
+	
+	memset(result, 0, sizeof(result));
+	if(filepath && strlen(filepath) > 0){
+		strcpy_array(result->file_path, filepath);
+		result->fp = fopen(result->file_path , "wb");
+		if(NULL == result->fp){
+			return -1;
+		}
+		result->result_save_func = ghttp_result_save_file;
+		return 0;
+	}
+	
+	if(buff){
+		result->buff = (unsigned char *)buff;
+		result->buff_size = buff_size;
+	}
+	else{
+		if(buff_size <= sizeof(result->data)){
+			result->buff = &(result->data[0]);
+			result->buff_size = sizeof(result->data);
+		}
+		else{
+			result->buff = (unsigned char *)malloc(buff_size);
+			if(NULL == result->buff){
+				return -1;
+			}
+		}
+	}
+	
+	result->result_save_func = ghttp_result_save_buff;
+
+	return 0;
+}
+
+static void ghttp_result_recv_finish(ghttp_request *request, struct ghttp_result *result)
+{
+	if(NULL == result || result->finish == 2 )
+		return;
+	result->finish = 1;
+	result->result_save_func(request, result);
+	result->finish = 2;
+}
+
+static void ghttp_result_recv(ghttp_request *request, struct ghttp_result *result)
+{
+	if(NULL == result)
+		ghttp_flush_response_buffer(request);
+	else
+		result->result_save_func(request, result);
+}
+
+int ghttp_get_work(ghttp_request *request, struct ghttp_result *result)
+{
+	int ret = 0;
+	ghttp_status req_status;
+	ghttp_proc req_proc;
+	int status_code = 0;
+	ghttp_request *redirect_request;
+	char *redirect = NULL, *buf = NULL;
+
+	#if GHTTP_DEBUG
+	char *tmp_pchar = NULL;
+	#endif
+
+	if(!request)
+		return -1;
+	ghttp_set_type(request, ghttp_type_get);
+	ghttp_set_sync(request, ghttp_async);
+	if( ghttp_prepare(request) < 0 ){
+		ret = -3;
+		goto END;
+	}
+
+	do
+	{
+		req_status = ghttp_process(request);
+		if( req_status == ghttp_error ){
+			ghttpDebug("%s \n", ghttp_get_error(request));
+			ret = -3;
+			goto END;
+		}
+		else
+		{
+			if( req_status == ghttp_done )
+			{
+				status_code = ghttp_status_code(request);
+				if(status_code != 200){
+					ghttp_result_recv_finish(request, result);
+					break;
+				}
+			}
+
+			req_proc = ghttp_get_proc(request);
+			if( req_proc == ghttp_proc_response || req_proc == ghttp_proc_done )
+			{
+			#if GHTTP_DEBUG
+				if( !tmp_pchar )
+				{
+					tmp_pchar = (char *)ghttp_get_header(request, "Content-Length");
+					ghttpDebug("Content-Length: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = (char *)ghttp_get_header(request, "Transfer-Encoding");
+					ghttpDebug("Transfer-Encoding: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = (char *)ghttp_get_header(request, "Content-Encoding");
+					ghttpDebug("Content-Encoding: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = (char *)ghttp_get_header(request, "Content-Type");
+					ghttpDebug("Content-Type: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = (char *)1;
+				}
+			#endif
+				ghttp_result_recv(request, result);
+			}
+		}
+	}while (req_status == ghttp_not_done);
+	
+	switch(status_code)
+	{
+	case 200:
+	default:
+		break;
+	case 302:
+		buf = (char *)ghttp_get_header(request, "Location");
+		if(buf){
+			redirect = (char *)malloc(strlen(buf)+1);
+			if(redirect == NULL){
+				ret = -2;
+				goto END;
+			}
+			strcpy(redirect, buf);
+		}
+		break;
+	}
+	
+END:
+	if(result)
+		result->http_code = status_code;
+	ghttp_result_recv_finish(request, result);
+	
+	if(redirect){
+		ghttpDebug("redirect: %s \n", redirect);
+		redirect_request = ghttp_request_redirect(request, redirect);
+		ghttp_request_destroy(request);
+		free(redirect);
+		ret = ghttp_get_work(redirect_request, ghttp_result_clean(result));
+	}
+	else
+		ghttp_request_destroy(request);
+	
+	return ret;
+}
+
+
+
+
+
+void ghttp_post_data_destory(struct ghttp_post_data *data, int self, int freebuff)
+{
+	if(!data)
+		return;
+	if(data->fp){
+		fclose(data->fp);
+		data->fp = NULL;
+	}
+	if(freebuff && data->buff)
+		free(data->buff);
+	if(self)
+		free(data);
+}
+
+static int ghttp_post_data_buff(ghttp_request *request, struct ghttp_post_data *data)
+{
+	unsigned int post_len = 0;
+	if(!request || !data || !data->buff || !data->bytes)
+		return -1;
+	if(!data->loop){
+		return 0;
+	}
+
+	post_len = data->bytes - data->post_bytes;
+	if(post_len == 0)
+		return 0;
+	else if(post_len > CONN_IO_BUF_CHUNKSIZE_DEFAULT)
+		post_len = CONN_IO_BUF_CHUNKSIZE_DEFAULT;
+	ghttp_set_body(request, (char *)data->buff + data->post_bytes, post_len);
+	
+	data->post_bytes += post_len;
+	if(data->post_bytes == data->bytes){
+		data->post_bytes = 0;
+		--data->loop;
+		data->post_total_bytes += data->bytes;
+	}
+	
+	return 0;
+}
+
+static unsigned char ghttp_chunk[CONN_IO_BUF_CHUNKSIZE_DEFAULT];
+static int ghttp_post_data_file(ghttp_request *request, struct ghttp_post_data *data)
+{
+	unsigned int post_len = 0;
+	size_t r_read;
+	if(!request || !data || !data->buff || !data->bytes)
+		return -1;
+	if(!data->loop){
+		if(data->fp){
+			fclose(data->fp);
+			data->fp = NULL;
+		}
+		return 0;
+	}
+
+	while(1){
+		r_read = fread(ghttp_chunk, 1, CONN_IO_BUF_CHUNKSIZE_DEFAULT, data->fp);
+		if(r_read >= 0)
+			break;
+		else if(errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+			continue;
+		else
+			return -1;
+	}
+	
+	if(r_read > 0){
+		ghttp_set_body(request, (char *)ghttp_chunk, r_read);
+		data->post_bytes += r_read;
+		if(data->post_bytes == data->bytes){
+			data->post_bytes = 0;
+			--data->loop;
+			data->post_total_bytes += data->bytes;
+			fseek(data->fp, 0, SEEK_SET);
+		}
+	}
+	else
+		ghttp_set_body(request, NULL, 0);
+
+	return 0;
+}
+
+int ghttp_post_data_set(struct ghttp_post_data *data, char *filepath, void *buff, unsigned int buff_size)
+{
+	if(!data)
+		return -1;
+	
+	memset(data, 0, sizeof(data));
+	data->loop = 1;
+	if(filepath && strlen(filepath) > 0){
+		strcpy_array(data->file_path, filepath);
+		data->fp = fopen(data->file_path , "rb");
+		if(NULL == data->fp){
+			return -1;
+		}
+		fseek(data->fp, 0, SEEK_END);
+		data->bytes = (unsigned int)ftell(data->fp);
+		fseek(data->fp, 0, SEEK_SET);
+		data->post_data_func = ghttp_post_data_buff;
+		return 0;
+	}
+	
+	if(buff){
+		data->buff = (unsigned char *)buff;
+		data->bytes = buff_size;
+	}
+	else{
+		return -1;
+	}
+	
+	data->post_data_func = ghttp_post_data_file;
+
+	return 0;
+}
+
+void ghttp_post_data_loop(struct ghttp_post_data *data, unsigned int loop)
+{
+	if(data)
+		data->loop = loop + 1;
+}
+
+int ghttp_post_work(ghttp_request *request, struct ghttp_result *result, struct ghttp_post_data *data)
+{
+	int ret = 0;
+	ghttp_status req_status;
+	ghttp_proc req_proc;
+	int status_code = 0;
+	ghttp_request *redirect_request;
+	char *redirect = NULL, *buf = NULL;
+
+	#if GHTTP_DEBUG
+	char *tmp_pchar = NULL;
+	#endif
+
+	if(!request || !data)
+		return -1;
+	ghttp_set_type(request, ghttp_type_post);
+	ghttp_set_sync(request, ghttp_async);
+	if( ghttp_prepare(request) < 0 ){
+		ret = -3;
+		goto END;
+	}
+
+	do
+	{
+		req_status = ghttp_process(request);
+		if( req_status == ghttp_error ){
+			ghttpDebug("%s \n", ghttp_get_error(request));
+			ret = -3;
+			goto END;
+		}
+		else
+		{
+			if(req_status == ghttp_next ){
+				data->post_data_func(request, data);
+			}
+			if( req_status == ghttp_done )
+			{
+				status_code = ghttp_status_code(request);
+				if(status_code != 200){
+					ghttp_result_recv_finish(request, result);
+					break;
+				}
+			}
+
+			req_proc = ghttp_get_proc(request);
+			if( req_proc == ghttp_proc_response || req_proc == ghttp_proc_done )
+			{
+			#if GHTTP_DEBUG
+				if( !tmp_pchar )
+				{
+					tmp_pchar = (char *)ghttp_get_header(request, "Content-Length");
+					ghttpDebug("Content-Length: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = (char *)ghttp_get_header(request, "Transfer-Encoding");
+					ghttpDebug("Transfer-Encoding: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = (char *)ghttp_get_header(request, "Content-Encoding");
+					ghttpDebug("Content-Encoding: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = (char *)ghttp_get_header(request, "Content-Type");
+					ghttpDebug("Content-Type: %s \n", tmp_pchar ? tmp_pchar : "null");
+					tmp_pchar = (char *)1;
+				}
+			#endif
+				ghttp_result_recv(request, result);
+			}
+		}
+	}while (req_status == ghttp_not_done);
+	
+END:
+	ghttpDebug("http_code: %d \n", status_code);
+	if(ret == 0 && (status_code < 200 || status_code >= 300))
+		ret = -3;
+	if(result)
+		result->http_code = status_code;
+	ghttp_result_recv_finish(request, result);
+
+	ghttp_request_destroy(request);
+	
+	return ret;
+}
+#endif
 

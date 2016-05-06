@@ -691,7 +691,7 @@ static void set_tmpbody(http_resp *a_resp, http_trans_conn *a_conn, int len)
 		memset(a_resp->tmpbody, 0, len+1);
 		memcpy(a_resp->tmpbody, a_conn->io_buf, len);
 	}
-
+	ghttpDebug("[set_tmpbody]  %d \n", a_resp->tmpbody_len);
 	if(len == a_conn->io_buf_alloc)
 		http_trans_buf_reset(a_conn);
 	else
@@ -703,7 +703,7 @@ static void count_prev_body_len(http_resp *a_resp)
 	a_resp->flushed_length += a_resp->body_len;
 	if (a_resp->body != NULL)
 	{
-		ghttpDebug("free body \n");
+		ghttpDebug("free body [%p]\n", a_resp->body);
 		free(a_resp->body);
 		a_resp->body = NULL;
 		a_resp->body_len = 0;
@@ -719,6 +719,7 @@ static void flush_response_body(http_resp *a_resp, http_trans_conn *a_conn)
 	if(a_resp->tmpbody){
 		a_resp->body = a_resp->tmpbody;
 		a_resp->body_len = a_resp->tmpbody_len;
+		// don't free tmpbody here.  free tmpbody at next free body
 		a_resp->tmpbody = NULL;
 		a_resp->tmpbody_len = 0;
 		ghttpDebug("flushed_length=%d, body_len=%d, io_buf_alloc=%d \n", a_resp->flushed_length, a_resp->body_len, a_conn->io_buf_alloc);

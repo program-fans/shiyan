@@ -23,10 +23,12 @@ extern int str2mac(char *str, unsigned char *mac);
 
 
 // only can be used array copy, dst must be array ptr
+#ifndef strcpy_array
 #define strcpy_array(dst, src)	do{\
 	strncpy(dst, src, sizeof(dst)-1);\
 	dst[sizeof(dst)-1] = '\0';\
 	}while(0)
+#endif
 
 // if <string.h> declare strupr, then don't use this function
 extern char *strupr_2(char *str);

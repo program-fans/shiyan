@@ -82,7 +82,7 @@ struct api_result
 	char path[256];
 	unsigned char data[2048];
 	unsigned int bytes;		// the size of result that saved in buff or fp
-	int finish;
+	int finish;				// 1: save result finish  2: the work after save result finish. eg: close file
 	cJSON *api_ret;
 	cJSON *api_data;			// the private data of api_ret
 	char *api_msg;			// the msg of api code
@@ -185,7 +185,7 @@ int result_save_buff(ghttp_request *request, struct api_t *api)
 	result = &(api->result);
 
 	if(result->finish){
-		if(result->buff_size == 0){
+		if(result->bytes == 0){
 			api->api_error = APIE_NOT_RESULT;
 		}
 		return 0;
@@ -231,7 +231,7 @@ int result_save_file(ghttp_request *request, struct api_t *api)
 	result = &(api->result);
 
 	if(result->finish){
-		if(result->buff_size == 0){
+		if(result->bytes == 0){
 			api->api_error = APIE_NOT_RESULT;
 		}
 		fclose(result->fp);
@@ -381,7 +381,7 @@ int call_api(struct api_t *api)
 			ret = -3;
 			goto END;
 		}
-		if (req_status != ghttp_error ) 
+		else
 		{
 			if( req_status == ghttp_done )
 			{
@@ -413,8 +413,6 @@ int call_api(struct api_t *api)
 			}
 		}
 	}while (req_status == ghttp_not_done);
-
-	api->result.http_code = status_code;
 	
 	switch(status_code)
 	{
@@ -435,11 +433,10 @@ int call_api(struct api_t *api)
 	}
 	
 END:
-	ghttp_clean(request);
+	api->result.http_code = status_code;
+	result_recv_finish(request, api);
 	ghttp_request_destroy(request);
 	
-	result_recv_finish(request, api);
-    	
 	if(redirect){
 		apiDebug("redirect: %s \n", redirect);
 		//ret = ghttp_get_file(path, redirect);

@@ -60,6 +60,7 @@ typedef enum ghttp_status_tag
 {
   ghttp_error = -1,
   ghttp_not_done,
+  ghttp_next,		// for post, need to set body that left 
   ghttp_done
 } ghttp_status;
 
@@ -81,6 +82,8 @@ typedef struct ghttp_current_status_tag
 
 /* create a new request object */
 extern ghttp_request *ghttp_request_new(void);
+extern ghttp_request *ghttp_request_new2(ghttp_type action, char *url, ghttp_sync_mode mode);
+extern ghttp_request *ghttp_request_new_url(char *url);
 
 /* delete a current request object */
 extern void ghttp_request_destroy(ghttp_request *a_request);
@@ -230,11 +233,69 @@ extern char *ghttp_get_resource_name(ghttp_request *a_request);
 
 extern ghttp_proc ghttp_get_proc(ghttp_request *a_request);
 
-extern int ghttp_download_file(char *path, char *url);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
+
+
+#define GHTTP_EXTEND	1	/*ghttp extend apply*/
+
+#if	GHTTP_EXTEND
+
+extern int ghttp_download_file(char *path, char *url);
+
+#ifndef strcpy_array
+#define strcpy_array(dst, src)	do{\
+	strncpy(dst, src, sizeof(dst)-1);\
+	dst[sizeof(dst)-1] = '\0';\
+	}while(0)
+#endif
+
+struct ghttp_result
+{
+	int http_code;
+	FILE *fp;
+	char file_path[256];
+	unsigned char *buff;
+	unsigned int buff_size;
+	unsigned char data[2048];
+	unsigned int bytes;		// the size of result that saved in buff or fp
+	int finish;			// 1: save result finish  2: the work after save result finish. eg: close file
+	int (*result_save_func)(ghttp_request *request, struct ghttp_result *result);
+};
+
+extern void ghttp_result_destroy(struct ghttp_result *result, int self, int freebuff);
+
+extern struct ghttp_result *ghttp_result_clean(struct ghttp_result *result);
+
+extern int ghttp_result_set(struct ghttp_result *result, char *filepath, void *buff, unsigned int buff_size);
+
+#define ghttp_result_set_default(result)	ghttp_result_set((result), NULL, NULL, 0)
+
+extern int ghttp_get_work(ghttp_request *request, struct ghttp_result *result);
+
+struct ghttp_post_data
+{
+	FILE *fp;
+	char file_path[256];
+	unsigned char *buff;
+	unsigned int bytes;		// the size of data that stored in buff or fp
+	unsigned int post_bytes;
+	unsigned int loop;			// the number of times that post data
+	unsigned int post_total_bytes;
+	int (*post_data_func)(ghttp_request *request, struct ghttp_post_data *data);
+};
+
+extern void ghttp_post_data_destory(struct ghttp_post_data *data, int self, int freebuff);
+
+extern int ghttp_post_data_set(struct ghttp_post_data *data, char *filepath, void *buff, unsigned int buff_size);
+
+extern void ghttp_post_data_loop(struct ghttp_post_data *data, unsigned int loop);
+
+extern int ghttp_post_work(ghttp_request *request, struct ghttp_result *result, struct ghttp_post_data *data);
+
+#endif
 
 
 #endif /* GHTTP_H */

@@ -50,6 +50,7 @@ typedef enum http_req_state_tag {
   http_req_state_start = 0,
   http_req_state_sending_request,
   http_req_state_sending_headers,
+  http_req_state_append_body,		// for post
   http_req_state_sending_body
 } http_req_state;
 
@@ -65,6 +66,8 @@ typedef struct http_req_tag {
   char          *resource;
   char          *body;
   int            body_len;
+  int            content_length;	// the content-length of req
+  int            content_send;	// the length of content that sended
   http_hdr_list *headers;
   http_req_state state;
 } http_req;

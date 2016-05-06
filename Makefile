@@ -11,7 +11,7 @@ app_list += sock_raw
 app_list += admin
 app_list += arp
 app_list += api_store
-
+app_list += speedtest
 
 all:
 	for d in $(app_list); do \

@@ -6,13 +6,15 @@ GLIB=../ghttp_lib/include/ -lghttp
 INCLUDE=../wf_lib/include/
 GINCLUDE=../ghttp_lib/include/
 
-all: tools_api
+SPD=speedtest
 
-tools_api: tools_api.c
-	$(CC) -g tools_api.c -I$(INCLUDE) -I$(GINCLUDE) -L$(LIB) -L$(GLIB) -o $@
+all: $(SPD)
+
+$(SPD): $(SPD).c
+	$(CC) -g $(SPD).c -I$(INCLUDE) -I$(GINCLUDE) -L$(LIB) -L$(GLIB) -o $@
 
 pack: clean
 	#nothing
 
 clean:
-	rm -f *.o tools_api
+	rm -f *.o $(SPD)

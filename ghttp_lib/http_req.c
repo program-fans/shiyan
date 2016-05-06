@@ -109,6 +109,8 @@ int http_req_send(http_req *a_req, http_trans_conn *a_conn)
 			goto http_req_state_sending_request_jump;
 		if (a_req->state == http_req_state_sending_headers)
 			goto http_req_state_sending_headers_jump;
+		if (a_req->state == http_req_state_append_body)
+			goto http_req_state_append_body_jump;
 		if (a_req->state == http_req_state_sending_body)
 			goto http_req_state_sending_body_jump;
 	}
@@ -192,6 +194,12 @@ http_req_state_sending_headers_jump:
 	l_content = http_hdr_get_value(a_req->headers, http_hdr_Content_Length);
 	if (l_content)
 	{
+		a_req->content_length = atoi(l_content);
+http_req_state_append_body_jump:
+		if(a_req->body == NULL || a_req->body_len <= 0){
+			a_req->state = http_req_state_append_body;
+			return HTTP_TRANS_NEXT;
+		}
 		/* append the information to the buffer */
 		http_trans_append_data_to_buf(a_conn, a_req->body, a_req->body_len);
 		a_req->state = http_req_state_sending_body;
@@ -200,6 +208,8 @@ http_req_state_sending_body_jump:
 		do
 		{
 			l_rv = http_trans_write_buf(a_conn);
+			if(a_conn->last_read > 0)
+				a_req->content_send += a_conn->last_read;
 			if ((a_conn->sync == HTTP_TRANS_ASYNC) && (l_rv == HTTP_TRANS_NOT_DONE))
 				return HTTP_TRANS_NOT_DONE;
 			if ((l_rv == HTTP_TRANS_DONE) && (a_conn->last_read == 0))
@@ -209,5 +219,11 @@ http_req_state_sending_body_jump:
 		/* reset the buffer */
 		http_trans_buf_reset(a_conn);
 	}
+
+	if(a_req->content_send < a_req->content_length){
+		a_req->state = http_req_state_append_body;
+		return HTTP_TRANS_NEXT;
+	}
+	
 	return HTTP_TRANS_DONE;
 }

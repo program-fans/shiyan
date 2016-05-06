@@ -12,7 +12,12 @@
 #include <sys/stat.h>		// umask
 #include <sys/resource.h>	// getrlimit
 #include <fcntl.h>
-
+#if 0
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#include <sched.h>		// sched_setaffinity
+#endif
 #include "wf_misc.h"
 
 
@@ -88,10 +93,55 @@ void abort()			// POSIX-style abort() function
 	exit(1);
 }
 #endif
+#if 0
+// need CAP_SYS_NICE (need root)
+int bind_cpu()
+{
+	cpu_set_t set;
+	int ret, cur_cpu_num = 0;
+	unsigned long i, cpu = __CPU_SETSIZE;
+
+	CPU_ZERO(&set);
+	ret = sched_getaffinity(0, sizeof(cpu_set_t), &set);
+	if(ret < 0)
+		return ret;
+	for(i=0; i<__CPU_SETSIZE; i++){
+		if(CPU_ISSET(i, &set)){
+			if(cpu == __CPU_SETSIZE)
+				cpu = i;
+			++cur_cpu_num;
+		}
+		if(cur_cpu_num > 1)
+			break;
+	}
+
+	if(cur_cpu_num <= 1)
+		return 0;
+
+	CPU_ZERO(&set);
+	CPU_SET(cpu, &set);
+
+	return sched_setaffinity(0, sizeof(cpu_set_t), &set);
+}
+#endif
 
 
 
 
+
+
+
+
+
+
+double radian(double angle)
+{
+	return ((M_PI/180.0) * angle);
+}
+double angle(double radian)
+{
+	return ((180.0/M_PI) * radian);
+}
 
 
 pid_t record_lock_test(int fd, int type, off_t offset, int whence, off_t len)

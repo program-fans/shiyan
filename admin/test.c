@@ -14,12 +14,66 @@ enum{
 	GDB_char,
 	GDB_ipc,
 	GDB_slist,
+	GDB_list,
 	GDB_httpget
 };
 
 int gdb_ctrl = OFF_GDB;
 
 static unsigned char globel_buf[4096] = {0};
+
+void list_test()
+{
+struct test_t
+{
+        int a;
+        struct list_head list;
+};
+	struct test_t  *pos;
+	struct test_t test_data[10];
+	struct test_t test_data2;
+	struct test_t test_data3;
+	struct list_head head = LIST_HEAD_INIT(head);
+	int i=0, j=10;
+
+	INIT_LIST_HEAD(&test_data2.list);
+	test_data2.a = 0;
+	INIT_LIST_HEAD(&test_data3.list);
+	test_data3.a = 99;
+	
+	for(i=0; i<10; i++){
+		INIT_LIST_HEAD(&(test_data[i].list));
+		test_data[i].a = j;
+		--j;
+		list_add(&(test_data[i].list), &head);
+	}
+
+	list_for_each_entry(pos, &head, list){
+		printf("%d ", pos->a);
+	}
+	printf(" [%d] \n", pos->a);
+
+	list_for_each_entry(pos, &head, list){
+		if(test_data2.a < pos->a){ 
+			list_add_tail(&test_data2.list, &pos->list);
+			break;
+		}
+	}
+	list_add_tail(&test_data3.list, &head); 
+
+	list_for_each_entry(pos, &head, list){
+		printf("%d ", pos->a);
+	}
+	printf("\n");
+
+	pos = list_entry(head.prev, struct test_t, list);
+	printf("del: %d \n", pos->a);
+	list_del(head.prev);
+	list_for_each_entry(pos, &head, list){
+		printf("%d ", pos->a);
+	}
+	printf("\n");
+}
 
 void slist_test()
 {
@@ -133,23 +187,9 @@ void char_test(int argc, char **argv)
 }
 void test()
 {
-	#define TOTAL	10
-	int a[12] = {56, 84, 5, 854, 24, 0, 5, 45, 0, 48, 486, 42};
-	int i, j, k;
-	printf("--------------- test ------------\n");
-
-	for(i=0; i<TOTAL; i++)
-		printf("%d\t", i);
-	printf("\n");
-	for(i=0; i<TOTAL; i++)
-		printf("%d\t", a[i]);
-	printf("\n");
-	
-	bubble_sort_int(a, 0, 9);
-
-	for(i=0; i<TOTAL; i++)
-		printf("%d\t", a[i]);
-	printf("\n");
+	printf("pi: %lf \n", M_PI);
+	printf("180 turn radian: %lf \n", radian(180.0));
+	printf("30.6586 - 30.5545 turn radian: %lf \n", radian(30.6586 - 30.5545));
 }
 
 int ghttp_get_file(char *path, char *url)
@@ -494,6 +534,9 @@ int time_test(int argc, char **argv)
 	time_set(0x01, 0, 56, 0, 12, &time_new);
 	time_set(0x7F, 0, 34, 0, 33, &time_old);
 	printf("overlap result: %d [1]\n", time_overlap(&time_new, &time_old));
+	time_set(0x7E, 23, 0, 2, 58, &time_new);
+	time_set(0x7F, 23, 51, 12, 11, &time_old);
+	printf("overlap result: %d [1]\n", time_overlap(&time_new, &time_old));
 
 	return 0;
 }
@@ -523,6 +566,8 @@ int main(int argc, char **argv)
 			char_test(argc, argv);
 		else if( strcmp(argv[1], "ipc") == 0 )
 			ipc_test();
+		else if( strcmp(argv[1], "list") == 0 )
+			list_test();
 		else if( strcmp(argv[1], "slist") == 0 )
 			slist_test();
 		else if( strcmp(argv[1], "httpget") == 0 )

@@ -5,19 +5,56 @@
 #include <time.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <signal.h>
-
+#include <fcntl.h>
+#include <stdarg.h>
 #include <math.h>
 
+#define ROUTER_360		0
+#if ROUTER_360
+#include "nc_ipc.h"
+#else
 #include "libwf.h"
+#endif
 #include "ghttp.h"
 
 #define SPD_DEBUG_EN	1
 #if SPD_DEBUG_EN
-#define DEBUG(fmt, ...)	printf("[%s-%d] "fmt, __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#if ROUTER_360
+#define DEBUG(fmt, ...)	do{if(1)console_printf("\nSPD[%s-%d] "fmt, __FUNCTION__, __LINE__, ##__VA_ARGS__);}while(0)
 #else
-#define DEBUG(fmt, ...)
+#define DEBUG(fmt, ...)	do{if(1)printf("\n[%s-%d] "fmt, __FUNCTION__, __LINE__, ##__VA_ARGS__);}while(0)
 #endif
+#else
+#define DEBUG(fmt, ...)	do{}while(0)
+#endif
+
+#ifdef ENABLE_SPD_LOG
+#define spdlog(fmt, args...)    spdlog_printf(fmt, ##args)
+#else
+#define spdlog(fmt, args...)	printf(fmt, ##args)
+#endif
+#define SPD_DEBUG_LOG   "/tmp/spd_log"
+
+int spdlog_printf(const char *fmt, ...)
+{
+        FILE *f = NULL;
+        va_list ap;
+
+        f = fopen(SPD_DEBUG_LOG, "a+");
+        if (f == NULL) {
+                return -1;
+        }
+
+        va_start(ap, fmt);
+        vfprintf(f, fmt, ap);
+        va_end(ap);
+        fclose(f);
+
+        return 0;
+}
 
 void print_strn(char *str, unsigned int max_num)
 {
@@ -58,7 +95,9 @@ struct speed_server_list
 };
 
 #define DOWN_PROCESS_NUM	5	// <= 10
+#define DOWN_TIME			18
 #define UP_PROCESS_NUM		5	// <= 10
+#define UPLOAD_TIME			15
 struct speed_child
 {
 	pid_t download_pid[DOWN_PROCESS_NUM];
@@ -73,18 +112,29 @@ struct speed_child
 #define SPEEDTEST_SERVERLIST_URL3	"http://www.speedtest.net/speedtest-servers.php"
 #define SPEEDTEST_SERVERLIST_URL4	"http://c.speedtest.net/speedtest-servers.php"
 #define CLOSEST_SERVER_NUM_MAX	3
+#define SPEEDTEST_CONFIG_XML				"/tmp/speedtest_config.xml"
+#define SPEEDTEST_SERVER_LIST_XML			"/tmp/speedtest_server_list.xml"
+#define SPEEDTEST_CLOSEST_SERVERS_XML	"/tmp/speedtest_closest_servers.xml"
+//#define SPEEDTEST_UPLOAD_XML				"/tmp/speedtest_upload.xml"
 
 #define USE_WGET	1
-#if USE_WGET
-void sig_child()
+
+int waitpid_time(pid_t pid, int *pstatus, unsigned int max_time)
 {
-	pid_t pid;
-	while(1){
-		pid = waitpid(-1, NULL, WNOHANG);
-		if(pid <= 0)
-			break;
-		DEBUG("child %d exit \n", pid);
+	unsigned int time_count = 0;
+
+	if(max_time){
+		while(1){
+			if(time_count >= max_time)
+				return time_count;
+			if(waitpid(pid, pstatus, WNOHANG) > 0)
+				return time_count;
+			sleep(1);
+			++time_count;
+		}
 	}
+	else
+		return waitpid(pid, pstatus, 0);
 }
 
 int create_child_process(const char *filename, char *const argv[], int close_std)
@@ -121,10 +171,6 @@ enum{
 	WGET_DOWNLOAD,
 	WGET_POST_UPLOAD
 };
-#define SPEEDTEST_CONFIG_XML				"/tmp/speedtest_config.xml"
-#define SPEEDTEST_SERVER_LIST_XML			"/tmp/speedtest_server_list.xml"
-#define SPEEDTEST_CLOSEST_SERVERS_XML	"/tmp/speedtest_closest_servers.xml"
-//#define SPEEDTEST_UPLOAD_XML				"/tmp/speedtest_upload.xml"
 
 int speedtest_child(int option, void *data)
 {
@@ -182,27 +228,7 @@ int speedtest_child(int option, void *data)
 	return ret;
 }
 
-int waitpid_time(pid_t pid, int *pstatus, unsigned int max_time)
-{
-	unsigned int time_count = 0;
-
-	if(max_time){
-		while(1){
-			if(time_count >= max_time)
-				return time_count;
-			if(waitpid(pid, pstatus, WNOHANG) > 0)
-				return time_count;
-			sleep(1);
-			++time_count;
-		}
-	}
-	else
-		return waitpid(pid, pstatus, 0);
-}
-#else
 static struct ghttp_result g_ghttp_result;
-#endif
-
 static unsigned char speed_chunk[1228800];		// 1200 KB
 static struct speed_config g_config;
 static struct speed_server_list closest_server_list;
@@ -263,11 +289,11 @@ void print_server_list(struct speed_server_list *list)
 {
 	struct speed_server *pos;
 
-	printf("---list size: %u \n", list->server_num);
+	spdlog("---list size: %u \n", list->server_num);
 	if(list_empty_careful(&list->server_head))
 		return;
 	list_for_each_entry(pos, &list->server_head, list){
-		printf("[distance: %lf] url=%s lat=%lf lon=%lf country=%s sponsor=%s \n\n", 
+		spdlog("[distance: %lf] url=%s lat=%lf lon=%lf country=%s sponsor=%s \n\n", 
 			pos->distance, pos->url, pos->lat, pos->lon, pos->country, pos->sponsor);
 	}
 }
@@ -514,6 +540,16 @@ int isfar(double lat1, double lon1, double lat2, double lon2)
 	return 0;
 }
 
+#if ROUTER_360
+#ifndef M_PI
+#define M_PI            3.14159265358979323846  /* pi */
+#endif
+double radian(double angle)
+{
+	return ((M_PI/180.0) * angle);
+}
+#endif
+
 double distance(double lat1, double lon1, double lat2, double lon2)
 {
 	double radius = 6371.0;  // km
@@ -572,11 +608,7 @@ int peek_closest_server(struct speed_config *config, struct speed_server_list *l
 
 int get_server_list(char *server_url)
 {
-#if USE_WGET
-	return 0;
-#else
 	int ret = 0;
-	char *ptr, *tmp;
 	ghttp_request *request = NULL;
 
 	if(!server_url)
@@ -596,7 +628,6 @@ int get_server_list(char *server_url)
 	}
 
 	return 0;
-#endif
 }
 
 int get_server_lists(struct speed_config *config, struct speed_server_list *list)
@@ -848,9 +879,335 @@ int select_best_server(struct speed_server_list *list, struct speed_server **bes
 	return 0;
 }
 
+#if ROUTER_360
+/*
+typedef struct _Recv_property_t{
+    unsigned long long rbytes;
+    unsigned int packets;
+    int errs;
+    int drop;
+    int fifo;
+    int frame;
+    int compressed;
+    int multicast;
+}Recv_pro,*pRecv_pro;
+typedef struct _Transmit_property_t{
+    unsigned long long sbytes;
+    unsigned int packets;
+    int errs;
+    int drop;
+    int fifo;
+    int colls;
+    int carrier;
+    int compressed;
+}Transmit_pro,*pTransmit_pro;
+*/
+typedef struct _Time_jiffes_t{
+    long jiffes_sec;
+    long jiffes_usec;
+}Time_jiffes,*pTime_jiffes;
+/*
+typedef struct _devInterface_t{
+    char name[32];
+    Recv_pro Rpacket;
+    Transmit_pro Spacket;
+    Time_jiffes jiffes;
+}devInterface,*pdevInterface;
+*/
+typedef struct _statistics_data_t{
+    unsigned long long packetsize;
+    Time_jiffes jiffes;
+}Statistic_data,*pStatistic_data;
+enum{
+    START=0,
+    RBYTES,
+    RPACKETS,
+    RERRS,
+    RDROP,
+    RFIFO,
+    RFRAME,
+    RCOMPRESSED,
+    RMULTICAST,
+    SBYTES,
+    SPACKETS,
+    SERRS,
+    SDROP,
+    SFIFO,
+    SCOLLS,
+    SCARRIER,
+    SCOMPRESSED,
+    TJIFFESSEC,
+    TJIFFESUSEC
+};
+
+#ifdef PLATFORM_MTK
+#define WIRED_INTERFACE "eth2.1"
+#define WISP_INTERFACE "apcli0"
+#define WISP_INTERFACE_5G "apclii0"
+#else//rtk
+#define WIRED_INTERFACE "eth1.1"
+#define WISP_INTERFACE		"wlan0-vxd"
+#endif
+
+char *ispacing(char *str)
+{
+	while(*str==' ')
+		str++;
+	return str ;
+}
+int isnspacing(char *str)
+{
+	int len = 0;	
+	while(*str!=' ' && *str!='\0' && *str!='\n'){
+		str++;
+		len++;
+	}
+	return len;
+}
+int getdata(char *dest, char *data, int line)
+{
+	char *node=NULL,*tmpstr=NULL;
+	int len=0;
+	
+	while(line)
+	{
+		node = ispacing(data);
+		tmpstr=node;
+		len = isnspacing(tmpstr);
+		--line;
+		if(!line){
+			strncpy(dest,node,len);
+			return 0;
+		}
+		data=node;
+		data+=len;
+		len = 0;
+	}
+	return -1;
+}
+int getRxdata(char *dest, char *data, int line)
+{
+	int ret=0;
+	
+	ret = getdata(dest,data,line);
+	if(ret){
+		DEBUG("get rx data error!\n");
+		return -1;
+	}
+	return 0;
+}
+static int readInterfaceData(Statistic_data *cout, char *facetype, int recv)
+{
+	FILE *fp=NULL;
+	char linebuf[256]={0};
+	char destbuf[18]={0};
+	char *pod=NULL;
+	
+	fp = fopen("/proc/net/dev","r");
+	while(fgets(linebuf, sizeof(linebuf)-1, fp) !=NULL)
+	{
+		pod = strstr(linebuf,facetype);
+		if(!pod)
+			continue;
+		pod+=strlen(facetype)+1;
+		if(recv)
+			getRxdata(destbuf,pod, RBYTES);
+		else
+			getRxdata(destbuf,pod, SBYTES);
+		cout->packetsize=atoll(destbuf);
+		pod = NULL;
+		
+		memset(destbuf,0,sizeof(destbuf));
+		pod = strstr(linebuf,facetype);
+		pod+=strlen(facetype)+1;
+		getRxdata(destbuf,pod, TJIFFESSEC);
+		cout->jiffes.jiffes_sec=atol(destbuf);
+		pod = NULL;
+		
+		memset(destbuf,0,sizeof(destbuf));
+		pod = strstr(linebuf,facetype);
+		pod+=strlen(facetype)+1;
+		getRxdata(destbuf,pod, TJIFFESUSEC);
+		cout->jiffes.jiffes_usec=atol(destbuf);
+	}
+	fclose(fp);
+	return 0;
+}
+static int get_netdev_flowNew(Statistic_data *cout, int recv)
+{
+	Statistic_data tmp_bytes;
+	memset(&tmp_bytes,0,sizeof(tmp_bytes));
+    
+	if(readInterfaceData(&tmp_bytes,WIRED_INTERFACE, recv)>=0)
+		cout->packetsize += tmp_bytes.packetsize;
+	cout->jiffes.jiffes_sec = tmp_bytes.jiffes.jiffes_sec;
+	cout->jiffes.jiffes_usec = tmp_bytes.jiffes.jiffes_usec;
+	spdlog("%-12s  %-12llu  %ld  %ld \n", WIRED_INTERFACE, tmp_bytes.packetsize, tmp_bytes.jiffes.jiffes_sec, tmp_bytes.jiffes.jiffes_usec);
+
+	memset(&tmp_bytes,0,sizeof(tmp_bytes));
+
+	if(readInterfaceData(&tmp_bytes,WISP_INTERFACE, recv) >= 0)
+		cout->packetsize+=tmp_bytes.packetsize;
+	spdlog("%-12s  %-12llu  %ld  %ld \n", WISP_INTERFACE, tmp_bytes.packetsize, tmp_bytes.jiffes.jiffes_sec, tmp_bytes.jiffes.jiffes_usec);
+
+#ifdef PLATFORM_MTK
+	if(readInterfaceData(&tmp_bytes,WISP_INTERFACE_5G, recv) >= 0)
+		cout->packetsize+=tmp_bytes.packetsize;
+	spdlog("%-12s  %-12llu  %ld  %ld \n", WISP_INTERFACE_5G, tmp_bytes.packetsize, tmp_bytes.jiffes.jiffes_sec, tmp_bytes.jiffes.jiffes_usec);
+#endif
+	
+	return 0;
+}
+
+enum {
+    SPD_STATUS_INIT=0,
+    SPD_STATUS_RUN,
+    SPD_STATUS_END,
+};
+#define SPEEDTEST_RESULT	"/tmp/test_speed"
+
+static int save_speed_result(const char *fmt, ...)
+{
+	int fd;
+	char s[1024] = {0};
+	va_list ap;
+
+	va_start(ap,fmt);
+	vsprintf(s,fmt,ap);
+	va_end(ap);
+	
+	fd = open(SPEEDTEST_RESULT, O_WRONLY|O_CREAT|O_TRUNC);
+	write(fd,s,strlen(s));
+	close(fd);
+	return 0;
+}
+
+int change_speed_result_status()
+{
+	FILE* fp = NULL;
+	char buf[1024] = {0}, buf_tmp[1024] = {0};;
+	char status[10] = "\"status\":";
+	char *p = NULL;
+
+	if(access(SPEEDTEST_RESULT, F_OK))
+		return -1;
+
+	fp = fopen(SPEEDTEST_RESULT, "r");
+	if(!fp){
+		DEBUG("open "SPEEDTEST_RESULT" failed\n");
+		fclose(fp);
+		return -1;
+	}
+
+	fseek(fp, 0, SEEK_SET);
+	fgets(buf, sizeof(buf), fp);
+	p = strstr(buf, status);
+	if(!p){
+		DEBUG("can not find status\n");
+		fclose(fp);
+		return -1;
+	}
+
+	strncpy(buf_tmp, buf + sizeof(status), sizeof(buf_tmp));
+	fclose(fp);
+	save_speed_result("\"status\":%d%s", SPD_STATUS_END, buf_tmp);
+	return 0;
+}
+
+Statistic_data down_count[DOWN_TIME];
+Statistic_data down_diff_count[DOWN_TIME];
+Statistic_data up_count[UPLOAD_TIME];
+Statistic_data up_diff_count[UPLOAD_TIME];
+static uint64_t down_speed = 0, down_max_speed = 0;
+static uint64_t up_speed = 0, up_max_speed = 0;
+
+long get_diff_of_count(Statistic_data *count, Statistic_data *diff_count, int time_count)
+{
+	long diff = 0;
+
+	if (count[time_count-1].packetsize>0 && count[time_count].packetsize>=count[time_count-1].packetsize) {
+		diff = count[time_count].packetsize - count[time_count-1].packetsize;
+	}
+	diff_count[time_count-1].packetsize = diff;
+	
+	if(count[time_count].jiffes.jiffes_sec > count[time_count-1].jiffes.jiffes_sec+1){
+		diff_count[time_count-1].jiffes.jiffes_sec = count[time_count].jiffes.jiffes_sec-count[time_count-1].jiffes.jiffes_sec;
+	}
+	else {
+		diff_count[time_count-1].jiffes.jiffes_sec=1;
+	}
+	
+	if(count[time_count].jiffes.jiffes_usec > count[time_count-1].jiffes.jiffes_usec){
+		diff_count[time_count-1].jiffes.jiffes_usec = count[time_count].jiffes.jiffes_usec-count[time_count-1].jiffes.jiffes_usec;
+	}
+
+	return diff;
+}
+
+void swapStatistic(Statistic_data *p1,Statistic_data *p2) { 
+	Statistic_data p; 
+	memcpy(&p,p1,sizeof(Statistic_data)); 
+	memcpy(p1,p2,sizeof(Statistic_data)); 
+	memcpy(p2,&p,sizeof(Statistic_data)); 
+}
+
+static uint64_t calc_speed(Statistic_data *count, Statistic_data *diff_count, int time_count, uint64_t *max_speed)
+{
+	int start, end;
+	int i,k;
+	float max_value=0, min_value=0;  
+	float tmptime=0.0,total_value=0.0,sub_value=0.0;
+
+	//start = COUNT_NUM>=3?2:0;
+	start = 0;
+	spdlog("------ all diff_count -------\n");
+	for (i=start; i<time_count-1; i++) {		
+		if (diff_count[i].packetsize <= 0) 
+			continue;
+		spdlog("%d \t%7llu \t%ld \t%ld \n", i, diff_count[i].packetsize, diff_count[i].jiffes.jiffes_sec, diff_count[i].jiffes.jiffes_usec);
+		tmptime=(float)diff_count[i].jiffes.jiffes_sec+(float)diff_count[i].jiffes.jiffes_usec/(1000000.00);
+
+		if ( diff_count[i].packetsize/tmptime < min_value || min_value == 0 )
+			min_value = diff_count[i].packetsize/tmptime;
+		if ( diff_count[i].packetsize/tmptime > max_value || min_value == 0 )
+			max_value = diff_count[i].packetsize/tmptime;
+	}
+	if(max_speed)
+		*max_speed = (uint64_t)max_value;
+	//if(min_speed)
+		//*min_speed = (uint64_t)min_value;
+
+	// the total number of data: COUNT_NUM-1
+	// when COUNT_NUM>=3, discard the first and second data
+	// bubble sort:  start index ~ end index
+	start = time_count>=3?2:0;
+	end = time_count - 2;
+	for(i=start+1; i<end; i++){
+		for(k=start; k<end+1+start-i; k++){
+			if(diff_count[k].packetsize > diff_count[k+1].packetsize){
+				swapStatistic(&diff_count[k], &diff_count[k+1]);
+			}
+		}
+	}
+
+	// take the largest four, then discard the biggest
+	spdlog("------ 3 diff_count -------\n");
+	for(i=end-3; i<end; i++){
+		spdlog("%d \t%7llu \t%ld \t%ld \n", i, diff_count[i].packetsize, diff_count[i].jiffes.jiffes_sec, diff_count[i].jiffes.jiffes_usec);
+		tmptime=(float)diff_count[i].jiffes.jiffes_sec+(float)diff_count[i].jiffes.jiffes_usec/(1000000.00);
+		total_value+=diff_count[i].packetsize/tmptime;
+	}
+	sub_value = total_value/3;
+	
+	return (uint64_t)sub_value;
+}
+#endif
+
 int download(struct speed_server *server)
 {
-	int sizes[10] = {350, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500, 4000};
+	//int sizes[10] = {350, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500, 4000};
+	//int sizes[10] = {4000, 3500, 3000, 2500, 2000, 1500, 1000, 750, 500, 350};
+	int sizes[10] = {4000, 3500, 3000, 4000, 3500, 3000, 4000, 3500, 3000, 4000};
 	int i=0;
 
 	for(i=0; i<DOWN_PROCESS_NUM; i++){
@@ -864,10 +1221,10 @@ void check_restart_download()
 {
 	int time_count = 0, i=0;
 	pid_t pid;
+	long diff = 0;
 
-	for(time_count=1; time_count<15; time_count++)
+	for(time_count=1; time_count<DOWN_TIME; time_count++)
 	{
-		DEBUG("time_count=%d\n", time_count);
 		pid = waitpid(-1, NULL, WNOHANG);
 		if(pid > 0){
 			for(i=0; i<DOWN_PROCESS_NUM; i++){
@@ -880,6 +1237,14 @@ void check_restart_download()
 			}
 		}
 		sleep(1);
+#if ROUTER_360
+		get_netdev_flowNew(&down_count[time_count], 1);
+		diff = get_diff_of_count(down_count, down_diff_count, time_count);
+
+		if( diff > 0 ){
+			save_speed_result("\"status\":%d,\"band\":%ld", SPD_STATUS_RUN, diff);
+		}
+#endif
 	}
 }
 
@@ -909,10 +1274,10 @@ void check_restart_upload()
 {
 	int time_count = 0, i=0;
 	pid_t pid;
+	long diff = 0;
 
-	for(time_count=1; time_count<15; time_count++)
+	for(time_count=1; time_count<UPLOAD_TIME; time_count++)
 	{
-		DEBUG("time_count=%d\n", time_count);
 		pid = waitpid(-1, NULL, WNOHANG);
 		if(pid > 0){
 			for(i=0; i<UP_PROCESS_NUM; i++){
@@ -925,6 +1290,15 @@ void check_restart_upload()
 			}
 		}
 		sleep(1);
+#if ROUTER_360
+		get_netdev_flowNew(&up_count[time_count], 1);
+		diff = get_diff_of_count(up_count, up_diff_count, time_count);
+
+		if( diff > 0 ){
+			save_speed_result("\"status\":%d,\"band\":%llu,\"max\":%llu,\"up_band\":%llu", 
+				SPD_STATUS_RUN, down_speed, down_max_speed, diff);
+		}
+#endif
 	}
 }
 
@@ -939,8 +1313,22 @@ void kill_upload()
 	}
 }
 
+void sig_child()
+{
+	pid_t pid;
+	while(1){
+		pid = waitpid(-1, NULL, WNOHANG);
+		if(pid <= 0)
+			break;
+		DEBUG("child %d exit \n", pid);
+	}
+}
+
 void speedtest_exit()
 {
+#if ROUTER_360
+	change_speed_result_status();
+#endif
 	free_server_list(&closest_server_list);
 	kill_download();
 	kill_upload();
@@ -949,26 +1337,35 @@ void speedtest_exit()
 
 int main(int argc, char **argv)
 {
-	int ret = 0;
+	int ret = 0, test_up = 0;
 	unsigned long time_start = 0, time_end = 0;
 	struct speed_server *best = NULL;
 
-	wf_registe_exit_signal(speedtest_exit);
+	init_server_list(&closest_server_list, CLOSEST_SERVER_NUM_MAX);
+	signal(SIGINT, speedtest_exit);
+	signal(SIGTERM, speedtest_exit);
+	signal(SIGUSR1, speedtest_exit);
+	remove(SPD_DEBUG_LOG);
+#if ROUTER_360
+	time_start = get_system_uptime();
+#else
 	get_system_uptime(&time_start);
+#endif
 
 	ret = getconfig(&g_config);
 	if(ret < 0){
-		DEBUG("get config failed \n");
+		spdlog("get config failed \n");
+	#if ROUTER_360
+		change_speed_result_status();
+	#endif
 		return -1;
 	}
-	DEBUG("client: [lat: %lf] [lon: %lf] [isp: %s] \n", g_config.client_lat, g_config.client_lon, g_config.client_isp);
-
-	init_server_list(&closest_server_list, CLOSEST_SERVER_NUM_MAX);
-
+	spdlog("client: [lat: %lf] [lon: %lf] [isp: %s] \n", g_config.client_lat, g_config.client_lon, g_config.client_isp);
+	
 	if(access(SPEEDTEST_CONFIG_XML, F_OK) == 0){
 		ret = read_closest_servers_file(&closest_server_list);
 		if(ret < 0){
-			DEBUG("read local failed, goto GET_SERVER_LIST \n");
+			spdlog("read local failed, goto GET_SERVER_LIST \n");
 			goto GET_SERVER_LIST;
 		}
 	}
@@ -976,7 +1373,7 @@ int main(int argc, char **argv)
 GET_SERVER_LIST:
 		ret = get_server_lists(&g_config, &closest_server_list);
 		if(ret < 0){
-			DEBUG("get server-list failed \n");
+			spdlog("get server-list failed \n");
 			speedtest_exit();
 		}
 		save_closest_servers_file(&closest_server_list);
@@ -985,28 +1382,67 @@ GET_SERVER_LIST:
 
 	ret = select_best_server(&closest_server_list, &best);
 	if(ret < 0 || !best){
-		DEBUG("select best-server failed \n");
+		spdlog("select best-server failed \n");
 		speedtest_exit();
 	}
-	DEBUG("[best] distance=%lf url=%s lat=%lf lon=%lf country=%s sponsor=%s \n\n", 
+	spdlog("[best] distance=%lf url=%s lat=%lf lon=%lf country=%s sponsor=%s \n\n", 
 			best->distance, best->url, best->lat, best->lon, best->country, best->sponsor);
-
+#if ROUTER_360
+	remove(SPEEDTEST_RESULT);
+	save_speed_result("\"status\":%d,\"band\":%llu", SPD_STATUS_INIT, 0);
+#endif
+	spdlog("======= test download ========\n");
 	download(best);
+#if ROUTER_360
+	sleep(1);
+	get_netdev_flowNew(&down_count[0], 1);
+#endif
 	check_restart_download();
 	kill_download();
-	
-	//sleep(1);
-	upload(best);
-	check_restart_upload();
-	kill_upload();
+#if ROUTER_360
+	down_speed = calc_speed(down_count, down_diff_count, DOWN_TIME, &down_max_speed);
+#endif
+	if(test_up){
+		spdlog("======= test upload ========\n");
+		//sleep(1);
+		upload(best);
+	#if ROUTER_360
+		sleep(1);
+		get_netdev_flowNew(&down_count[0], 1);
+	#endif
+		check_restart_upload();
+		kill_upload();
+	#if ROUTER_360
+		up_speed = calc_speed(up_count, up_diff_count, UPLOAD_TIME, &up_max_speed);
+	#endif
+	}
 
+#if ROUTER_360
+	time_end = get_system_uptime();
+#else
 	get_system_uptime(&time_end);
-	DEBUG("[time %lu s] \n", time_end - time_start);
+#endif
 	
+	spdlog("[time %lu s] \n", time_end - time_start);
+
+#if ROUTER_360
+	if(test_up){
+		save_speed_result("\"status\":%d,\"band\":%llu,\"max\":%llu,\"up_band\":%llu", 
+			SPD_STATUS_END, down_speed, down_max_speed, up_speed);
+		spdlog("\"status\":%d,\"band\":%llu,\"max\":%llu,\"up_band\":%llu \n", 
+			SPD_STATUS_END, down_speed, down_max_speed, up_speed);
+
+	}
+	else{
+		save_speed_result("\"status\":%d,\"band\":%llu,\"max\":%llu", SPD_STATUS_END, down_speed, down_max_speed);
+		spdlog("\"status\":%d,\"band\":%llu,\"max\":%llu \n", SPD_STATUS_END, down_speed, down_max_speed);
+	}
+#endif
+
+	free_server_list(&closest_server_list);
 	signal(SIGCHLD, sig_child);
 	sleep(2);
 	
-	speedtest_exit();
 	return 0;
 }
 

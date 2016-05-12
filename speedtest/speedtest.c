@@ -12,13 +12,21 @@
 #include <stdarg.h>
 #include <math.h>
 
-#define ROUTER_360		0
+#include "ghttp.h"
+
+#define ROUTER_360					0
 #if ROUTER_360
 #include "nc_ipc.h"
+#define PRE_SET_SERVERLIST_XML		1
+#define FOR_MULTI_PPPD				1
+#if FOR_MULTI_PPPD
+#include "nt_ipc.h"
+#include "nt_kernel.h"
+#include "igd/igd_ifstate.h"
+#endif
 #else
 #include "libwf.h"
 #endif
-#include "ghttp.h"
 
 #define SPD_DEBUG_EN	1
 #if SPD_DEBUG_EN
@@ -104,6 +112,7 @@ struct speed_child
 	pid_t upload_pid[UP_PROCESS_NUM];
 	char url[DOWN_PROCESS_NUM][256];
 	char upload_url[UP_PROCESS_NUM][256];
+	char download_if[DOWN_PROCESS_NUM][12];
 };
 
 #define SPEEDTEST_CONFIG_URL		"http://www.speedtest.net/speedtest-config.php"
@@ -171,8 +180,13 @@ enum{
 	WGET_DOWNLOAD,
 	WGET_POST_UPLOAD
 };
+#if ROUTER_360
+#define WGET_PATH	"/bin/wget"
+#else
+#define WGET_PATH	"/usr/bin/wget"
+#endif
 
-int speedtest_child(int option, void *data)
+int speedtest_child(int option, void *data, char *if_name)
 {
 	int ret = -1, i=-1;
 	char *argv[10];
@@ -185,7 +199,7 @@ int speedtest_child(int option, void *data)
 		argv[++i] = SPEEDTEST_CONFIG_XML;
 		argv[++i] = SPEEDTEST_CONFIG_URL;
 		argv[++i] = NULL;
-		ret = create_child_process("/usr/bin/wget", argv, 0);
+		ret = create_child_process(WGET_PATH, argv, 0);
 		break;
 	case WGET_SERVER_LIST1:
 	case WGET_SERVER_LIST2:
@@ -203,15 +217,19 @@ int speedtest_child(int option, void *data)
 		else if(option == WGET_SERVER_LIST4)
 			argv[++i] = SPEEDTEST_SERVERLIST_URL4;
 		argv[++i] = NULL;
-		ret = create_child_process("/usr/bin/wget", argv, 0);
+		ret = create_child_process(WGET_PATH, argv, 0);
 		break;
 	case WGET_DOWNLOAD:
 		argv[++i] = "wget";
 		argv[++i] = "-O";
 		argv[++i] = "/dev/null";
+		if(if_name && (strlen(if_name) > 0)){
+			argv[++i] = "-i";
+			argv[++i] = if_name;
+		}
 		argv[++i] = (char *)data;
 		argv[++i] = NULL;
-		ret = create_child_process("/usr/bin/wget", argv, 1);
+		ret = create_child_process(WGET_PATH, argv, 1);
 		break;
 	case WGET_POST_UPLOAD:
 		argv[++i] = "wget";
@@ -220,7 +238,7 @@ int speedtest_child(int option, void *data)
 		argv[++i] = "/dev/null";
 		argv[++i] = (char *)data;
 		argv[++i] = NULL;
-		ret = create_child_process("/usr/bin/wget", argv, 1);
+		ret = create_child_process(WGET_PATH, argv, 1);
 		break;
 	default:
 		break;
@@ -309,6 +327,42 @@ void set_common_headers(ghttp_request *request)
 	ghttp_set_header(request, http_hdr_User_Agent, get_useragent());
 	ghttp_set_header(request, http_hdr_Accept_Encoding, "identity");
 	ghttp_set_header(request, http_hdr_Connection, "close");
+}
+
+static int cp_file(char *src, char *dst)
+{
+	FILE *fp = NULL, *fp_tmp = NULL;
+	char buf[1024] = {0};
+
+	fp_tmp = NULL;
+	fp = NULL;
+
+	fp = fopen(src, "r");
+	if(!fp){
+		DEBUG("open %s failed\n",src);
+		return -1;
+	}
+
+	fp_tmp = fopen(dst, "w+");
+	if(!fp_tmp){
+		DEBUG("open %s failed\n",dst);
+		fclose(fp);
+		return -1;
+	}
+
+	fseek(fp, 0, SEEK_SET);
+	fseek(fp_tmp, 0, SEEK_SET);
+
+	while(!feof(fp)){
+		memset(buf, 0, sizeof(buf));
+		fgets(buf, sizeof(buf), fp);
+		fputs(buf, fp_tmp);
+	}
+
+	fclose(fp);
+	fclose(fp_tmp);
+
+	return 0;
 }
 
 char *get_string_value(char *key, char *in, char *out, unsigned int out_size)
@@ -414,7 +468,7 @@ int getconfig(struct speed_config *config)
 	if(access(SPEEDTEST_CONFIG_XML, F_OK) == 0)
 		goto XML_EXIST;
 	
-	ret = speedtest_child(WGET_CONFIG, NULL);
+	ret = speedtest_child(WGET_CONFIG, NULL, NULL);
 	if(ret <= 0){
 		DEBUG("get "SPEEDTEST_CONFIG_XML" failed \n");
 		return -1;
@@ -643,7 +697,7 @@ int get_server_lists(struct speed_config *config, struct speed_server_list *list
 		goto XML_EXIST;
 
 	for(i=WGET_SERVER_LIST1; i<=WGET_SERVER_LIST4; i++){
-		ret = speedtest_child(i, NULL);
+		ret = speedtest_child(i, NULL, NULL);
 		if(ret <= 0){
 			DEBUG("get "SPEEDTEST_SERVER_LIST_XML" failed \n");
 			goto NEXT;
@@ -1201,6 +1255,36 @@ static uint64_t calc_speed(Statistic_data *count, Statistic_data *diff_count, in
 	
 	return (uint64_t)sub_value;
 }
+#if FOR_MULTI_PPPD
+int get_wan_enable(int *wan_enable)
+{
+	int ret = 0, i = 0;
+	char uiname[12] = {'\0'};
+	struct ifstate_status if_status[10];
+	scall_param pa = {0},pb = {0},pc = {0};
+
+	strcpy(uiname, "ALL");
+	memset(&if_status, 0, sizeof(if_status));
+	ret = client_SwitchCall(IGD_MSG_IFSTATE_GET_CHECKER_RESULT,PRM_POINTER(pa, uiname, strlen(uiname)+1), PRM_POINTER(pb, &if_status, sizeof(if_status)), PRM_VALUE(pc, 10));
+	if (ret < 0)
+	{
+		return ret;
+	}
+	for(i = 0; i < ret; i++)
+	{
+		if(!if_status[i].flag)
+			continue;
+		if(!strncmp(if_status[i].uiname, "WISP", 4) && !if_status[i].status)
+			*wan_enable = 0;
+		if(!strncmp(if_status[i].uiname, "WAN", 3) && !if_status[i].status)
+		{
+			*wan_enable = 1;
+			break;
+		}
+	}
+	return 0;
+}
+#endif
 #endif
 
 int download(struct speed_server *server)
@@ -1209,10 +1293,52 @@ int download(struct speed_server *server)
 	//int sizes[10] = {4000, 3500, 3000, 2500, 2000, 1500, 1000, 750, 500, 350};
 	int sizes[10] = {4000, 3500, 3000, 4000, 3500, 3000, 4000, 3500, 3000, 4000};
 	int i=0;
+	char *pif_name = NULL;
+#if FOR_MULTI_PPPD
+	int ifip_num = 0, wan_enable = 1;
+	int j=0, index=-1, count=0;
+	struct nc_ifip ifip[RULE_MX], *p_ifip=NULL;
+	
+	if(get_wan_enable(&wan_enable) == 0){
+		memset(&ifip, 0, sizeof(ifip));
+		ifip_num = dump_ifip(ifip);
+	}
+#endif
 
-	for(i=0; i<DOWN_PROCESS_NUM; i++){
+	for(i=0; i<DOWN_PROCESS_NUM; i++)
+	{
+#if FOR_MULTI_PPPD
+		if (ifip_num > 1) {
+			count = 0;
+			while (count++ < ifip_num) {
+				if (index < 0)
+					j = index = 0;
+				else
+					j = index;
+
+				if (++index >= ifip_num)
+					index = 0;
+
+				p_ifip = &ifip[j];
+				if (p_ifip->ifid && p_ifip->def_route && 
+					((wan_enable && strcmp(p_ifip->ifname, "apclii0")) ||
+					(wan_enable == 0 && !strcmp(p_ifip->ifname, "apclii0")))) 
+				{
+					if(strlen(p_ifip->ifname) > 0){
+						igd_strcpy(speed_child_info.download_if[i], p_ifip->ifname);
+						pif_name = speed_child_info.download_if[i];
+					}
+					break;
+				}
+			}
+			if(!pif_name){
+				speed_child_info.download_if[i][0] = '\0';
+			}
+		}
+#endif		
 		sprintf(speed_child_info.url[i], "%s/speedtest/random%dx%d.jpg", server->cut_url, sizes[i], sizes[i]);
-		speed_child_info.download_pid[i] = speedtest_child(WGET_DOWNLOAD, (void *)speed_child_info.url[i]);
+		speed_child_info.download_pid[i] = speedtest_child(WGET_DOWNLOAD, (void *)speed_child_info.url[i], pif_name);
+		spdlog("start download %d %s \n", speed_child_info.download_pid[i], pif_name?pif_name:"");
 	}
 	return 0;
 }
@@ -1230,7 +1356,7 @@ void check_restart_download()
 			for(i=0; i<DOWN_PROCESS_NUM; i++){
 				if(pid != speed_child_info.download_pid[i])
 					continue;
-				speed_child_info.download_pid[i] = speedtest_child(WGET_DOWNLOAD, (void *)speed_child_info.url[i]);
+				speed_child_info.download_pid[i] = speedtest_child(WGET_DOWNLOAD, (void *)speed_child_info.url[i], speed_child_info.download_if[i]);
 				usleep(1000);
 				DEBUG("restart download: %d -> %d\n", pid, speed_child_info.download_pid[i]);
 				break;
@@ -1265,7 +1391,8 @@ int upload(struct speed_server *server)
 
 	for(i=0; i<UP_PROCESS_NUM; i++){
 		strcpy(speed_child_info.upload_url[i], server->url);
-		speed_child_info.upload_pid[i] = speedtest_child(WGET_POST_UPLOAD, speed_child_info.upload_url[i]);
+		speed_child_info.upload_pid[i] = speedtest_child(WGET_POST_UPLOAD, speed_child_info.upload_url[i], NULL);
+		spdlog("start upload %d \n", speed_child_info.upload_pid[i]);
 	}
 	return 0;
 }
@@ -1283,7 +1410,7 @@ void check_restart_upload()
 			for(i=0; i<UP_PROCESS_NUM; i++){
 				if(pid != speed_child_info.upload_pid[i])
 					continue;
-				speed_child_info.upload_pid[i] = speedtest_child(WGET_POST_UPLOAD, speed_child_info.upload_url[i]);
+				speed_child_info.upload_pid[i] = speedtest_child(WGET_POST_UPLOAD, speed_child_info.upload_url[i], NULL);
 				usleep(1000);
 				DEBUG("restart upload: %d -> %d\n", pid, speed_child_info.upload_pid[i]);
 				break;
@@ -1291,7 +1418,7 @@ void check_restart_upload()
 		}
 		sleep(1);
 #if ROUTER_360
-		get_netdev_flowNew(&up_count[time_count], 1);
+		get_netdev_flowNew(&up_count[time_count], 0);
 		diff = get_diff_of_count(up_count, up_diff_count, time_count);
 
 		if( diff > 0 ){
@@ -1337,7 +1464,7 @@ void speedtest_exit()
 
 int main(int argc, char **argv)
 {
-	int ret = 0, test_up = 0;
+	int ret = 0, test_up = 0, action = 0;
 	unsigned long time_start = 0, time_end = 0;
 	struct speed_server *best = NULL;
 
@@ -1345,10 +1472,23 @@ int main(int argc, char **argv)
 	signal(SIGINT, speedtest_exit);
 	signal(SIGTERM, speedtest_exit);
 	signal(SIGUSR1, speedtest_exit);
-	remove(SPD_DEBUG_LOG);
+
+	if(argv[1]){
+		if(strcmp(argv[1], "get-servers" ) == 0)	
+			action = 1;
+	}
+	
 #if ROUTER_360
+	remove(SPD_DEBUG_LOG);
+	if(argv[1]){
+		if(strcmp(argv[1], "1" ) == 0)		// user: PC
+			test_up = 1;
+		else if(strcmp(argv[1], "2" ) == 0)	// user: phone
+			test_up = 1;
+	}
 	time_start = get_system_uptime();
 #else
+	test_up = 1;
 	get_system_uptime(&time_start);
 #endif
 
@@ -1362,7 +1502,7 @@ int main(int argc, char **argv)
 	}
 	spdlog("client: [lat: %lf] [lon: %lf] [isp: %s] \n", g_config.client_lat, g_config.client_lon, g_config.client_isp);
 	
-	if(access(SPEEDTEST_CONFIG_XML, F_OK) == 0){
+	if(access(SPEEDTEST_CLOSEST_SERVERS_XML, F_OK) == 0){
 		ret = read_closest_servers_file(&closest_server_list);
 		if(ret < 0){
 			spdlog("read local failed, goto GET_SERVER_LIST \n");
@@ -1371,6 +1511,11 @@ int main(int argc, char **argv)
 	}
 	else{
 GET_SERVER_LIST:
+	#if PRE_SET_SERVERLIST_XML
+		if(access(SPEEDTEST_SERVER_LIST_XML, F_OK)){
+			cp_file("/sh/speedtest_server_list.xml", SPEEDTEST_SERVER_LIST_XML);
+		}
+	#endif
 		ret = get_server_lists(&g_config, &closest_server_list);
 		if(ret < 0){
 			spdlog("get server-list failed \n");
@@ -1379,7 +1524,9 @@ GET_SERVER_LIST:
 		save_closest_servers_file(&closest_server_list);
 	}
 	print_server_list(&closest_server_list);
-
+	if(action == 1)
+		speedtest_exit();
+	
 	ret = select_best_server(&closest_server_list, &best);
 	if(ret < 0 || !best){
 		spdlog("select best-server failed \n");
@@ -1391,6 +1538,7 @@ GET_SERVER_LIST:
 	remove(SPEEDTEST_RESULT);
 	save_speed_result("\"status\":%d,\"band\":%llu", SPD_STATUS_INIT, 0);
 #endif
+
 	spdlog("======= test download ========\n");
 	download(best);
 #if ROUTER_360
@@ -1402,13 +1550,14 @@ GET_SERVER_LIST:
 #if ROUTER_360
 	down_speed = calc_speed(down_count, down_diff_count, DOWN_TIME, &down_max_speed);
 #endif
+
 	if(test_up){
 		spdlog("======= test upload ========\n");
 		//sleep(1);
 		upload(best);
 	#if ROUTER_360
 		sleep(1);
-		get_netdev_flowNew(&down_count[0], 1);
+		get_netdev_flowNew(&down_count[0], 0);
 	#endif
 		check_restart_upload();
 		kill_upload();

@@ -1,0 +1,89 @@
+【get配置信息  getconfig】
+GET http://www.speedtest.net/speedtest-config.php
+关注xml节点：client(包含客户端位置信息)  times  download  upload	（实际只使用了 client 节点）
+
+【get服务器列表  closestServers】
+GET http://www.speedtest.net/speedtest-servers-static.php
+GET http://c.speedtest.net/speedtest-servers-static.php
+GET http://www.speedtest.net/speedtest-servers.php
+GET http://c.speedtest.net/speedtest-servers.php
+依次执行以上操作，成功获取到服务器列表xml，则停止循环
+
+关注server节点， lan 和 lon 表示位置信息，url 和 url2 为网址（url首选）
+根据位置信息筛选距离最近的若干个服务器，origin 表示客户端位置信息，destination 表示服务器位置信息
+	def distance(origin, destination):
+   
+		 """Determine distance between 2 sets of [lat,lon] in km"""
+
+    
+		lat1, lon1 = origin
+    
+		lat2, lon2 = destination
+    
+		radius = 6371  # km
+
+    
+		dlat = math.radians(lat2 - lat1)
+    
+		dlon = math.radians(lon2 - lon1)
+    
+		a = (math.sin(dlat / 2) * math.sin(dlat / 2) +
+         
+			math.cos(math.radians(lat1)) *
+         
+			math.cos(math.radians(lat2)) * math.sin(dlon / 2) *
+         
+			math.sin(dlon / 2))
+    
+		c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    
+		d = radius * c
+
+    
+		return d
+
+【从筛选之后的服务器列表中选择最优的服务器】
+对每个服务器请求
+GET "服务器url域名部分"/speedtest/latency.txt	6次
+	（根据服务器url协议类型部分使用 相应协议，少部分是https）
+选择平均响应时间最短的服务器
+
+响应时间计算：
+
+
+【下行测速】
+sizes = [350, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500, 4000]	（抓包分析 使用了 前4个）
+GET  "最优服务器url域名部分"/speedtest/random"size"x"size".jpg	4次（size是sizes列表中的数值）
+	（根据服务器url协议类型部分使用 相应协议，少部分是https）
+	<350x350 240K  1000x1000 1.9M   2000x2000 7.5M  
+	3000x3000 17M  3500x3500 23M  4000x4000 30M>
+
+速率计算：
+
+
+【上行测速】
+url: 最优服务器url
+数据：
+sizesizes = [int(.25 * 1000 * 1000), int(.5 * 1000 * 1000)]
+    	（抓包分析只使用了第一个）
+sizes = []
+    
+for size in sizesizes:
+        
+	for i in range(0, 25):
+            		sizes.append(size)
+
+for size in sizes
+chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        
+data = chars * (int(round(int(size) / 36.0)))
+        
+self.data = ('content1=%s' % data[0:int(size) - 9]).encode()
+
+
+抓包分析POST的数据：'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'字符串 6944 个，
+	共 6944 * 36 = 249984 + 9 = 249993 字节    9 = len("content1=")
+	响应报文内容："size=250236"    250236 = 249993 + http请求头大小
+POST  "最优服务器url"	25次  （根据服务器url协议类型部分使用 相应协议，少部分是https）
+
+速率计算：

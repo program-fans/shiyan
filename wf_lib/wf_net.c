@@ -6,11 +6,432 @@
 #include <netdb.h>
 #include <net/if.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
+#include <arpa/inet.h>  //for in_addr   
+#include <linux/rtnetlink.h>    //for rtnetlink   
 #include <errno.h>
 
 #include "wf_char.h"
 #include "wf_net.h"
+
+int get_netdev_mac(const char *ifname, unsigned char *mac)
+{
+	int sock = -1;
+	struct ifreq ifr;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if( sock < 0)
+		return -1;
+
+	ifr.ifr_addr.sa_family = AF_INET;
+	strcpy(ifr.ifr_name, ifname);
+
+	if (ioctl(sock, SIOCGIFHWADDR, &ifr) < 0){
+		close(sock);
+		return -1;
+	}
+
+	if(mac)
+		memcpy(mac, ifr.ifr_hwaddr.sa_data, 6);
+	close(sock);
+
+	return 0;
+}
+
+int get_netdev_ip(const char *ifname, char *ip)
+{
+	int sock = -1;
+	struct ifreq ifr;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if( sock < 0)
+		return -1;
+
+	ifr.ifr_addr.sa_family = AF_INET;
+	strcpy(ifr.ifr_name, ifname);
+
+	if (ioctl(sock, SIOCGIFADDR, &ifr) < 0){
+		close(sock);
+		return -1;
+	}
+
+	if(ip)
+		sprintf(ip,"%s",inet_ntoa(((struct sockaddr_in*)&(ifr.ifr_addr))->sin_addr));
+	close(sock);
+
+	return 0;
+}
+
+int get_netdev_addr(const char *ifname, unsigned int *addr)
+{
+	int sock = -1;
+	struct ifreq ifr;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if( sock < 0)
+		return -1;
+
+	ifr.ifr_addr.sa_family = AF_INET;
+	strcpy(ifr.ifr_name, ifname);
+
+	if (ioctl(sock, SIOCGIFADDR, &ifr) < 0){
+		close(sock);
+		return -1;
+	}
+
+	if(addr)
+		*addr = ((struct sockaddr_in*)&(ifr.ifr_addr))->sin_addr.s_addr;
+	close(sock);
+
+	return 0;
+}
+
+int get_netdev_dstip(const char *ifname, char *dstip)
+{
+	int sock = -1;
+	struct ifreq ifr;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if( sock < 0)
+		return -1;
+
+	ifr.ifr_addr.sa_family = AF_INET;
+	strcpy(ifr.ifr_name, ifname);
+
+	if (ioctl(sock, SIOCGIFDSTADDR, &ifr) < 0){
+		close(sock);
+		return -1;
+	}
+
+	if(dstip)
+		sprintf(dstip,"%s",inet_ntoa(((struct sockaddr_in*)&(ifr.ifr_dstaddr))->sin_addr));
+	close(sock);
+
+	return 0;
+}
+
+int get_netdev_dstaddr(const char *ifname, unsigned int *dstaddr)
+{
+	int sock = -1;
+	struct ifreq ifr;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if( sock < 0)
+		return -1;
+
+	ifr.ifr_addr.sa_family = AF_INET;
+	strcpy(ifr.ifr_name, ifname);
+
+	if (ioctl(sock, SIOCGIFDSTADDR, &ifr) < 0){
+		close(sock);
+		return -1;
+	}
+
+	if(dstaddr)
+		*dstaddr = ((struct sockaddr_in*)&(ifr.ifr_dstaddr))->sin_addr.s_addr;
+	close(sock);
+
+	return 0;
+}
+
+int get_netdev_broadip(const char *ifname, char *broadip)
+{
+	int sock = -1;
+	struct ifreq ifr;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if( sock < 0)
+		return -1;
+
+	ifr.ifr_addr.sa_family = AF_INET;
+	strcpy(ifr.ifr_name, ifname);
+
+	if (ioctl(sock, SIOCGIFBRDADDR, &ifr) < 0){
+		close(sock);
+		return -1;
+	}
+
+	if(broadip)
+		sprintf(broadip,"%s",inet_ntoa(((struct sockaddr_in*)&(ifr.ifr_broadaddr))->sin_addr));
+	close(sock);
+
+	return 0;
+}
+
+int get_netdev_broadaddr(const char *ifname, unsigned int *broadaddr)
+{
+	int sock = -1;
+	struct ifreq ifr;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if( sock < 0)
+		return -1;
+
+	ifr.ifr_addr.sa_family = AF_INET;
+	strcpy(ifr.ifr_name, ifname);
+
+	if (ioctl(sock, SIOCGIFBRDADDR, &ifr) < 0){
+		close(sock);
+		return -1;
+	}
+
+	if(broadaddr)
+		*broadaddr = ((struct sockaddr_in*)&(ifr.ifr_broadaddr))->sin_addr.s_addr;
+	close(sock);
+
+	return 0;
+}
+
+int get_netdev_mask(const char *ifname, char *maskstr, unsigned int *mask)
+{
+	int sock = -1;
+	struct ifreq ifr;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if( sock < 0)
+		return -1;
+
+	ifr.ifr_addr.sa_family = AF_INET;
+	strcpy(ifr.ifr_name, ifname);
+
+	if (ioctl(sock, SIOCGIFNETMASK, &ifr) < 0){
+		close(sock);
+		return -1;
+	}
+
+	if(mask)
+		*mask = ((struct sockaddr_in*)&(ifr.ifr_netmask))->sin_addr.s_addr;
+	if(maskstr)
+		sprintf(maskstr,"%s",inet_ntoa(((struct sockaddr_in*)&(ifr.ifr_netmask))->sin_addr));
+	close(sock);
+
+	return 0;
+}
+
+int get_netdev_mtu(const char *ifname)
+{
+	int sock = -1;
+	int mtu = 0;
+	struct ifreq ifr;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if( sock < 0)
+		return -1;
+
+	ifr.ifr_addr.sa_family = AF_INET;
+	strcpy(ifr.ifr_name, ifname);
+
+	if (ioctl(sock, SIOCGIFMTU, &ifr) < 0){
+		close(sock);
+		return -1;
+	}
+
+	mtu = ifr.ifr_mtu;
+	close(sock);
+
+	return mtu;
+}
+
+int get_netdev_ifindex(const char *ifname)
+{
+	int sock = -1;
+	int ifindex = 0;
+	struct ifreq ifr;
+
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if( sock < 0)
+		return -1;
+
+	ifr.ifr_addr.sa_family = AF_INET;
+	strcpy(ifr.ifr_name, ifname);
+
+	if (ioctl(sock, SIOCGIFADDR, &ifr) < 0){
+		close(sock);
+		return -1;
+	}
+
+	ifindex = ifr.ifr_ifindex;
+	close(sock);
+
+	return ifindex;
+}
+
+
+#define BUFSIZE 8192
+struct route_info{   
+	unsigned int dstAddr;   
+	unsigned int srcAddr;   
+	unsigned int gateWay;   
+	char ifName[IF_NAMESIZE];   
+};   
+static int readNlSock(int sockFd, unsigned char *bufPtr, int seqNum, int pId)   
+{   
+	struct nlmsghdr *nlHdr;   
+	int readLen = 0, msgLen = 0;   
+	do{   
+		//收到内核的应答   
+		if((readLen = recv(sockFd, bufPtr, BUFSIZE - msgLen, 0)) < 0){   
+			//perror("SOCK READ: ");   
+			return -1;   
+		}   
+
+		nlHdr = (struct nlmsghdr *)bufPtr;   
+		//检查header是否有效   
+		if((NLMSG_OK(nlHdr, readLen) == 0) || (nlHdr->nlmsg_type == NLMSG_ERROR)){   
+			//perror("Error in recieved packet");   
+			return -1;   
+		}   
+
+		if(nlHdr->nlmsg_type == NLMSG_DONE){   
+			break;   
+		}   
+		else{
+			bufPtr += readLen;   
+			msgLen += readLen;   
+		}
+		
+		if((nlHdr->nlmsg_flags & NLM_F_MULTI) == 0){
+			break;   
+		}   
+	} while((nlHdr->nlmsg_seq != seqNum) || (nlHdr->nlmsg_pid != pId));   
+	
+	return msgLen;   
+}   
+
+//分析返回的路由信息   
+static int parseRoutes(struct nlmsghdr *nlHdr, struct route_info *rtInfo)
+{   
+	struct rtmsg *rtMsg;   
+	struct rtattr *rtAttr;   
+	int rtLen;
+	
+	rtMsg = (struct rtmsg *)NLMSG_DATA(nlHdr);   
+	// If the route is not for AF_INET or does not belong to main routing table   
+	//then return.    
+	if((rtMsg->rtm_family != AF_INET) || (rtMsg->rtm_table != RT_TABLE_MAIN))   
+		return 0;   
+//	printf("flags=%d \n", rtMsg->rtm_flags);
+	rtAttr = (struct rtattr *)RTM_RTA(rtMsg);   
+	rtLen = RTM_PAYLOAD(nlHdr);   
+	for(;RTA_OK(rtAttr,rtLen);rtAttr = RTA_NEXT(rtAttr,rtLen))
+	{
+		switch(rtAttr->rta_type)
+		{   
+		case RTA_OIF:   // 4
+			if_indextoname(*(int *)RTA_DATA(rtAttr), rtInfo->ifName);
+//			printf("RTA_OIF: %s \n", rtInfo->ifName);
+			break;   
+		case RTA_GATEWAY:   // 5
+			rtInfo->gateWay = *(u_int *)RTA_DATA(rtAttr);
+//			printf("RTA_GATEWAY: 0x%x \n", rtInfo->gateWay);
+			break;   
+		case RTA_PREFSRC:  // 7  
+			rtInfo->srcAddr = *(u_int *)RTA_DATA(rtAttr);
+//			printf("RTA_PREFSRC: 0x%x \n", rtInfo->srcAddr);
+			break;   
+		case RTA_DST:  // 1 
+			rtInfo->dstAddr = *(u_int *)RTA_DATA(rtAttr);
+//			printf("RTA_DST: 0x%x \n", rtInfo->dstAddr);
+			break;
+		case RTA_TABLE:	// 15
+		default:
+			break;
+		}
+	}   
+		
+	return 1;
+}   
+
+static struct route_info *select_route(struct route_info *rtInfo, unsigned int rt_num, char *ifname)
+{
+	unsigned int i=0;
+//	struct in_addr tmp_addr;
+
+	for(; i<rt_num; i++)
+	{
+/*		printf("oif:%s  ",rtInfo[i].ifName);
+		tmp_addr.s_addr = rtInfo[i].gateWay;
+		printf("%s\n",(char *)inet_ntoa(tmp_addr));
+		tmp_addr.s_addr = rtInfo[i].srcAddr;   
+		printf("src:%s\n",(char *)inet_ntoa(tmp_addr));
+		tmp_addr.s_addr = rtInfo[i].dstAddr;   
+		printf("dst:%s\n",(char *)inet_ntoa(tmp_addr));
+*/
+		if(ifname){
+			if(strcmp(rtInfo[i].ifName, ifname) == 0 && rtInfo[i].gateWay != 0)
+				return &rtInfo[i];
+		}
+		if(rtInfo[i].dstAddr == 0 && rtInfo[i].gateWay != 0)
+			return &rtInfo[i];
+	}
+	return NULL;
+}
+
+int get_host_gateway(char *gateway, unsigned int *gwaddr, char *ifname)
+{   
+	struct nlmsghdr *nlMsg;   
+	struct rtmsg *rtMsg;   
+	struct route_info rtInfo[8], *prt = NULL;
+	int rt_idx = 0;
+	struct in_addr gw;
+	unsigned char *msgBuf;   
+	int ret = 0;
+	int sock, len, msgSeq = 0;   
+
+	if((sock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE)) < 0){   
+		//perror("Socket Creation: ");   
+		return -1;   
+	}
+
+	msgBuf = (unsigned char *)malloc(BUFSIZE);
+	if(msgBuf == NULL){
+		close(sock);
+		return -1;
+	}
+	memset(msgBuf, 0, BUFSIZE);   
+	nlMsg = (struct nlmsghdr *)msgBuf;   
+	rtMsg = (struct rtmsg *)NLMSG_DATA(nlMsg);   
+	nlMsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg)); // Length of message.   
+	nlMsg->nlmsg_type = RTM_GETROUTE; // Get the routes from kernel routing table .   
+	nlMsg->nlmsg_flags = NLM_F_DUMP | NLM_F_REQUEST; // The message is a request for dump.   
+	nlMsg->nlmsg_seq = msgSeq++; // Sequence of the message packet.   
+	nlMsg->nlmsg_pid = getpid(); // PID of process sending the request.   
+
+	if(send(sock, nlMsg, nlMsg->nlmsg_len, 0) < 0){   
+		//printf("Write To Socket Failed…\n");
+		ret = -1;
+		goto END;
+	}   
+
+	if((len = readNlSock(sock, msgBuf, msgSeq, getpid())) < 0){   
+		//printf("Read From Socket Failed…\n");   
+		ret = -1;
+		goto END; 
+	}   
+
+	memset(rtInfo, 0, sizeof(rtInfo));   
+	for(;NLMSG_OK(nlMsg,len);nlMsg = NLMSG_NEXT(nlMsg,len)){   
+		if(parseRoutes(nlMsg, &rtInfo[rt_idx]))
+			++rt_idx;
+		if(rt_idx >= 8)
+			break;
+	}
+	
+	prt = select_route(rtInfo, rt_idx, ifname);
+	if(prt){
+		if(gwaddr)
+			*gwaddr = prt->gateWay;
+		if(gateway){
+			gw.s_addr = prt->gateWay;
+			sprintf(gateway, "%s",(char *)inet_ntoa(gw));
+		}
+	}
+	else
+		ret = -1;
+END:
+	free(msgBuf);   
+	close(sock);   
+	return ret;   
+}   
 
 int getHostIP_2(char *prior_if, char *ip, char *broadip, char *ifname, int *ifindex)
 {
@@ -37,12 +458,15 @@ int getHostIP_2(char *prior_if, char *ip, char *broadip, char *ifname, int *ifin
 	{
 		if(ifrp->ifr_flags == AF_INET)            //for ipv4
 		{
+			//printf("ifname: %s\n", ifrp->ifr_name);
 			//发送命令，获得网络接口的广播地址
 			if (ioctl(sockfd, SIOCGIFBRDADDR, ifrp) == -1)	continue;
 			if(broadip)	sprintf(broadip,"%s", inet_ntoa(((struct sockaddr_in*)&(ifrp->ifr_broadaddr))->sin_addr));
 
 			//printf("broadip: %s \n", inet_ntoa(((struct sockaddr_in*)&(ifrp->ifr_broadaddr))->sin_addr));
-
+			//if(ioctl(sockfd, SIOCGIFHWADDR, ifrp ) == 0){
+			//	printf("mac: "MAC_FORMAT_STRING_CAPITAL"\n", MAC_FORMAT_SPLIT(ifrp->ifr_hwaddr.sa_data));
+			//}
 			if (ioctl(sockfd, SIOCGIFADDR, ifrp ) == -1)	continue;
 			if(ip)	sprintf(ip,"%s",inet_ntoa(((struct sockaddr_in*)&(ifrp->ifr_addr))->sin_addr));
 			if( ifname )	sprintf(ifname, "%s", ifrp->ifr_name);

@@ -8,18 +8,6 @@
 #include "libwf.h"
 #include "ghttp.h"
 
-enum{
-	OFF_GDB,
-	GDB_test,
-	GDB_char,
-	GDB_ipc,
-	GDB_slist,
-	GDB_list,
-	GDB_httpget
-};
-
-int gdb_ctrl = OFF_GDB;
-
 static unsigned char globel_buf[4096] = {0};
 
 void list_test()
@@ -185,12 +173,6 @@ void char_test(int argc, char **argv)
 	printf("%%3A%%2F\n[%d] %s \n[%d] %s \n", strlen(src2), src2, strlen(dest), dest);
 #endif
 }
-void test()
-{
-	printf("pi: %lf \n", M_PI);
-	printf("180 turn radian: %lf \n", radian(180.0));
-	printf("30.6586 - 30.5545 turn radian: %lf \n", radian(30.6586 - 30.5545));
-}
 
 int ghttp_get_file(char *path, char *url)
 {
@@ -347,15 +329,9 @@ int test_httpget(int argc, char **argv)
 		}
 	}
 #if 1
-	if(gdb_ctrl == GDB_httpget)
-		ret = ghttp_download_file("httpget_gdb.html", "http://www.baidu.com");
-	else
-		ret = ghttp_download_file(path, url);
+	ret = ghttp_download_file(path, url);
 #else
-	if(gdb_ctrl == GDB_httpget)
-		ret = ghttp_get_file("httpget_gdb.html", "http://www.baidu.com");
-	else
-		ret = ghttp_get_file(path, url);
+	ret = ghttp_get_file(path, url);
 #endif
 	if(ret < 0)
 		printf("failed get [%d] \n", ret);
@@ -541,24 +517,64 @@ int time_test(int argc, char **argv)
 	return 0;
 }
 
+int net_test(int argc, char **argv)
+{
+	char ip[16] = {'\0'};
+	unsigned char mac[6] = {0};
+
+	get_netdev_mac("eth0", mac);
+	printf("mac: "MAC_FORMAT_STRING_CAPITAL"\n", MAC_FORMAT_SPLIT(mac));
+
+	get_netdev_ip("eth0", ip);
+	printf("get_netdev_ip: %s \n", ip);
+
+	get_netdev_dstip("eth0", ip);
+	printf("get_netdev_dstip: %s \n", ip);
+
+	get_netdev_broadip("eth0", ip);
+	printf("get_netdev_broadip: %s \n", ip);
+
+	get_netdev_mask("eth0", ip, NULL);
+	printf("get_netdev_mask: %s \n", ip);
+
+	printf("get_netdev_mtu: %d \n", get_netdev_mtu("eth0"));
+	printf("get_netdev_ifindex: %d \n", get_netdev_ifindex("eth0"));
+
+	get_host_gateway(ip, NULL, "eth0");
+	printf("get_host_gateway: %s \n", ip);
+}
+
+
+void testtest()
+{
+	return;
+}
+void test()
+{
+	int argc = -1;
+	char *argv[15] = {NULL};
+	argv[++argc] = "test";
+#if 0
+	testtest();
+#endif
+#if 1
+	argv[++argc] = "net";
+	++argc;
+	net_test(argc, argv);
+#endif
+#if 0
+	argv[++argc] = "httpget";
+	argv[++argc] = "-O";
+	argv[++argc] = "httpget_gdb.html";
+	argv[++argc] = "http://www.baidu.com";
+	++argc;
+	test_httpget(argc, argv);
+#endif
+}
+
 int main(int argc, char **argv)
 {
 	int ret=0;
-
-	switch(gdb_ctrl)
-	{
-	case GDB_httpget:
-		ret = test_httpget(argc, argv);
-		return ret;
-		break;
-	case GDB_slist:
-		slist_test();
-		return ret;
-		break;
-	case OFF_GDB:
-	default:
-		break;
-	}
 
 	if(argc >= 2)
 	{
@@ -576,6 +592,8 @@ int main(int argc, char **argv)
 			ret = json_test(argc, argv);
 		else if( strcmp(argv[1], "time") == 0 )
 			ret = time_test(argc, argv);
+		else if( strcmp(argv[1], "net") == 0 )
+			ret = net_test(argc, argv);
 		else
 			test();
 	}

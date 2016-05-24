@@ -10,6 +10,22 @@
 #define WF_FD_SET(fd, where, max_fd)	 { FD_SET(fd, where); if (fd > max_fd) max_fd = fd; }
 #endif
 
+
+
+extern int get_netdev_mac(const char *ifname, unsigned char *mac);
+extern int get_netdev_ip(const char *ifname, char *ip);
+extern int get_netdev_addr(const char * ifname, unsigned int *addr);
+extern int get_netdev_dstip(const char * ifname, char *dstip);
+extern int get_netdev_dstaddr(const char * ifname, unsigned int *dstaddr);
+extern int get_netdev_broadip(const char * ifname, char *broadip);
+extern int get_netdev_broadaddr(const char * ifname, unsigned int *broadaddr);
+extern int get_netdev_mask(const char * ifname, char * maskstr, unsigned int * mask);
+extern int get_netdev_mtu(const char * ifname);
+extern int get_netdev_ifindex(const char * ifname);
+
+
+extern int get_host_gateway(char *gateway, unsigned int *gwaddr, char *ifname);
+
 /*
 in: prior_if (prior interface)
 out: ip  broadip  ifname  */

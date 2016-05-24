@@ -13,12 +13,15 @@ app_list += arp
 app_list += api_store
 app_list += speedtest
 
+#test programs
+app_list += test
+
 all:
 	for d in $(app_list); do \
 		make -C $$d; \
 		[ "$$?" != "0" ] && exit "$$?"; \
 	done; \
-	echo OK 
+	echo OK: done
 
 pack:
 	for d in $(app_list); do \
@@ -33,4 +36,5 @@ clean:
                 make -C $$d clean; \
 	done
 	rm -f *.order *.symvers
+	echo OK: done
 

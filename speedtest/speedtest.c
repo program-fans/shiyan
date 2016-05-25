@@ -11,8 +11,7 @@
 #include <fcntl.h>
 #include <stdarg.h>
 #include <math.h>
-
-#include "ghttp.h"
+#include <errno.h>
 
 #define ROUTER_360					0
 #if ROUTER_360
@@ -89,6 +88,8 @@ struct speed_server
 	double distance;
 	double lat;
 	double lon;
+	unsigned int ip;
+	char *host;
 	char url[256];
 	char cut_url[256];
 	char country[32];
@@ -125,8 +126,6 @@ struct speed_child
 #define SPEEDTEST_SERVER_LIST_XML			"/tmp/speedtest_server_list.xml"
 #define SPEEDTEST_CLOSEST_SERVERS_XML	"/tmp/speedtest_closest_servers.xml"
 //#define SPEEDTEST_UPLOAD_XML				"/tmp/speedtest_upload.xml"
-
-#define USE_WGET	1
 
 int waitpid_time(pid_t pid, int *pstatus, unsigned int max_time)
 {
@@ -246,7 +245,6 @@ int speedtest_child(int option, void *data, char *if_name)
 	return ret;
 }
 
-static struct ghttp_result g_ghttp_result;
 static unsigned char speed_chunk[1228800];		// 1200 KB
 static struct speed_config g_config;
 static struct speed_server_list closest_server_list;
@@ -316,17 +314,12 @@ void print_server_list(struct speed_server_list *list)
 	}
 }
 
-char *get_useragent()
+static char *get_common_headers()
 {
-	static char useragent[256] = "Mozilla/5.0 (Linux; U; 32bit; en-us) Python/2.7.3 (KHTML, like Gecko) speedtest-cli/0.3.4";
-	return &useragent[0];
-}
-
-void set_common_headers(ghttp_request *request)
-{
-	ghttp_set_header(request, http_hdr_User_Agent, get_useragent());
-	ghttp_set_header(request, http_hdr_Accept_Encoding, "identity");
-	ghttp_set_header(request, http_hdr_Connection, "close");
+	static char header[256] = "User-Agent: Mozilla/5.0 (Linux; U; 32bit; en-us) Python/2.7.3 (KHTML, like Gecko) speedtest-cli/0.3.4\r\n"
+							"Accept-Encoding: identity\r\n"
+							"Connection: close\r\n";
+	return &header[0];
 }
 
 static int cp_file(char *src, char *dst)
@@ -459,7 +452,6 @@ char *get_client_xml(char *in, struct speed_config *config)
 
 int getconfig(struct speed_config *config)
 {
-#if USE_WGET
 	int ret = 0;
 	FILE *fp;
 
@@ -499,31 +491,6 @@ XML_EXIST:
 		return -1;
 	
 	return 0;
-#else
-	int ret = 0;
-	char *ptr, *tmp;
-	ghttp_request *request = NULL;
-
-	if(!config)
-		return -1;
-
-	request = ghttp_request_new_url(SPEEDTEST_CONFIG_URL);
-	if(!request)
-		return -1;
-	set_common_headers(request);
-
-	ghttp_result_set(&g_ghttp_result, NULL, speed_chunk, sizeof(speed_chunk));
-	ret = ghttp_get_work(request, &g_ghttp_result);
-	if(ret < 0){
-		DEBUG("error of ghttp_get_work: %d \n", ret);
-		return -1;
-	}
-
-	if(!get_client_xml((char *)speed_chunk, config))
-		return -1;
-	
-	return 0;
-#endif
 }
 
 char *get_server_xml(char *in, struct speed_server *server)
@@ -549,6 +516,12 @@ char *get_server_xml(char *in, struct speed_server *server)
 	tmp = strstr(server->cut_url, "/speedtest/");
 	if(tmp)
 		*tmp = '\0';
+	if(strncmp(server->cut_url, "http://", 7) == 0)
+		server->host = server->cut_url + 7;
+	else if(strncmp(server->cut_url, "https://", 8) == 0)
+		server->host = server->cut_url + 8;
+	else
+		server->host = server->cut_url;
 
 	tmp = get_double_value("lat", ptr, &server->lat);
 	if(!tmp){
@@ -660,33 +633,8 @@ int peek_closest_server(struct speed_config *config, struct speed_server_list *l
 	return ret;
 }
 
-int get_server_list(char *server_url)
-{
-	int ret = 0;
-	ghttp_request *request = NULL;
-
-	if(!server_url)
-		return -1;
-	
-	request = ghttp_request_new_url(server_url);
-	if(!request)
-		return -1;
-	set_common_headers(request);
-
-	memset(&g_ghttp_result, 0, sizeof(g_ghttp_result));
-	ghttp_result_set(&g_ghttp_result, NULL, speed_chunk, sizeof(speed_chunk));
-	ret = ghttp_get_work(request, &g_ghttp_result);
-	if(ret < 0){
-		DEBUG("error of ghttp_get_work: %d \n", ret);
-		return -1;
-	}
-
-	return 0;
-}
-
 int get_server_lists(struct speed_config *config, struct speed_server_list *list)
 {
-#if USE_WGET
 	int i = 0, ret = 0, parse_xml = 0;
 	size_t r_read;
 	FILE *fp;
@@ -742,39 +690,6 @@ XML_EXIST:
 	}
 
 	return 0;
-#else
-	int i = 0, ret = 0;
-	char *serverlist_urls[4];
-
-	if(!config || !list)
-		return -1;
-
-	serverlist_urls[0] = SPEEDTEST_SERVERLIST_URL1;
-	serverlist_urls[1] = SPEEDTEST_SERVERLIST_URL2;
-	serverlist_urls[2] = SPEEDTEST_SERVERLIST_URL3;
-	serverlist_urls[3] = SPEEDTEST_SERVERLIST_URL4;
-
-	for(i=0; i<4; i++){
-		ret = get_server_list(serverlist_urls[i]);
-		if(ret < 0){
-			DEBUG("get server-list failed: %s \n", serverlist_urls[i]);
-			continue;
-		}
-		else
-			break;
-	}
-	if(ret < 0){
-		return -1;
-	}
-
-	ret = peek_closest_server(config, list);
-	if(ret < 0){
-		DEBUG("peek closest servers failed: %d \n", ret);
-		return ret;
-	}
-
-	return 0;
-#endif
 }
 
 int save_closest_servers_file(struct speed_server_list *list)
@@ -869,39 +784,179 @@ int read_closest_servers_file(struct speed_server_list *list)
 	return 0;
 }
 
+#if ROUTER_360
+static int wf_gethostbyname(char *name, char *ip, unsigned int *addr)
+{
+	struct hostent *host = NULL;
+	struct in_addr host_addr;
+	char *ptr = name;
+
+	if(strncmp(ptr, "http://", 7) == 0)
+		ptr += 7;
+	else if(strncmp(ptr, "https://", 8) == 0)
+		ptr += 8;
+
+	host = gethostbyname(ptr);
+	if(!host)
+		return -1;
+	host_addr = *((struct in_addr *)(host->h_addr));
+	//memcpy(&host_addr.sin_addr.s_addr, host->h_addr_list[0], sizeof(unsigned int));
+	if(ip){
+		inet_pton(host->h_addrtype, host->h_addr, ip);
+		//sprintf(ip, "%s",(char *)inet_ntoa(host_addr));
+	}
+	if(addr)
+		*addr = host_addr.s_addr;
+	return 0;
+}
+static int wf_connect_addr(int clientSock, unsigned int serverAddr, int serverPort)
+{
+	struct hostent *host = NULL;
+	struct sockaddr_in addr;
+	
+	if( clientSock < 0 || serverAddr == 0 || serverPort <= 0 )
+		return -1;
+	memset(&addr, 0, sizeof(addr));
+	addr.sin_addr.s_addr = serverAddr;
+	addr.sin_family =AF_INET;
+	addr.sin_port = htons(serverPort);
+
+	return connect(clientSock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
+}
+static int wf_send(int sock, unsigned char *buf, int total_len, int flag)
+{
+	int len=0, i=0, next=total_len;
+	
+	while(next > 0 && (len=send(sock, buf+i, next, flag)) != next)
+	{
+		if(len>0)
+		{
+			i += len;
+			next -= len;
+		}
+		else if(len == 0)
+			break;
+		else if(errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+			continue;
+		else
+			return -1;
+	}
+	if(!i)
+		return len;
+
+	return i;
+}
+static int wf_recv(int sock, unsigned char *buf, int total_len, int flag)
+{
+	int len=0, i=0, next=total_len;
+	
+	while(next > 0 && (len=recv(sock, buf+i, next, flag)) != next)
+	{
+		if(len>0)
+		{
+			i += len;
+			next -= len;
+		}
+		else if(len == 0)
+			break;
+		else if(errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+			continue;
+		else
+			return -1;
+	}
+
+	return i;
+}
+#endif
+
+static char latency_head[1024] = "GET /speedtest/latency.txt HTTP/1.1\r\n"
+							"User-Agent: Mozilla/5.0 (Linux; U; 32bit; en-us) Python/2.7.3 (KHTML, like Gecko)speedtest-cli/0.3.4\r\n"
+							"Accept-Encoding: identity\r\n"
+							"Connection: close\r\n"
+							"Host: ";
+static int send_latency_request(int sock_fd, char *url)
+{
+	char data[1024];
+	int data_len = 0;
+
+	data_len = sprintf(data, "%s%s\r\n\r\n", latency_head, url);
+	return wf_send(sock_fd, (unsigned char *)data, data_len, 0);
+}
 int get_latency(struct speed_server *server, unsigned long *time_ms)
 {
-	ghttp_request *request = NULL;
-	char url[256];
-	int ret = 0;
-	struct timeval tv1, tv2;
+	int ret = 0, sock_fd = 0;
+	fd_set readable;
+	struct timeval wait_tv, time_delay, tv1, tv2;
+	int max_fd;
+	unsigned char data[1024];
 
-	sprintf(url, "%s/speedtest/latency.txt", server->cut_url);
-	request = ghttp_request_new_url(url);
-	if(!request){
-		goto ERR;
+	sock_fd = socket(AF_INET,SOCK_STREAM,0);
+	if(sock_fd < 0)
+		return -1;
+
+	if(server->ip == 0){
+		//DEBUG("gethostbyname: %s \n", server->host);
+		ret = wf_gethostbyname(server->host, NULL, &server->ip);
+		if(ret < 0){
+			DEBUG("gethostbyname error: %s \n", server->host);
+			goto ERR;
+		}
 	}
-	set_common_headers(request);
-
-	//ghttp_result_set(&g_ghttp_result, NULL, speed_chunk, sizeof(speed_chunk));
-	gettimeofday(&tv1, NULL);
-	ret = ghttp_get_work(request, NULL);
-	if(ret < 0){
-		DEBUG("error of ghttp_get_work: %d \n", ret);
-		goto ERR;
-	}
-	gettimeofday(&tv2, NULL);
-
-	*time_ms = (unsigned long)(((tv2.tv_sec - tv1.tv_sec) * 1000) + ((tv2.tv_usec - tv1.tv_usec) / 1000));
-	//*time_ms = (unsigned long)((tv2.tv_sec * 1000 + tv2.tv_usec) - (tv1.tv_sec * 1000 + tv1.tv_usec));
-	//DEBUG("time_ms=%lu [%lu.%lu - %lu.%lu]\n", *time_ms, 
-		//(unsigned long)tv2.tv_sec, (unsigned long)tv2.tv_usec, 
-		//(unsigned long)tv1.tv_sec, (unsigned long)tv1.tv_usec);
 	
-	return ret;
+	ret = wf_connect_addr(sock_fd, server->ip, 8080);
+	if(ret < 0){
+		DEBUG("connect error: %s \n", server->cut_url);
+		goto ERR;
+	}
+	gettimeofday(&tv1,NULL);
+	ret = send_latency_request(sock_fd, server->host);
+	if(ret < 0)
+		goto ERR;
+
+	while(1)
+	{
+		FD_ZERO(&readable);
+		FD_SET(sock_fd, &readable);
+		max_fd = sock_fd + 1;
+		wait_tv.tv_sec = 0;
+		wait_tv.tv_usec = 100000;		// 100 ms = 100 * 1000
+
+		ret = select(max_fd, &readable, NULL, NULL, &wait_tv);
+		if (ret < 0){
+			if (errno == EINTR){
+				continue;
+			}
+			DEBUG("TIME_OUT     1\n");
+			goto TIME_OUT;
+		}
+		else if (ret == 0){
+			DEBUG("TIME_OUT     2\n");
+			goto TIME_OUT;
+		}
+		else{
+			if (FD_ISSET(sock_fd, &readable)){
+				if( wf_recv(sock_fd, data, sizeof(data), 0) < 0){
+					DEBUG("TIME_OUT     3\n");
+					goto TIME_OUT;
+				}
+				gettimeofday(&tv2,NULL);
+			}
+		}
+		break;
+	}
+	close(sock_fd);
+	*time_ms = (unsigned long)(((tv2.tv_sec - tv1.tv_sec) * 1000) + ((tv2.tv_usec - tv1.tv_usec) / 1000));
+	return 0;
+
 ERR:
-	DEBUG("get latency.txt failed: %s \n", url);
+	close(sock_fd);
+	*time_ms = 100;
+	DEBUG("get latency.txt failed: %s/speedtest/latency.txt \n", server->cut_url);
 	return -1;
+TIME_OUT:
+	close(sock_fd);
+	*time_ms = 100;
+	return 0;
 }
 
 int select_best_server(struct speed_server_list *list, struct speed_server **best)

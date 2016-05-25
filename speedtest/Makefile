@@ -1,17 +1,18 @@
 
 CC=gcc
-LIB=../wf_lib/include/ -lwf -lpthread -lm
-GLIB=../ghttp_lib/include/ -lghttp
+LDFLAGS= -lpthread -lm
+LDFLAGS+= -L../wf_lib/include/ -lwf
+#LDFLAGS+= -L../ghttp_lib/include/ -lghttp
 
-INCLUDE=../wf_lib/include/
-GINCLUDE=../ghttp_lib/include/
+CFLAGS= -I../wf_lib/include/
+#CFLAGS= -I../ghttp_lib/include/
 
 SPD=speedtest
 
 all: $(SPD)
 
 $(SPD): $(SPD).c
-	$(CC) -g $(SPD).c -I$(INCLUDE) -I$(GINCLUDE) -L$(LIB) -L$(GLIB) -o $@
+	$(CC) -g $(SPD).c $(CFLAGS) $(LDFLAGS) -o $@
 
 pack: clean
 	#nothing

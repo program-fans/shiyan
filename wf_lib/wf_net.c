@@ -712,6 +712,31 @@ ERR:
 	return sock;
 }
 
+int wf_gethostbyname(char *name, char *ip, unsigned int *addr)
+{
+	struct hostent *host = NULL;
+	struct in_addr host_addr;
+	char *ptr = name;
+
+	if(strncmp(ptr, "http://", 7) == 0)
+		ptr += 7;
+	else if(strncmp(ptr, "https://", 8) == 0)
+		ptr += 8;
+
+	host = gethostbyname(ptr);
+	if(!host)
+		return -1;
+	host_addr = *((struct in_addr *)(host->h_addr));
+	//memcpy(&host_addr.sin_addr.s_addr, host->h_addr_list[0], sizeof(unsigned int));
+	if(ip){
+		inet_pton(host->h_addrtype, host->h_addr, ip);
+		//sprintf(ip, "%s",(char *)inet_ntoa(host_addr));
+	}
+	if(addr)
+		*addr = host_addr.s_addr;
+	return 0;
+}
+
 int wf_accept(int sock, void *client_addr, int *addr_len)
 {
 	int client_sock = -1, len;
@@ -741,11 +766,24 @@ int wf_connect(int clientSock, char *serverName, int serverPort)
 	}
 	else
 	{
-		host = gethostbyname(serverName);
-		if(host == NULL)
+		if(wf_gethostbyname(serverName, NULL, &addr.sin_addr.s_addr) < 0)
 			return -1;
-		addr.sin_addr = *((struct in_addr *)(host->h_addr));
 	}
+	addr.sin_family =AF_INET;
+	addr.sin_port = htons(serverPort);
+
+	return connect(clientSock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
+}
+
+int wf_connect_addr(int clientSock, unsigned int serverAddr, int serverPort)
+{
+	struct hostent *host = NULL;
+	struct sockaddr_in addr;
+	
+	if( clientSock < 0 || serverAddr == 0 || serverPort <= 0 )
+		return -1;
+	memset(&addr, 0, sizeof(addr));
+	addr.sin_addr.s_addr = serverAddr;
 	addr.sin_family =AF_INET;
 	addr.sin_port = htons(serverPort);
 

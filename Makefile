@@ -17,24 +17,23 @@ app_list += speedtest
 app_list += test
 
 all:
-	for d in $(app_list); do \
+	@for d in $(app_list); do \
 		make -C $$d; \
 		[ "$$?" != "0" ] && exit "$$?"; \
 	done; \
 	echo OK: done
 
 pack:
-	for d in $(app_list); do \
+	@for d in $(app_list); do \
                 make -C $$d pack; \
-		[ "$$?" != "0" ] && exit "$$?"; \
-	done; \
+	done
 	zip -qr wolf_shiyan.zip ./
-	echo OK: wolf_shiyan.zip
+	@echo OK: wolf_shiyan.zip
 
 clean:
-	for d in $(app_list); do \
+	@for d in $(app_list); do \
                 make -C $$d clean; \
 	done
 	rm -f *.order *.symvers
-	echo OK: done
+	@echo OK: done
 

@@ -1,22 +1,22 @@
-test_list += inotify
+test_list = inotify
+test_list += icmp
 
 all:
-	for d in $(test_list); do \
+	@for d in $(test_list); do \
 		make -C $$d; \
 		[ "$$?" != "0" ] && exit "$$?"; \
 	done; \
 	echo OK: test
 
 pack:
-	for d in $(test_list); do \
+	@for d in $(test_list); do \
                 make -C $$d pack; \
-		[ "$$?" != "0" ] && exit "$$?"; \
-	done; \
-	echo OK: test
+	done
+	@echo OK: test
 
 clean:
-	for d in $(test_list); do \
-                make -C $$d clean; \
+	@for d in $(test_list); do \
+		make -C $$d clean; \
 	done
-	echo OK: test
+	@echo OK: test
 

@@ -123,7 +123,11 @@ struct speed_child
 #define SPEEDTEST_SERVERLIST_URL4	"http://c.speedtest.net/speedtest-servers.php"
 #define CLOSEST_SERVER_NUM_MAX	3
 #define SPEEDTEST_CONFIG_XML				"/tmp/speedtest_config.xml"
+#if PRE_SET_SERVERLIST_XML
+#define SPEEDTEST_SERVER_LIST_XML			"/sh/speedtest_server_list.xml"
+#else
 #define SPEEDTEST_SERVER_LIST_XML			"/tmp/speedtest_server_list.xml"
+#endif
 #define SPEEDTEST_CLOSEST_SERVERS_XML	"/tmp/speedtest_closest_servers.xml"
 //#define SPEEDTEST_UPLOAD_XML				"/tmp/speedtest_upload.xml"
 
@@ -1566,11 +1570,11 @@ int main(int argc, char **argv)
 	}
 	else{
 GET_SERVER_LIST:
-	#if PRE_SET_SERVERLIST_XML
+/*	#if PRE_SET_SERVERLIST_XML
 		if(access(SPEEDTEST_SERVER_LIST_XML, F_OK)){
 			cp_file("/sh/speedtest_server_list.xml", SPEEDTEST_SERVER_LIST_XML);
 		}
-	#endif
+	#endif */
 		ret = get_server_lists(&g_config, &closest_server_list);
 		if(ret < 0){
 			spdlog("get server-list failed \n");

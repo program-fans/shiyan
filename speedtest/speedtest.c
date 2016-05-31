@@ -88,8 +88,8 @@ struct speed_server
 	double distance;
 	double lat;
 	double lon;
-	unsigned int ip;
-	char *host;
+	unsigned int ip;		// use for get_latency
+	char *host;			// use for get_latency
 	char url[256];
 	char cut_url[256];
 	char country[32];
@@ -520,12 +520,6 @@ char *get_server_xml(char *in, struct speed_server *server)
 	tmp = strstr(server->cut_url, "/speedtest/");
 	if(tmp)
 		*tmp = '\0';
-	if(strncmp(server->cut_url, "http://", 7) == 0)
-		server->host = server->cut_url + 7;
-	else if(strncmp(server->cut_url, "https://", 8) == 0)
-		server->host = server->cut_url + 8;
-	else
-		server->host = server->cut_url;
 
 	tmp = get_double_value("lat", ptr, &server->lat);
 	if(!tmp){
@@ -627,6 +621,8 @@ int peek_closest_server(struct speed_config *config, struct speed_server_list *l
 			continue;
 		}
 		memcpy(insert, &server_tmp, sizeof(struct speed_server));
+		insert->ip = 0;
+		insert->host = NULL;
 		INIT_LIST_HEAD(&insert->list);
 		del = insert_server_list(list, insert);
 		if(del)
@@ -775,7 +771,9 @@ int read_closest_servers_file(struct speed_server_list *list)
 			break;
 		}
 		ptr = tmp;
-		
+
+		server_tmp->ip = 0;
+		server_tmp->host = NULL;
 		INIT_LIST_HEAD(&server_tmp->list);
 		del = insert_server_list(list, server_tmp);
 		if(del)
@@ -899,6 +897,14 @@ int get_latency(struct speed_server *server, unsigned long *time_ms)
 		return -1;
 
 	if(server->ip == 0){
+		if(server->host == NULL){
+				if(strncmp(server->cut_url, "http://", 7) == 0)
+					server->host = server->cut_url + 7;
+				else if(strncmp(server->cut_url, "https://", 8) == 0)
+					server->host = server->cut_url + 8;
+				else
+					server->host = server->cut_url;
+		}
 		//DEBUG("gethostbyname: %s \n", server->host);
 		ret = wf_gethostbyname(server->host, NULL, &server->ip);
 		if(ret < 0){

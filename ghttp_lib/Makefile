@@ -3,6 +3,8 @@ MAKELIB=ar
 CC=cc
 RM=rm
 
+CFLAGS= -Wall -Iinclude/
+
 src=$(wildcard *.c)
 obj=$(src:.c=.o)
 TARGET=libghttp
@@ -16,7 +18,7 @@ $(TARGET).so: $(obj)
 	$(CC) -o $@ -fPIC -shared $^
 #	cp -f $(TARGET).so include/
 %.o: %.c
-	$(CC) -c -Iinclude/ $< -o $@
+	$(CC) -c $(CFLAGS) $< -o $@
 
 pack: clean
 	zip -qr $(TARGET).zip ./

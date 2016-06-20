@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <netdb.h>
@@ -435,7 +436,6 @@ END:
 
 int getHostIP_2(char *prior_if, char *ip, char *broadip, char *ifname, int *ifindex)
 {
-	int leng = sizeof(struct sockaddr_in);
 	int sockfd;
 	int i=0;
 	struct ifreq ifr;
@@ -506,7 +506,7 @@ int getMAC_byCmd(char *mac)
 {
 	FILE *fp = popen("ifconfig | grep eth0 | awk '{print $5}'", "r");//打开管道，执行shell 命令
 	char buffer[1024] = {0};
-	int num=0,len=0;
+	int num=0;
 	while (NULL != fgets(buffer, 1024, fp)) //逐行读取执行结果并打印
 	{
 		wipe_off_CRLF_inEnd(buffer);
@@ -578,7 +578,7 @@ int getDNS_byCmd(char *dns_1,char *dns_2)
 {
 	FILE *fp = popen("cat /etc/resolv.conf | grep nameserver | awk '{print $2}'", "r");//打开管道，执行shell 命令
 	char buffer[1024] = {0};
-	char dns[2][16] = {0};
+	char dns[2][16] = {{'\0'}};
 	int num=0;
 	while (NULL != fgets(buffer, 1024, fp)) //逐行读取执行结果并打印
 	{
@@ -634,7 +634,66 @@ int ip_check(char *ip)
 	return 1;
 }
 
+unsigned int ip_atoh(char *ip, unsigned int *addr)
+{
+	char *cip = ip;
+	int icnt = 0, idot = 0, n;
+	unsigned char a[4], *p = NULL;
+	unsigned int ret = 0;
+	
+	if(ip == NULL || strlen(ip) == 0)
+		return 0;
 
+	n = atoi(cip);
+	if(n <= 0 || n > 255)
+		return 0;
+	a[0] = (unsigned char)n;
+	
+	while(*cip != '\0')
+	{
+		++icnt;
+		if(*cip == '.')
+		{
+			if( *(cip+1) < '0' || *(cip+1) > '9' )
+				return 0;
+			n = atoi(cip+1);
+			if(n < 0 || n > 255)
+				return 0;
+			++idot;
+			a[idot] = (unsigned char)n;
+		}
+		else
+		{
+			if( *cip < '0' || *cip > '9' )
+				return 0;
+		}
+		++cip;
+	}
+
+	if(idot != 3 || icnt < 7 || icnt > 15)
+		return 0;
+	p = (unsigned char *)&ret;
+	*p++ = a[3];
+	*p++ = a[2];
+	*p++ = a[1];
+	*p++ = a[0];
+	if(addr)
+		*addr = ret;
+	
+	return ret;
+}
+
+char *ip_htoa(unsigned int addr, char *buff)
+{
+	unsigned char a[4];
+
+	a[0] = (unsigned char)(addr >> 24);
+	a[1] = (unsigned char)(addr >> 16);
+	a[2] = (unsigned char)(addr >> 8);
+	a[3] = (unsigned char)(addr);
+	sprintf(buff, "%d.%d.%d.%d", a[0], a[1], a[2], a[3]);
+	return buff;
+}
 
 
 int wf_udp_socket(int port, int is_broad, char *if_name)
@@ -727,7 +786,7 @@ int wf_gethostbyname(char *name, char *ip, unsigned int *addr)
 	if(!host)
 		return -1;
 	host_addr = *((struct in_addr *)(host->h_addr));
-	//memcpy(&host_addr.sin_addr.s_addr, host->h_addr_list[0], sizeof(unsigned int));
+	//memcpy(&host_addr.s_addr, host->h_addr_list[0], sizeof(unsigned int));
 	if(ip){
 		inet_pton(host->h_addrtype, host->h_addr, ip);
 		//sprintf(ip, "%s",(char *)inet_ntoa(host_addr));
@@ -739,12 +798,13 @@ int wf_gethostbyname(char *name, char *ip, unsigned int *addr)
 
 int wf_accept(int sock, void *client_addr, int *addr_len)
 {
-	int client_sock = -1, len;
+	int client_sock = -1;
+	socklen_t len;
 	struct sockaddr_in c_addr;
 	len = sizeof(struct sockaddr_in);
 	
 	if(client_addr && addr_len)
-		client_sock = accept(sock, (struct sockaddr *)client_addr, addr_len);
+		client_sock = accept(sock, (struct sockaddr *)client_addr, (socklen_t *)addr_len);
 	else
 		client_sock = accept(sock, (struct sockaddr *)&c_addr, &len);
 
@@ -753,7 +813,6 @@ int wf_accept(int sock, void *client_addr, int *addr_len)
 
 int wf_connect(int clientSock, char *serverName, int serverPort)
 {
-	struct hostent *host = NULL;
 	struct sockaddr_in addr;
 	
 	if( clientSock < 0 || serverName == NULL || serverPort <= 0 )
@@ -777,7 +836,6 @@ int wf_connect(int clientSock, char *serverName, int serverPort)
 
 int wf_connect_addr(int clientSock, unsigned int serverAddr, int serverPort)
 {
-	struct hostent *host = NULL;
 	struct sockaddr_in addr;
 	
 	if( clientSock < 0 || serverAddr == 0 || serverPort <= 0 )
@@ -907,7 +965,7 @@ int wf_sendto_ip(int sock, unsigned char *buf, int total_len, int flag, char *to
 int wf_recvfrom(int sock, unsigned char *buf, int total_len, int flag, void *addr_from)
 {
 	int len=0;
-	int sockaddr_len = sizeof(struct sockaddr_in);
+	socklen_t sockaddr_len = sizeof(struct sockaddr_in);
 	struct sockaddr_in addr;
 	struct sockaddr *paddr = (struct sockaddr *)addr_from;
 

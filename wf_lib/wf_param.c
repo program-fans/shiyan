@@ -427,8 +427,6 @@ static int txt_write_parame(int fd,struct list_head *head)
 	struct txt_list_head *array_head = NULL;
 	struct txt_list_head *child_array_head = NULL;
 	struct txt_list *txt_head;
-	void *data;
-	int ret;
 
 	list_for_each_entry(array_head,head,list) {
 		bzero(txt_buf,sizeof(txt_buf));
@@ -509,7 +507,7 @@ static int __txt_read_parame(FILE *fd, struct list_head *head, int parent_skip)
 	char buf[read_max_buf] = {0};
 	struct txt_list_head *array_head;
 	struct txt_list_head *child_array_head;
-	int i,j=0;
+	int j=0;
 	int child_skip = parent_skip , skip = parent_skip;
 
 	while(1) {

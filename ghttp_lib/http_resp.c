@@ -487,7 +487,7 @@ static int read_chunk(http_resp *a_resp, http_trans_conn *a_conn)
 	int   i = 0;
 	int   j = 0;
 	char *l_ptr = NULL;
-	int   l_left_to_read = 0;
+//	int   l_left_to_read = 0;
 	int   l_rv = 0;
 
 	if (a_conn->chunk_len == 0)

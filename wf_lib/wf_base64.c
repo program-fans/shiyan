@@ -334,7 +334,6 @@ void base64_encode_start(struct base64_context *cxt)
 unsigned int base64_encode_process(struct base64_context *cxt, 
 	unsigned char *in, unsigned int in_len, char *out, unsigned int out_size)
 {
-	unsigned char a, b, c;
 	char *pout = out;
 	unsigned int pout_size = out_size, pin_len = in_len;
 	unsigned char *pin = in;
@@ -391,8 +390,6 @@ unsigned int base64_encode_process(struct base64_context *cxt,
 
 unsigned int base64_encode_finish(struct base64_context *cxt, char *out, unsigned int out_size)
 {
-	unsigned char a, b, c;
-	
 	if(!cxt || !out || out_size < 4)
 		return 0;
 

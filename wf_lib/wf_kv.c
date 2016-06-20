@@ -44,7 +44,7 @@ static void kv_free(struct wf_kv_t *kv)
 
 static int get_kv_index(void *key, unsigned int size)
 {
-	int kv_index = 0, i=0;
+	int  i=0;
 	unsigned int m=0;
 	unsigned char *ptr = (unsigned char *)key;
 
@@ -125,12 +125,14 @@ static int key_check(void *key, unsigned int key_size)
 	if(key_size > 1024 || key_size == 0)	return 0;
 	return 1;
 }
+/*
 static int value_check(void *value, unsigned int value_size)
 {
 	if(value == NULL)		return 0;
 	if(value_size == 0)	return 0;
 	return 1;
 }
+*/
 static int wf_kv_param_check(void *key, unsigned int key_size, void *value, unsigned int value_size)
 {
 	if(key == NULL)	return 0;

@@ -57,11 +57,13 @@ static void tp_removeJob(struct job_list *list,struct job *node)
 	}
 	--list->num;
 }
+/*
 static void tp_deleteJob(struct job_list *list,struct job *node)
 {
 	tp_removeJob(list,node);
 	free(node);
 }
+*/
 static void tp_freeJob_list(struct job_list *list)
 {
 	struct job *p = NULL;
@@ -77,6 +79,64 @@ static void tp_freeJob_list(struct job_list *list)
 	list->num= 0;
 	list->head= NULL;
 	list->tail = NULL;
+}
+
+//================================================================================================
+//函数名：                    threadpool_function
+//函数描述：                  线程池中线程函数
+//输入：                     [in] arg                  线程池地址
+//输出：                     无  
+//返回：                     无
+//================================================================================================
+static void* threadpool_function(void* arg)
+{
+    struct threadpool *pool = (struct threadpool*)arg;
+    struct job *pjob = NULL;
+	int rc=0;
+    while (1)  //死循环
+    {
+        pthread_mutex_lock(&(pool->mutex));
+        while ((pool->wait_list.num == 0) && !pool->pool_close)   //队列为空时，就等待队列非空
+        {
+            pthread_cond_wait(&(pool->queue_not_empty), &(pool->mutex));
+        }
+        if (pool->pool_close)   //线程池关闭，线程就退出
+        {
+            pthread_mutex_unlock(&(pool->mutex));
+            pthread_exit(NULL);
+        }
+        pjob = pool->wait_list.head;
+		tp_removeJob(&(pool->wait_list), pjob);
+		pjob->state = EXCUTE_JOB;
+		tp_insertEnd_job(&(pool->excu_list), pjob);
+        if (pool->wait_list.num == 0)
+        {
+            pthread_cond_signal(&(pool->queue_empty));        //队列为空，就可以通知threadpool_destroy函数，销毁线程函数
+        }
+        if (pool->wait_list.num == pool->queue_max_num - 1)
+        {
+            pthread_cond_broadcast(&(pool->queue_not_full));  //队列非满，就可以通知threadpool_add_job函数，添加新任务
+        }
+        pthread_mutex_unlock(&(pool->mutex));
+        
+        rc = (*(pjob->callback_function))(pjob->arg);   //线程真正要做的工作，回调函数的调用
+	if(rc == 1)
+	{
+		pthread_mutex_lock(&(pool->mutex));
+		tp_removeJob(&(pool->excu_list), pjob);
+		pjob->state = PAUSE_JOB;
+		tp_insertEnd_job(&(pool->pend_list), pjob);
+		pthread_mutex_unlock(&(pool->mutex));
+	}
+	else
+	{
+		pthread_mutex_lock(&(pool->mutex));
+		tp_removeJob(&(pool->excu_list), pjob);
+		pthread_mutex_unlock(&(pool->mutex));
+		free(pjob);
+	}
+        pjob = NULL;    
+    }
 }
 
 struct threadpool* threadpool_init(int thread_num, int queue_max_num)
@@ -231,96 +291,76 @@ int threadpool_resumeJob_byID(struct threadpool* pool, char *jobID)
 	if(pjob != NULL)	return 0;
 	else return -1;
 }
-void* threadpool_function(void* arg)
-{
-    struct threadpool *pool = (struct threadpool*)arg;
-    struct job *pjob = NULL;
-	int rc=0;
-    while (1)  //死循环
-    {
-        pthread_mutex_lock(&(pool->mutex));
-        while ((pool->wait_list.num == 0) && !pool->pool_close)   //队列为空时，就等待队列非空
-        {
-            pthread_cond_wait(&(pool->queue_not_empty), &(pool->mutex));
-        }
-        if (pool->pool_close)   //线程池关闭，线程就退出
-        {
-            pthread_mutex_unlock(&(pool->mutex));
-            pthread_exit(NULL);
-        }
-        pjob = pool->wait_list.head;
-		tp_removeJob(&(pool->wait_list), pjob);
-		pjob->state = EXCUTE_JOB;
-		tp_insertEnd_job(&(pool->excu_list), pjob);
-        if (pool->wait_list.num == 0)
-        {
-            pthread_cond_signal(&(pool->queue_empty));        //队列为空，就可以通知threadpool_destroy函数，销毁线程函数
-        }
-        if (pool->wait_list.num == pool->queue_max_num - 1)
-        {
-            pthread_cond_broadcast(&(pool->queue_not_full));  //队列非满，就可以通知threadpool_add_job函数，添加新任务
-        }
-        pthread_mutex_unlock(&(pool->mutex));
-        
-        rc = (*(pjob->callback_function))(pjob->arg);   //线程真正要做的工作，回调函数的调用
-	if(rc == 1)
-	{
-		pthread_mutex_lock(&(pool->mutex));
-		tp_removeJob(&(pool->excu_list), pjob);
-		pjob->state = PAUSE_JOB;
-		tp_insertEnd_job(&(pool->pend_list), pjob);
-		pthread_mutex_unlock(&(pool->mutex));
-	}
-	else
-	{
-		pthread_mutex_lock(&(pool->mutex));
-		tp_removeJob(&(pool->excu_list), pjob);
-		pthread_mutex_unlock(&(pool->mutex));
-		free(pjob);
-	}
-        pjob = NULL;    
-    }
-}
+
 int threadpool_destroy(struct threadpool *pool)
 {
-	struct job *p;
 	int i;
-    //assert(pool != NULL);		// 断言
-    if(pool==NULL)	return -1;
+	//assert(pool != NULL);		// 断言
+	if(pool==NULL)	return -1;
 	
-    pthread_mutex_lock(&(pool->mutex));
-    if (pool->queue_close || pool->pool_close)   //线程池已经退出了，就直接返回
-    {
-        pthread_mutex_unlock(&(pool->mutex));
-        return -1;
-    }
-    
-    pool->queue_close = 1;        //置队列关闭标志
-    while (pool->wait_list.num != 0)
-    {
-        pthread_cond_wait(&(pool->queue_empty), &(pool->mutex));  //等待队列为空
-    }    
-    
-    pool->pool_close = 1;      //置线程池关闭标志
-    pthread_mutex_unlock(&(pool->mutex));
-    pthread_cond_broadcast(&(pool->queue_not_empty));  //唤醒线程池中正在阻塞的线程
-    pthread_cond_broadcast(&(pool->queue_not_full));   //唤醒添加任务的threadpool_add_job函数
-    
-    for (i = 0; i < pool->thread_num; ++i)
-    {
-        pthread_join(pool->pthreads[i], NULL);    //等待线程池的所有线程执行完毕
-    }
-    
-    pthread_mutex_destroy(&(pool->mutex));          //清理资源
-    pthread_cond_destroy(&(pool->queue_empty));
-    pthread_cond_destroy(&(pool->queue_not_empty));   
-    pthread_cond_destroy(&(pool->queue_not_full));    
-    free(pool->pthreads);
+	pthread_mutex_lock(&(pool->mutex));
+	if (pool->queue_close || pool->pool_close)   //线程池已经退出了，就直接返回
+	{
+		pthread_mutex_unlock(&(pool->mutex));
+		return -1;
+	}
+
+	pool->queue_close = 1;        //置队列关闭标志
+	while (pool->wait_list.num != 0)
+	{
+		pthread_cond_wait(&(pool->queue_empty), &(pool->mutex));  //等待队列为空
+	}    
+
+	pool->pool_close = 1;      //置线程池关闭标志
+	pthread_mutex_unlock(&(pool->mutex));
+	pthread_cond_broadcast(&(pool->queue_not_empty));  //唤醒线程池中正在阻塞的线程
+	pthread_cond_broadcast(&(pool->queue_not_full));   //唤醒添加任务的threadpool_add_job函数
+
+	for (i = 0; i < pool->thread_num; ++i)
+	{
+		pthread_join(pool->pthreads[i], NULL);    //等待线程池的所有线程执行完毕
+	}
+
+	pthread_mutex_destroy(&(pool->mutex));          //清理资源
+	pthread_cond_destroy(&(pool->queue_empty));
+	pthread_cond_destroy(&(pool->queue_not_empty));   
+	pthread_cond_destroy(&(pool->queue_not_full));    
+	free(pool->pthreads);
 	tp_freeJob_list(&(pool->wait_list));
 	tp_freeJob_list(&(pool->excu_list));
 	tp_freeJob_list(&(pool->pend_list));
-    free(pool);
-    return 0;
+	free(pool);
+	return 0;
+}
+
+int threadpool_get_waitlist_num(struct threadpool *pool)
+{
+	int num = -1;
+	if(pool==NULL)	return -1;
+	pthread_mutex_lock(&(pool->mutex));
+	num = pool->wait_list.num;
+	pthread_mutex_unlock(&(pool->mutex));
+	return num;
+}
+
+int threadpool_get_exculist_num(struct threadpool *pool)
+{
+	int num = -1;
+	if(pool==NULL)	return -1;
+	pthread_mutex_lock(&(pool->mutex));
+	num = pool->excu_list.num;
+	pthread_mutex_unlock(&(pool->mutex));
+	return num;
+}
+
+int threadpool_get_pendlist_num(struct threadpool *pool)
+{
+	int num = -1;
+	if(pool==NULL)	return -1;
+	pthread_mutex_lock(&(pool->mutex));
+	num = pool->pend_list.num;
+	pthread_mutex_unlock(&(pool->mutex));
+	return num;
 }
 
 #if 0

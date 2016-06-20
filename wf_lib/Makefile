@@ -3,6 +3,7 @@ MAKELIB=ar
 CC=cc
 RM=rm
 
+CFLAGS= -Wall -Iinclude/
 TARGET=libwf
 #OBJ = [libpx_thread.o pal_time.o] [wf_hacker.o]
 
@@ -19,7 +20,7 @@ $(TARGET).so: $(OBJ)
 	$(CC) -o $@ -fPIC -shared $^
 #	cp -f $(TARGET).so include/
 %.o: %.c
-	$(CC) -c -Iinclude/ $< -o $@
+	$(CC) -c $(CFLAGS) $< -o $@
 
 pack: clean
 	zip -qr $(TARGET).zip ./

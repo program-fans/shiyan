@@ -634,13 +634,13 @@ char *cJSON_GetStringValue(cJSON *object, const char *key)
 
 int cJSON_GetDigitValue(cJSON *object, const char *key, int *value)
 {
-	cJSON *j;
+	cJSON *j = NULL;
 	int num = -1;
-	char *str;
+	char *str = NULL;
 
 	if(object && !key){
 		if((object->type & 255) == cJSON_Number){
-			num = j->valueint;
+			num = object->valueint;
 			goto RET;
 		}
 		else if((object->type & 255) == cJSON_String){

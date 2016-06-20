@@ -237,7 +237,7 @@ void NetMsgLogNote(char *logname, enum MSG_DIRECT msg_direct, char *fmt, ...)
 
 void wf_print(char *file, int line, enum LOG_LEVEL loglevel, char *fmt, ...)
 {
-	char buf[2048],level[10];
+	char buf[2048] = {'\0'};
 	va_list args;
 
 	if( loglevel > wf_cfg.level_show )	return;

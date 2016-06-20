@@ -337,7 +337,7 @@ END:
 int ipc_server_accept(int sock)
 {
 	struct sockaddr addr;
-	int len=sizeof(addr);
+	socklen_t len=sizeof(addr);
 	int client_sock=0;
 
 	client_sock = accept(sock, &addr, &len);

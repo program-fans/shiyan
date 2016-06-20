@@ -3,8 +3,8 @@ GET http://www.speedtest.net/speedtest-config.php
 关注xml节点：client(包含客户端位置信息)  times  download  upload	（实际只使用了 client 节点）
 
 【get服务器列表  closestServers】
-GET http://www.speedtest.net/speedtest-servers-static.php
-GET http://c.speedtest.net/speedtest-servers-static.php
+GET http://www.speedtest.net/speedtest-servers-static.php	澳大利亚
+GET http://c.speedtest.net/speedtest-servers-static.php	美国
 GET http://www.speedtest.net/speedtest-servers.php
 GET http://c.speedtest.net/speedtest-servers.php
 依次执行以上操作，成功获取到服务器列表xml，则停止循环

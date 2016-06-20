@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <unistd.h>
 
 #include <netinet/ip.h>
@@ -76,11 +77,9 @@ static unsigned int icmp_pack(unsigned short icmpSeq, unsigned char icmp_type, u
 
 static struct icmp *icmp_unpack(unsigned char *buf, unsigned int len)
 {
-	int i,iphdrlen;
+	int iphdrlen;
 	struct ip *ip;
 	struct icmp *picmp;
-	
-	double rtt;
 
 	ip = (struct ip *)buf;
 	iphdrlen = ip->ip_hl << 2;
@@ -134,7 +133,8 @@ int icmp_send_echo(int sockfd, unsigned short icmpSeq, char *ip)
 
 int icmp_recv_echo(int sockfd, struct timeval *time_delay, struct sockaddr_in *from_addr)
 {
-	int n,fromlen;
+	int n;
+	socklen_t fromlen;
 	unsigned char recvpacket[4096];
 	struct sockaddr_in from;
 	struct timeval tvrecv, *tvsend;
@@ -188,15 +188,16 @@ static int tv_min(struct timeval *tv, struct timeval *tv_min)
 }
 static void select_best_ip(int sockfd, char *ip, struct timeval *tv_avg, struct sockaddr_in *from_addr)
 {
+#define SEND_TIMES		2
 	unsigned short icmpSeq = 0;
-	struct timeval time_delay[6], time_all;
-	int i = 0, ret = 0;
+	struct timeval time_delay[SEND_TIMES], time_all;
+	int i = 0, ret = 0, one = 1;
 	
 	fd_set readable;
 	struct timeval wait_tv;
 	int max_fd;
 
-	for(i=0; i<6; i++)
+	for(i=0; i<SEND_TIMES; i++)
 	{
 		icmp_send_echo(sockfd, icmpSeq, ip);
 		++icmpSeq;
@@ -233,19 +234,25 @@ static void select_best_ip(int sockfd, char *ip, struct timeval *tv_avg, struct 
 		time_delay[i].tv_usec = 100*1000;
 	}
 
-	time_all.tv_sec = 0;
-	time_all.tv_usec = 0;
-	for(i=0; i<6; i++){
-		time_all.tv_sec += time_delay[1].tv_sec;
-		time_all.tv_usec += time_delay[1].tv_usec;
+	if(one == SEND_TIMES){
+		tv_avg->tv_sec = time_delay[0].tv_sec;
+		tv_avg->tv_usec = time_delay[0].tv_usec ;
 	}
+	else{
+		time_all.tv_sec = 0;
+		time_all.tv_usec = 0;
+		for(i=0; i<SEND_TIMES; i++){
+			time_all.tv_sec += time_delay[i].tv_sec;
+			time_all.tv_usec += time_delay[i].tv_usec;
+		}
 
-	tv_avg->tv_sec = time_all.tv_sec / 6;
-	tv_avg->tv_usec = time_all.tv_usec / 6;
+		tv_avg->tv_sec = time_all.tv_sec / SEND_TIMES;
+		tv_avg->tv_usec = time_all.tv_usec / SEND_TIMES;
+	}
 }
 int icmp_select_best_ip(char ip_list[][16], int ip_num, char *best_ip)
 {
-	int sockfd = 0, ret = 0;
+	int sockfd = 0;
 	struct timeval time_delay, min_time;
 	struct sockaddr_in from_addr;
 
@@ -272,7 +279,7 @@ int icmp_select_best_ip(char ip_list[][16], int ip_num, char *best_ip)
 			break;
 		
 		select_best_ip(sockfd, cur_ip, &time_delay, &from_addr);
-//		printf("%ld  %ld \n", time_delay.tv_sec, time_delay.tv_usec);
+		printf("%s %ld  %ld \n", cur_ip, time_delay.tv_sec, time_delay.tv_usec);
 		if(tv_min(&time_delay, &min_time)){
 			memset(ip_str,0,sizeof(ip_str));
 			strncpy(ip_str, inet_ntoa(from_addr.sin_addr), strlen(inet_ntoa(from_addr.sin_addr)));

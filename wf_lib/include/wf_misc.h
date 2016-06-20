@@ -45,6 +45,14 @@
 
 
 
+
+
+
+#define srand_curtime()		srand((unsigned short)time(NULL))
+#define rand_interval(a, b)	(a+((double)((b-a)*rand())/(double)(RAND_MAX)))
+#define rand_natural(max)	(rand() % max)
+
+
 #ifndef	M_PI
 #define	M_PI		3.14159265358979323846	/* pi */
 #endif
@@ -100,6 +108,7 @@ extern int close_fd_self();
 
 extern void bubble_sort_char(char *str, int start_index, int end_index);
 extern void bubble_sort_int(int *num, int start_index, int end_index);
+extern void randsort(long begin, long end, long *out, unsigned int out_size);
 
 
 extern void alarm_start(unsigned int seconds, void (*func)(int));

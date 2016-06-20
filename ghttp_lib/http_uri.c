@@ -41,7 +41,6 @@ int http_uri_parse(char *a_string, http_uri *a_uri)
 	char *host_s = NULL;
 	char *source_s = NULL;
 	char *port_s = NULL;
-	char *param_s = NULL;
 	int len = 0;
 	char  tmp_port[6];
 	

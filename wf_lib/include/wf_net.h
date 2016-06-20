@@ -44,6 +44,8 @@ extern int getGW_byCmd(char *gw);
 extern int getDNS_byCmd(char *dns_1,char *dns_2);
 
 extern int ip_check(char *ip);
+extern unsigned int ip_atoh(char *ip, unsigned int *addr);
+extern char *ip_htoa(unsigned int addr, char *buff);
 
 // ------------------------  wf socket --------------------------------------
 #define wf_socket_error(errcode)	wf_std_error(errcode)

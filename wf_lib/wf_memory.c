@@ -95,7 +95,7 @@ static void free_use_mem_list(struct list_head *list)
 		}
 	}
 }
-
+/*
 static void print_mem_pool(MemPool *pool)
 {
 	char mod_str[3][24]={"Mod_MemId_OutSet", "Mod_MemId_InSet", "Mod_NO_MemId"};
@@ -115,7 +115,7 @@ static void print_mem_pool(MemPool *pool)
 	printf("use_mem_list: %s \n", list_empty_careful(&pool->use_mem_head) ? "empty" : "not empty");
 	printf("-------------------------\n");
 }
-
+*/
 void free_mem_pool(MemPool *pool)
 {
 	if(!pool)
@@ -550,7 +550,7 @@ int remove_mem_pool_2(mcm_id id, unsigned int mem_size)
 }
 static int __add_mem_pool(MemCacheModule *mcm, unsigned int mem_num, unsigned int mem_size, MemPool **cgPool)
 {
-	MemCacheManager *manager = &g_manager;
+//	MemCacheManager *manager = &g_manager;
 	MemPool *pool = NULL;
 	int ret=0;
 	unsigned int extend_mem_num=mem_num;
@@ -609,7 +609,7 @@ int add_mem_pool_2(mcm_id id, unsigned int mem_num, unsigned int mem_size)
 
 static void __destory_mem_cache(MemCacheModule *mcm)
 {
-	MemCacheManager *manager = &g_manager;
+//	MemCacheManager *manager = &g_manager;
 	MemPool *pos, *n;
 	
 	mcm->enable = 0;
@@ -700,7 +700,7 @@ void *mem_cache_alloc(mcm_id id, unsigned int size)
 {
 	MemCacheManager *manager = &g_manager;
 	MemCacheModule *mcm;
-	MemPool *pool = NULL, *pos;
+	MemPool *pool = NULL;
 	void *ret = NULL;
 
 	if(!manager->enable)
@@ -745,7 +745,7 @@ int mem_cache_free(mcm_id id, void *data, unsigned int size)
 {
 	MemCacheManager *manager = &g_manager;
 	MemCacheModule *mcm;
-	MemPool *pool = NULL, *pos;
+	MemPool *pool = NULL;
 	int ret = -1;
 
 	if(!manager->enable)
@@ -799,6 +799,7 @@ int lib_mem_cache_close()
 	g_manager.total_size = 0;
 	return ret;
 }
+/*
 static void print_mcm(MemCacheModule *mcm)
 {
 	printf("---- %s \n", mcm->name);
@@ -822,7 +823,7 @@ static void print_mem_cache()
 		print_mcm(&g_manager.mem_cache_list[id]);
 	printf("---------------------------\n");
 }
-
+*/
 
 unsigned int get_mcmg_total_size()	{return g_manager.total_size;}
 unsigned int get_mcmg_cache_size()	{return g_manager.cache_size;}

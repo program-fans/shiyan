@@ -50,15 +50,7 @@ static int writefile(char *filename,char *wbuf)
 	fclose(fp);
 }
 
-void print_ip_list(char **ip_list, int ip_num)
-{
-	int i=0;
-
-	for(; i<ip_num; i++){
-		printf("%s\n", ip_list[i]);
-	}
-}
-void print_ip_list2(char ip_list[][16], int ip_num)
+void print_ip_list(char ip_list[][16], int ip_num)
 {
 	int i=0;
 
@@ -74,7 +66,7 @@ int main(int argc, char **argv)
 	int ret = 0, ip_num = 0;
 	char best_ip[16] = "0.0.0.0";
 
-	ip_num = readServerIPList(argv[1], ip_list, 40);
+	ip_num = readServerIPList(argv[1], ip_list, 100);
 	if(ip_num <= 0){
 		printf("no ip list\n");
 		exit(1);

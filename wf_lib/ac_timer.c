@@ -74,7 +74,7 @@ static struct bucket_key_manger *key_manger;/*key÷µπ‹¿Ì*/
 //extern int ac_if_run;
 //extern void sig_exit(int signo);
 static void timerAddToBucket(int bucket, TIMER_EVENT *pTimer);
-	
+/*	
 static int mysleep(int second,long nsec){
 	if(second==0 && nsec ==0)
 		return -1;
@@ -87,16 +87,17 @@ static int mysleep(int second,long nsec){
 		//ACCW_LOG("SIGALRM added sigset filed");
 		return -1;
 	}
-	/*
-	if(sigaddset(&sigset,SIGTERM) == -1){
-		return -1;
-	}
-	*/
+	
+//	if(sigaddset(&sigset,SIGTERM) == -1){
+//		return -1;
+//	}
+	
 	struct timespec timeout;
 	timeout.tv_sec = second;
 	timeout.tv_nsec = nsec;
 	return pselect(0, NULL, NULL, NULL, &timeout,&sigset);
 }
+*/
 static TIMER_EVENT * timer_task_get_tail(){
 
 	TIMER_EVENT *temp = NULL;
@@ -188,7 +189,7 @@ static void timerAddToBucket(int bucket, TIMER_EVENT *pTimer)
 int timerAdd(int second,int (*callBack)(void*,int), void *user_data,int len,int if_reop)
 {
 	int selectBucket = 0;
-	int bucketMask = MAX_BUCKET_SIZE - 1;
+//	int bucketMask = MAX_BUCKET_SIZE - 1;
 	TIMER_EVENT *pTimer;
 	int key = 0;
 	if ((pTimer = (struct timerEvent *)malloc(sizeof(struct timerEvent))) == NULL)
@@ -334,9 +335,9 @@ static void timerProcess(void)
 {
 	TIMER_EVENT *phead = NULL;
 	TIMER_EVENT *ptail = NULL;
-	TIMER_EVENT *temp = NULL;
+//	TIMER_EVENT *temp = NULL;
 	int timer_num = 0;
-	int selectBucket = 0;
+//	int selectBucket = 0;
 
 	while(gTimerIsRunning)
 	{

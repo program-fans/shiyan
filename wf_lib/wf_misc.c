@@ -6,6 +6,8 @@
 #include <setjmp.h>
 #include <errno.h>
 #include <sys/ipc.h>
+#include <sys/types.h>
+#include <sys/sem.h>
 #include <dirent.h>
 #include <limits.h>
 #include <sys/param.h>
@@ -311,7 +313,7 @@ void close_all_fd(int close_std)
 #else
 	long open_max = 0;
 #endif
-	int i = 0, j=0;
+	int i = 0;
 
 	if(open_max == 0)
 	{
@@ -324,7 +326,7 @@ void close_all_fd(int close_std)
 			open_max = 256;
 	#endif
 	}
-	j = (int)open_max;
+	
 	for(i = close_std ? 0 : 3; i<open_max; i++)
 		close(i);
 }
@@ -395,6 +397,24 @@ void bubble_sort_int(int *num, int start_index, int end_index)
 				num[j+1] = k;
 			}
 		}
+	}
+}
+
+void randsort(long begin, long end, long *out, unsigned int out_size)
+{
+	long count = end - begin;
+	long i, tmp, idx;
+
+	if((count <= 0) || (out_size <= count))	// out_size >= count +1
+		return;
+	for(i=0; i<=count; i++)
+		out[i] = begin + i;
+	srand_curtime();
+	for(i=0; i<=count; i++){
+		idx = rand_natural(count);
+		tmp = out[idx];
+		out[idx] = out[i];
+		out[i] = tmp;
 	}
 }
 
@@ -534,8 +554,8 @@ void wf_daemon_action(int nochdir, int noclose, __sighandler_t exit_call)
 
 	if(!noclose){
 		fd0 = open("/dev/null", O_RDWR);
-		fd1 = dup(0);
-		fd2 = dup(0);
+		fd1 = dup(fd0);
+		fd2 = dup(fd0);
 	}
 
 	signal(SIGINT, exit_call);

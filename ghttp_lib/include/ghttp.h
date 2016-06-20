@@ -243,6 +243,8 @@ extern ghttp_proc ghttp_get_proc(ghttp_request *a_request);
 
 #if	GHTTP_EXTEND
 
+extern int ghttp_work_httpheader(ghttp_request *request, ghttp_type request_type);
+
 extern int ghttp_download_file(char *path, char *url);
 
 #ifndef strcpy_array

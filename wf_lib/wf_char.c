@@ -48,6 +48,7 @@ char *str_skip_blank(char *str)
 		else
 			return s;
 	}
+	return s;
 }
 
 int str_replace(char *str, char *substr, char *repace, char *out)
@@ -137,7 +138,7 @@ static char *time2str_f(time_t tv, char *out, char *fmt, int max, int *n)
 	char *dst = out, *pfmt=fmt, *start=NULL;
 	struct tm *local_t;
 	static char time_str[128+1]={'\0'};
-	int len=0, i=0, count=0, max_size=max;
+	int len=0, count=0, max_size=max;
 
 	local_t=localtime(&t);
 
@@ -508,7 +509,7 @@ int copyIP(char *str,char *out)
 	
 	return len;
 }
-/*¸´ÖÆÊý×Ö·û´®
+/*¸´ÖÆÊý×Ö×Ö·û´®
 ÊäÈë:
 str: ×Ö·û´®
 Êä³ö:
@@ -519,7 +520,7 @@ out: Êý×Ö·û´®
 */
 int copyNum(char *str,char *out)
 {
-	int len=0,num=0;
+	int len=0;
 	char *pout = out;
 	if(str==NULL || out==NULL)	return -1;
 

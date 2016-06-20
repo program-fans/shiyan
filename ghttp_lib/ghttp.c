@@ -74,6 +74,8 @@ ghttp_request *ghttp_request_new2(ghttp_type action, char *url, ghttp_sync_mode 
 {
 	ghttp_request *request = NULL;
 
+	if(!url)
+		return NULL;
 	request = ghttp_request_new();
 	if(!request)
 		return NULL;
@@ -92,6 +94,8 @@ ghttp_request *ghttp_request_new_url(char *url)
 {
 	ghttp_request *request = NULL;
 
+	if(!url)
+		return NULL;
 	request = ghttp_request_new();
 	if(!request)
 		return NULL;
@@ -852,6 +856,43 @@ ghttp_proc ghttp_get_proc(ghttp_request *a_request)
 
 
 #if	GHTTP_EXTEND
+int ghttp_work_httpheader(ghttp_request *request, ghttp_type request_type)
+{
+	int ret = 0;
+	ghttp_status req_status;
+	ghttp_proc req_proc;
+
+	if(!request)
+		return -1;
+	ghttp_set_type(request, request_type);
+	ghttp_set_sync(request, ghttp_async);
+	if( ghttp_prepare(request) < 0 ){
+		ret = -3;
+		goto END;
+	}
+
+	do
+	{
+		req_status = ghttp_process(request);
+		if( req_status == ghttp_error ){
+			ghttpDebug("%s \n", ghttp_get_error(request));
+			ret = -3;
+			goto END;
+		}
+		else
+		{
+			req_proc = ghttp_get_proc(request);
+			if( req_proc == ghttp_proc_response || req_proc == ghttp_proc_done ){
+				break;
+			}
+		}
+	}while (req_status == ghttp_not_done);
+		
+END:	
+	return ret;
+}
+
+
 int ghttp_download_file(char *path, char *url)
 {
 	ghttp_request *request = NULL;
@@ -984,6 +1025,8 @@ END:
 	
 	return ret;
 }
+
+
 
 static ghttp_request *ghttp_request_redirect(ghttp_request *cur_request, char *new_url)
 {
@@ -1305,7 +1348,6 @@ static int ghttp_post_data_buff(ghttp_request *request, struct ghttp_post_data *
 static unsigned char ghttp_chunk[CONN_IO_BUF_CHUNKSIZE_DEFAULT];
 static int ghttp_post_data_file(ghttp_request *request, struct ghttp_post_data *data)
 {
-	unsigned int post_len = 0;
 	size_t r_read;
 	if(!request || !data || !data->buff || !data->bytes)
 		return -1;
@@ -1388,8 +1430,8 @@ int ghttp_post_work(ghttp_request *request, struct ghttp_result *result, struct 
 	ghttp_status req_status;
 	ghttp_proc req_proc;
 	int status_code = 0;
-	ghttp_request *redirect_request;
-	char *redirect = NULL, *buf = NULL;
+//	ghttp_request *redirect_request;
+//	char *redirect = NULL, *buf = NULL;
 
 	#if GHTTP_DEBUG
 	char *tmp_pchar = NULL;

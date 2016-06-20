@@ -145,13 +145,31 @@ extern int threadpool_resumeJob_byID(struct threadpool* pool, char *jobID);
 extern int threadpool_destroy(struct threadpool *pool);
 
 //================================================================================================
-//函数名：                    threadpool_function
-//函数描述：                  线程池中线程函数
-//输入：                     [in] arg                  线程池地址
-//输出：                     无  
-//返回：                     无
+//函数名：                    threadpool_get_waitlist_num
+//函数描述：                  获取线程池任务等待队列中的任务个数
+//输入：                      [in] pool                  线程池地址
+//输出：                      无
+//返回：                      成功：任务个数;   失败：-1
 //================================================================================================
-extern void* threadpool_function(void* arg);
+extern int threadpool_get_waitlist_num(struct threadpool *pool);
+
+//================================================================================================
+//函数名：                    threadpool_get_exculist_num
+//函数描述：                  获取线程池任务执行队列中的任务个数
+//输入：                      [in] pool                  线程池地址
+//输出：                      无
+//返回：                      成功：任务个数;   失败：-1
+//================================================================================================
+extern int threadpool_get_exculist_num(struct threadpool *pool);
+
+//================================================================================================
+//函数名：                    threadpool_get_pendlist_num
+//函数描述：                  获取线程池任务挂起队列中的任务个数
+//输入：                      [in] pool                  线程池地址
+//输出：                      无
+//返回：                      成功：任务个数;   失败：-1
+//================================================================================================
+extern int threadpool_get_pendlist_num(struct threadpool *pool);
 
 #endif
 

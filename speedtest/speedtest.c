@@ -802,7 +802,7 @@ static int wf_gethostbyname(char *name, char *ip, unsigned int *addr)
 	if(!host)
 		return -1;
 	host_addr = *((struct in_addr *)(host->h_addr));
-	//memcpy(&host_addr.sin_addr.s_addr, host->h_addr_list[0], sizeof(unsigned int));
+	//memcpy(&host_addr.s_addr, host->h_addr_list[0], sizeof(unsigned int));
 	if(ip){
 		inet_pton(host->h_addrtype, host->h_addr, ip);
 		//sprintf(ip, "%s",(char *)inet_ntoa(host_addr));

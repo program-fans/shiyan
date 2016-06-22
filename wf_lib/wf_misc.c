@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/sysinfo.h>
 #include <signal.h>
 #include <setjmp.h>
 #include <errno.h>
+#include<sys/wait.h>
 #include <sys/ipc.h>
 #include <sys/types.h>
 #include <sys/sem.h>
@@ -306,62 +308,6 @@ compare:
 	return 0;
 }
 
-void close_all_fd(int close_std)
-{
-#ifdef OPEN_MAX
-	long open_max = OPEN_MAX;
-#else
-	long open_max = 0;
-#endif
-	int i = 0;
-
-	if(open_max == 0)
-	{
-	#ifdef NOFILE		// <sys/param.h>
-		open_max = NOFILE;
-	#else
-		errno = 0;
-		open_max = sysconf(_SC_OPEN_MAX);
-		if(open_max < 0 || open_max == LONG_MAX)
-			open_max = 256;
-	#endif
-	}
-	
-	for(i = close_std ? 0 : 3; i<open_max; i++)
-		close(i);
-}
-
-int close_fd_self()
-{
-	struct dirent **namelist = NULL;
-	int n=0, i=0, fd=0;
-	char dir[256];
-
-	sprintf(dir, "/proc/%d/fd", getpid());
-
-	n = scandir(dir, &namelist, 0, alphasort);
-	if(n < 0)
-		return -1;
-	for(i=n-1; i>=0; i--)
-	{
-		if(0 == strcmp(".", namelist[i]->d_name)){
-			free(namelist[i]);
-			continue;
-		}
-		if(0 == strcmp("..", namelist[i]->d_name)){
-			free(namelist[i]);
-			continue;
-		}
-		fd = atoi(namelist[i]->d_name);
-		free(namelist[i]);
-		if(fd == 0 || fd == 1 || fd == 2)
-			continue;
-		close(fd);
-	}
-
-	free(namelist);
-	return 0;
-}
 
 void bubble_sort_char(char *str, int start_index, int end_index)
 {
@@ -435,6 +381,7 @@ void alarm_cancel()
 	alarm(0);
 }
 
+
 int wf_kill_exe(int pid, char *name)
 {
 	char cmd_buf[128]={'\0'};
@@ -489,6 +436,82 @@ struct sysinfo
 		*up_time = info.uptime;
 
 	return info.uptime;
+}
+
+
+void close_all_fd(int close_std)
+{
+#ifdef OPEN_MAX
+	long open_max = OPEN_MAX;
+#else
+	long open_max = 0;
+#endif
+	int i = 0;
+
+	if(open_max == 0)
+	{
+	#ifdef NOFILE		// <sys/param.h>
+		open_max = NOFILE;
+	#else
+		errno = 0;
+		open_max = sysconf(_SC_OPEN_MAX);
+		if(open_max < 0 || open_max == LONG_MAX)
+			open_max = 256;
+	#endif
+	}
+	
+	for(i = close_std ? 0 : 3; i<open_max; i++)
+		close(i);
+}
+
+int close_fd_self()
+{
+	struct dirent **namelist = NULL;
+	int n=0, i=0, fd=0;
+	char dir[256];
+
+	sprintf(dir, "/proc/%d/fd", getpid());
+
+	n = scandir(dir, &namelist, 0, alphasort);
+	if(n < 0)
+		return -1;
+	for(i=n-1; i>=0; i--)
+	{
+		if(0 == strcmp(".", namelist[i]->d_name)){
+			free(namelist[i]);
+			continue;
+		}
+		if(0 == strcmp("..", namelist[i]->d_name)){
+			free(namelist[i]);
+			continue;
+		}
+		fd = atoi(namelist[i]->d_name);
+		free(namelist[i]);
+		if(fd == 0 || fd == 1 || fd == 2)
+			continue;
+		close(fd);
+	}
+
+	free(namelist);
+	return 0;
+}
+
+int waitpid_time(pid_t pid, int *pstatus, unsigned int max_time)
+{
+	unsigned int time_count = 0;
+
+	if(max_time){
+		while(1){
+			if(time_count >= max_time)
+				return time_count;
+			if(waitpid(pid, pstatus, WNOHANG) > 0)
+				return time_count;
+			sleep(1);
+			++time_count;
+		}
+	}
+	else
+		return waitpid(pid, pstatus, 0);
 }
 
 // void (*exit_call)(void)    void (*exit_call)(int)
@@ -561,6 +584,7 @@ void wf_daemon_action(int nochdir, int noclose, __sighandler_t exit_call)
 	signal(SIGINT, exit_call);
 	signal(SIGTERM, exit_call);
 }
+
 
 int getSysCmd_output(char *cmd,char *output, unsigned int size)
 {

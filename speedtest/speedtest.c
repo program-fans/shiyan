@@ -131,7 +131,8 @@ struct speed_child
 #define SPEEDTEST_CLOSEST_SERVERS_XML	"/tmp/speedtest_closest_servers.xml"
 //#define SPEEDTEST_UPLOAD_XML				"/tmp/speedtest_upload.xml"
 
-int waitpid_time(pid_t pid, int *pstatus, unsigned int max_time)
+#if ROUTER_360
+static int waitpid_time(pid_t pid, int *pstatus, unsigned int max_time)
 {
 	unsigned int time_count = 0;
 
@@ -148,6 +149,7 @@ int waitpid_time(pid_t pid, int *pstatus, unsigned int max_time)
 	else
 		return waitpid(pid, pstatus, 0);
 }
+#endif
 
 int create_child_process(const char *filename, char *const argv[], int close_std)
 {

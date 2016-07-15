@@ -107,7 +107,27 @@ int icmp_socket()
 	return sockfd;
 }
 
-int icmp_send_echo(int sockfd, unsigned short icmpSeq, char *ip)
+int icmp_send_echo(int sockfd, unsigned short icmpSeq, struct sockaddr_in *dest_addr)
+{
+	int sendlen = 0;
+	unsigned int packetsize = 0;
+	unsigned char sendpacket[4096];
+
+	if(!dest_addr)
+		return -1;
+	packetsize = icmp_pack(icmpSeq, ICMP_ECHO, sendpacket);
+	if(packetsize){
+		sendlen = sendto(sockfd, sendpacket, packetsize, 0, (struct sockaddr *)dest_addr, sizeof(struct sockaddr_in) );
+		if(sendlen < 0)
+			perror("icmp sendto error");
+	}
+	else
+		perror("icmp pack error");
+//	printf("icmp send to %s \n", ip);
+	return sendlen;
+}
+
+int icmp_send_echo_ip(int sockfd, unsigned short icmpSeq, char *ip)
 {
 	int sendlen = 0;
 	unsigned int packetsize = 0;
@@ -119,16 +139,8 @@ int icmp_send_echo(int sockfd, unsigned short icmpSeq, char *ip)
 	bzero(&dest_addr,sizeof(dest_addr));
 	dest_addr.sin_family=AF_INET;
 	dest_addr.sin_addr.s_addr = inet_addr(ip);
-	packetsize = icmp_pack(icmpSeq, ICMP_ECHO, sendpacket);
-	if(packetsize){
-		sendlen = sendto(sockfd, sendpacket, packetsize, 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr) );
-		if(sendlen < 0)
-			perror("icmp sendto error");
-	}
-	else
-		perror("icmp pack error");
-//	printf("icmp send to %s \n", ip);
-	return sendlen;
+
+	return icmp_send_echo(sockfd, icmpSeq, &dest_addr);
 }
 
 int icmp_recv_echo(int sockfd, struct timeval *time_delay, struct sockaddr_in *from_addr)
@@ -199,7 +211,7 @@ static void select_best_ip(int sockfd, char *ip, struct timeval *tv_avg, struct 
 
 	for(i=0; i<SEND_TIMES; i++)
 	{
-		icmp_send_echo(sockfd, icmpSeq, ip);
+		icmp_send_echo_ip(sockfd, icmpSeq, ip);
 		++icmpSeq;
 		
 		FD_ZERO(&readable);

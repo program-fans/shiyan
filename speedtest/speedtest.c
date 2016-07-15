@@ -149,9 +149,8 @@ static int waitpid_time(pid_t pid, int *pstatus, unsigned int max_time)
 	else
 		return waitpid(pid, pstatus, 0);
 }
-#endif
 
-int create_child_process(const char *filename, char *const argv[], int close_std)
+static int create_child_process(const char *filename, char *const argv[], int close_std)
 {
 	pid_t pid;
 	int fd;
@@ -175,6 +174,7 @@ int create_child_process(const char *filename, char *const argv[], int close_std
 	execvp(filename, argv);
 	exit(1);
 }
+#endif
 
 enum{
 	WGET_CONFIG,

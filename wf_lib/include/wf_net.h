@@ -50,6 +50,16 @@ extern char *ip_htoa(unsigned int addr, char *buff);
 // ------------------------  wf socket --------------------------------------
 #define wf_socket_error(errcode)	wf_std_error(errcode)
 
+extern int setsock_broad(int sock, int on);
+
+extern int setsock_device(int sock, char *dev);
+
+extern int setsock_multi(int sock, char *ip);
+
+extern int setsock_reuse(int sock, int on);
+
+extern int setsock_rcvbuf(int sock, int size);
+
 extern int wf_udp_socket(int port, int is_broad, char *if_name);
 
 extern int wf_tcp_socket(int port, int keepalive);

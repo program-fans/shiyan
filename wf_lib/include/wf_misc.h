@@ -134,6 +134,7 @@ extern int close_fd_self();
 #define close_fd_parent()	close_fd_self()
 
 extern int waitpid_time(pid_t pid, int *pstatus, unsigned int max_time);
+extern int create_child_process(const char *filename, char *const argv[], int close_std);
 
 #include <signal.h>
 extern void wf_registe_exit_signal(__sighandler_t exit_call);

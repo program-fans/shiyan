@@ -19,6 +19,7 @@
 #include "md5.h"					// include <inttypes.h>  <basetsd.h>
 #include "wf_base64.h"
 #include "wf_icmp.h"				// include <netinet/in.h>
+#include "urlcode.h"				// no include 
 
 //#include "pal_time.h"
 //#include "libpx_thread.h"

@@ -6,7 +6,9 @@
 
 extern int icmp_socket();
 
-extern int icmp_send_echo(int sockfd, unsigned short icmpSeq, char *ip);
+extern int icmp_send_echo(int sockfd, unsigned short icmpSeq, struct sockaddr_in *dest_addr);
+
+extern int icmp_send_echo_ip(int sockfd, unsigned short icmpSeq, char *ip);
 
 extern int icmp_recv_echo(int sockfd, struct timeval *time_delay, struct sockaddr_in *from_addr);
 

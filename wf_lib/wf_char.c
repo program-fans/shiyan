@@ -5,6 +5,13 @@
 #include "wf_char.h"
 
 
+static unsigned char url_to_hex(unsigned char code)
+{
+	static char hex[] = "0123456789abcdef";
+
+	return hex[code & 0x0F];
+}
+
 int urlencode( unsigned char *src, unsigned char *dest )
 {
 #define char_to_hex(x)	(x > 9 ? x + 55: x + 48)
@@ -26,8 +33,13 @@ int urlencode( unsigned char *src, unsigned char *dest )
 		else
 		{
 			*dest++ = '%';
+		#if 0
 			*dest++ = char_to_hex( (unsigned char)(ch >> 4) );
 			*dest++ = char_to_hex( (unsigned char)(ch & 0x0F) );
+		#else
+			*dest++ = url_to_hex( (unsigned char)(ch >> 4) );
+			*dest++ = url_to_hex( (unsigned char)(ch & 0x0F) );
+		#endif
 		} 
 		++src;
 		++len;

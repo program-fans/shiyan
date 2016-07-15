@@ -696,6 +696,38 @@ char *ip_htoa(unsigned int addr, char *buff)
 }
 
 
+int setsock_broad(int sock, int on)
+{
+	int optval = on;
+	return setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &optval, sizeof(optval));
+}
+
+int setsock_device(int sock, char *dev)
+{
+	return setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, dev, strlen(dev) + 1);
+}
+
+int setsock_multi(int sock, char *ip)
+{
+	struct ip_mreq mreq;
+
+	mreq.imr_multiaddr.s_addr = inet_addr(ip);
+	mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+	return setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&mreq, sizeof(mreq));
+}
+
+int setsock_reuse(int sock, int on)
+{
+	int optval = on;
+	return setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+}
+
+int setsock_rcvbuf(int sock, int size)
+{
+	int optval = size;
+	return setsockopt(sock, SOL_SOCKET, SO_RCVBUF, &optval, sizeof(optval));
+}
+
 int wf_udp_socket(int port, int is_broad, char *if_name)
 {
 	int optval = 1;

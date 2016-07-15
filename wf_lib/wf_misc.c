@@ -514,6 +514,31 @@ int waitpid_time(pid_t pid, int *pstatus, unsigned int max_time)
 		return waitpid(pid, pstatus, 0);
 }
 
+int create_child_process(const char *filename, char *const argv[], int close_std)
+{
+	pid_t pid;
+	int fd;
+
+	pid = fork();
+	if(pid < 0)
+		return pid;
+	else if(pid > 0)
+		return pid;
+
+	if(close_std){
+		fd = open("/dev/null", O_WRONLY);
+		if(fd >= 0){
+			if(fd != STDOUT_FILENO)
+				dup2(fd, STDOUT_FILENO);
+			if(fd != STDERR_FILENO)
+				dup2(fd, STDERR_FILENO);
+		}
+	}
+	
+	execvp(filename, argv);
+	exit(1);
+}
+
 // void (*exit_call)(void)    void (*exit_call)(int)
 void wf_registe_exit_signal(__sighandler_t exit_call)
 {

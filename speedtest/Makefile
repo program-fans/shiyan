@@ -5,14 +5,20 @@ LDFLAGS+= -L../wf_lib/include/ -lwf
 #LDFLAGS+= -L../ghttp_lib/include/ -lghttp
 
 CFLAGS= -I../wf_lib/include/
-#CFLAGS= -I../ghttp_lib/include/
+#CFLAGS+= -I../ghttp_lib/include/
 
-SPD=speedtest
+src=$(wildcard *.c)
+obj=$(src:.c=.o)
 
-all: $(SPD)
+TAG=speedtest
 
-$(SPD): $(SPD).c
-	$(CC) -g $(SPD).c $(CFLAGS) $(LDFLAGS) -o $@
+.PHONY: $(TAG)
+
+$(TAG):$(obj)
+	$(CC) $^ $(LDFLAGS) -o $@
+
+%.o:%.c
+	$(CC) -c $(CFLAGS) $< -o $@
 
 pack: clean
 	#nothing

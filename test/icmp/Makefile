@@ -1,17 +1,24 @@
 
 CC=gcc
-LDFLAG= -lpthread -lm
-LDFLAG+= -L../../wf_lib/include/ -lwf
-#LDFLAG+= -L../../ghttp_lib/include/ -lghttp
+LDFLAGS= -lpthread -lm
+LDFLAGS+= -L../../wf_lib/include/ -lwf
+#LDFLAGS+= -L../../ghttp_lib/include/ -lghttp
 
-CFLAG= -I../../wf_lib/include/
-#CFLAG= -I../../ghttp_lib/include/
+CFLAGS= -I../../wf_lib/include/
+#CFLAGS= -I../../ghttp_lib/include/
+
+SOURCES = $(wildcard *.c)
+OBJS = $(patsubst %.c,%.o,$(SOURCES))
 
 TAG=icmp
-all: $(TAG)
 
-$(TAG): $(TAG).c
-	$(CC) -g $(TAG).c $(CFLAG) $(LDFLAG) -o $@
+.PHONY: $(TAG)
+
+$(TAG):$(OBJS)
+	$(CC) $^ $(LDFLAGS) -o $@
+
+%.o:%.c
+	$(CC) -c $(CFLAGS) $< -o $@
 
 pack: clean
 	#nothing

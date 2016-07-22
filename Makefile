@@ -12,9 +12,13 @@ app_list += admin
 app_list += arp
 app_list += api_store
 app_list += speedtest
+app_list += netscan
+app_list += tickets
 
 #test programs
 app_list += test
+
+.PHONY:all
 
 all:
 	@for d in $(app_list); do \

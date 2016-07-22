@@ -1,23 +1,30 @@
 
+RM=rm
 CC=gcc
-WFLIB=../wf_lib/include/ -lwf
-LIB=-lpthread -lm
-INCLUDE=../wf_lib/include/
 
-TARGET=net_monitor
-OBJS=net_monitor.o filter.o misc.o peek.o
+LDFLAGS= -lpthread
+LDFLAGS+= -L../wf_lib/include/ -lwf -lm
+#LDFLAGS+= -L../ghttp_lib/include/ -lghttp
 
-all:$(TARGET)
+CFLAGS= -I../wf_lib/include/
+#CFLAGS= -I../ghttp_lib/include/
 
-$(TARGET):$(OBJS)
-	$(CC) $(OBJS) -L$(WFLIB) $(LIB) -o $(TARGET)
-#	$(CC) $(OBJS) ../wf_lib/libwf.so $(LIB) -o $(TARGET)
+SOURCES = $(wildcard *.c)
+OBJS = $(patsubst %.c,%.o,$(SOURCES))
+
+TAG=net_monitor
+
+.PHONY: $(TAG)
+
+$(TAG):$(OBJS)
+	$(CC) $^ $(LDFLAGS) -o $@
+
 %.o:%.c
-	$(CC) -c -I$(INCLUDE) $< -o $@
+	$(CC) -c $(CFLAGS) $< -o $@
 
 pack: clean
-	rm -f log/*
-	zip -qr $(TARGET).zip ./
+	#nothing
 
 clean:
-	rm -f *.o $(TARGET)
+	$(RM) -f *.o $(TAG)
+	$(RM) -rf log/

@@ -1,5 +1,7 @@
 test_list = inotify
 test_list += icmp
+test_list += text_stat
+test_list += xml_fetch
 
 all:
 	@for d in $(test_list); do \

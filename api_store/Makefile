@@ -1,18 +1,29 @@
 
+RM=rm
 CC=gcc
-LIB=../wf_lib/include/ -lwf -lpthread -lm
-GLIB=../ghttp_lib/include/ -lghttp
 
-INCLUDE=../wf_lib/include/
-GINCLUDE=../ghttp_lib/include/
+LDFLAGS= -lpthread
+LDFLAGS+= -L../wf_lib/include/ -lwf -lm
+LDFLAGS+= -L../ghttp_lib/include/ -lghttp
 
-all: tools_api
+CFLAGS= -I../wf_lib/include/
+CFLAGS+= -I../ghttp_lib/include/
 
-tools_api: tools_api.c
-	$(CC) -g tools_api.c -I$(INCLUDE) -I$(GINCLUDE) -L$(LIB) -L$(GLIB) -o $@
+SOURCES = $(wildcard *.c)
+OBJS = $(patsubst %.c,%.o,$(SOURCES))
+
+TAG=tools_api
+
+.PHONY: $(TAG)
+
+$(TAG):$(OBJS)
+	$(CC) $^ $(LDFLAGS) -o $@
+
+%.o:%.c
+	$(CC) -c $(CFLAGS) $< -o $@
 
 pack: clean
 	#nothing
 
 clean:
-	rm -f *.o tools_api
+	$(RM) -f *.o $(TAG)

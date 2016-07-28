@@ -15,6 +15,8 @@ app_list += speedtest
 app_list += netscan
 app_list += tickets
 
+app_list += reptile
+
 #test programs
 app_list += test
 

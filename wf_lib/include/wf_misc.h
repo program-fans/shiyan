@@ -153,6 +153,9 @@ extern void wf_check_exit(int semkey, char *name);
 
 extern char *wf_std_error(int *errcode);
 
+extern void print_strn(char *str, unsigned int max_num);
+
+extern void print_bytes(unsigned char *byte, unsigned int max_num);
 
 // -------------------------------------------------------------------
 #ifndef WF_CURSOR

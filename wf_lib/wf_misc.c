@@ -668,6 +668,33 @@ char *wf_std_error(int *errcode)
 	return strerror(errno);
 }
 
+void print_strn(char *str, unsigned int max_num)
+{
+	printf("[print_strn]:");
+	while(max_num && str && (*str != '\0'))
+	{
+		printf("%c", *str);
+		++str;
+		--max_num;
+	}
+	printf("\n");
+}
+
+void print_bytes(unsigned char *byte, unsigned int max_num)
+{
+	int j = 0;
+	printf("[print_bytes]:");
+	while(max_num && byte)
+	{
+		if(j%16==0)	printf("\n");
+		printf("%02X ", *byte);
+		++j;
+		++byte;
+		--max_num;
+	}
+	printf("\n");
+}
+
 #if 0
 void schedule()
 {

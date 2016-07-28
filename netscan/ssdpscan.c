@@ -22,18 +22,6 @@
 #define ERROR(fmt, ...)	do{}while(0)
 #endif
 
-void print_strn(char *str, unsigned int max_num)
-{
-	printf("[print_strn]:");
-	while(max_num && str && (*str != '\0'))
-	{
-		printf("%c", *str);
-		++str;
-		--max_num;
-	}
-	printf("\n");
-}
-
 struct ssdpscan_t
 {
 	unsigned int listen_timeout;

@@ -14,6 +14,15 @@
 
 #include "libwf.h"
 
+void txt_usage()
+{
+	fprintf(stderr, "wftool txt usage: \n"
+		"wftool ntorn [-s src-file] [-d dst-file] [--debug] \n"
+		"wftool rnton [-s src-file] [-d dst-file] [--debug] \n"
+		"wftool a1torn [-s src-file] [-d dst-file] [--debug] \n"
+		);
+}
+
 void udp_usage()
 {
 	fprintf(stderr, "wftool udp usage: \n"
@@ -45,6 +54,7 @@ void wftool_usage()
 		"\twftool [cmd] [option] [...] \n"
 		"cmd list: \n"
 		"  help \n"
+		"  txt \n"
 		"  udp \n"
 		"  gethost \n"
 		"  asc \n"
@@ -64,6 +74,8 @@ void print_usage(char *cmd)
 		asc_usage();
 	else if( strcmp(cmd, "wol") == 0 )
 		wol_usage();
+	else if( strcmp(cmd, "txt") == 0 )
+		txt_usage();
 	else
 		wftool_usage();
 }
@@ -72,7 +84,7 @@ void print_usage(char *cmd)
 	if(debug)	printf(fmt, ##__VA_ARGS__);\
 } while (0)
 
-int debug = 0;
+static int debug = 0;
 
 int pipe_fd[2];
 int init_pipe()
@@ -107,30 +119,24 @@ void close_pipe()
 char asc_buf[4096] = {'\0'};
 struct threadpool* thread_pool = NULL;
 
-int cmd_ntorn(int argc, char **argv)
+
+struct txt_t
 {
-	FILE *fp_old, *fp_new;
-	int len=0, i=1, tmp_len=0, line=0;
+	char *sfile;
+	FILE *fp_old;
+	char *dfile;
+	FILE *fp_new;
+	unsigned int old_line;
+	unsigned int new_line;
+	unsigned int switch_line;
+};
 
-	if(strcmp(argv[++i], "--debug") == 0)
-		debug = 1;
-	else
-		--i;
-	
-	fp_old = fopen(argv[++i], "r");
-	if(fp_old == NULL)
-	{
-		printf("open old file error: %s \n", argv[i]);
-		return -1;
-	}
-	fp_new = fopen(argv[++i], "w");
-	if(fp_new == NULL)
-	{
-		printf("open new file error: %s \n", argv[i]);
-		return -2;
-	}
+static int txt_ntorn(struct txt_t *txt)
+{
+	int line = 0;
+	int tmp_len = 0;
 
-	while( fgets(asc_buf, sizeof(asc_buf), fp_old) != NULL )
+	while( fgets(asc_buf, sizeof(asc_buf), txt->fp_old) != NULL )
 	{
 		++line;
 		tmp_len = strlen(asc_buf);
@@ -146,47 +152,28 @@ int cmd_ntorn(int argc, char **argv)
 			asc_buf[tmp_len] = '\n';
 			asc_buf[tmp_len+1] = '\0';
 			dprintf("writeline: %d len: %d \n", line, strlen(asc_buf));
-			fputs(asc_buf, fp_new);
+			fputs(asc_buf, txt->fp_new);
+			++txt->switch_line;
 		}
 		else
 		{
 			dprintf("writeline: %d len: %d \n", line, strlen(asc_buf)    );
-			fputs(asc_buf, fp_new);
+			fputs(asc_buf, txt->fp_new);
 		}
 		memset(asc_buf, 0, sizeof(asc_buf));
 	}
-	printf("switch OK : %d lines \n", line);
 
-	fclose(fp_old);
-	fclose(fp_new);
-
+	txt->old_line = (unsigned int)line;
+	txt->new_line = txt->old_line;
 	return 0;
 }
 
-int cmd_rnton(int argc, char **argv)
+static int txt_rnton(struct txt_t *txt)
 {
-	FILE *fp_old, *fp_new;
-	int len=0, i=1, tmp_len=0, line=0;
-
-	if(strcmp(argv[++i], "--debug") == 0)
-		debug = 1;
-	else
-		--i;
-
-	fp_old = fopen(argv[++i], "r");
-	if(fp_old == NULL)
-	{
-		printf("open old file error: %s \n", argv[i]);
-		return -1;
-	}
-	fp_new = fopen(argv[++i], "w");
-	if(fp_new == NULL)
-	{
-		printf("open new file error: %s \n", argv[i]);
-		return -2;
-	}
-
-	while( fgets(asc_buf, sizeof(asc_buf), fp_old) != NULL )
+	int line = 0;
+	int tmp_len = 0;
+	
+	while( fgets(asc_buf, sizeof(asc_buf), txt->fp_old) != NULL )
 	{
 		++line;
 		tmp_len = strlen(asc_buf);
@@ -201,21 +188,144 @@ int cmd_rnton(int argc, char **argv)
 			asc_buf[tmp_len-2] = '\n';
 			asc_buf[tmp_len-1] = '\0';
 			dprintf("writeline: %d len: %d \n", line, strlen(asc_buf));
-			fputs(asc_buf, fp_new);
+			fputs(asc_buf, txt->fp_new);
+			++txt->switch_line;
 		}
 		else
 		{
 			dprintf("writeline: %d len: %d \n", line, strlen(asc_buf)    );
-			fputs(asc_buf, fp_new);
+			fputs(asc_buf, txt->fp_new);
 		}
 		memset(asc_buf, 0, sizeof(asc_buf));
 	}
-	printf("switch OK : %d lines \n", line);
 
-	fclose(fp_old);
-	fclose(fp_new);
+	txt->old_line = (unsigned int)line;
+	txt->new_line = txt->old_line;
+	return 0;
+}
+
+static int txt_a1torn(struct txt_t *txt)
+{
+	int line = 0;
+	int tmp_len = 0, i = 0, done = 0;
+	unsigned char *pbyte = (unsigned char *)&asc_buf[0];
+
+	while( fgets(asc_buf, sizeof(asc_buf), txt->fp_old) != NULL )
+	{
+		++line;
+		tmp_len = strlen(asc_buf);
+
+		done = 0;
+		for(i=0; i<tmp_len; i++){
+			if( pbyte[i] > 0x00 && pbyte[i] <= 0x7F ){			// ASCIIÂë
+				dprintf("asc: %02X \n", pbyte[i]);
+				continue;
+			}
+			else if( pbyte[i] >= 0x81 && pbyte[i] <= 0xFE ){			// ºº×Ö
+				
+				++i;
+				if( pbyte[i] >= 0x40 && pbyte[i] <= 0x7E ){			// Ë«×Ö½Úºº×Ö
+					dprintf("ch: %02X %02X \n", pbyte[i-1], pbyte[i]);
+					continue;
+				}
+				else if( pbyte[i] >= 0x80 && pbyte[i] <= 0xFE ){		// Ë«×Ö½Úºº×Ö
+					dprintf("ch: %02X %02X \n", pbyte[i-1], pbyte[i]);
+					if(pbyte[i-1] == 0xA1 && pbyte[i] == 0xA1){
+						pbyte[i-1] = '\r';
+						pbyte[i] = '\n';
+						++txt->new_line;
+						done = 1;
+					}
+				}
+				else if( pbyte[i] >= 0x30 && pbyte[i] <= 0x39 ){		// ËÄ×Ö½Úºº×Ö
+					dprintf("ch: %02X %02X %02X %02X \n", pbyte[i-1], pbyte[i], pbyte[i+1], pbyte[i+2]);
+					i += 2;
+					continue;
+				}
+			}
+		}
+		fputs(asc_buf, txt->fp_new);
+		if(done)
+			++txt->switch_line;
+		memset(asc_buf, 0, sizeof(asc_buf));
+	}
+
+	txt->old_line = (unsigned int)line;
+	txt->new_line += txt->old_line;
+	return 0;
+}
+
+static int txt_switch(struct txt_t *txt, int (*switch_call)(struct txt_t *txt))
+{
+	txt->fp_old = fopen(txt->sfile, "r");
+	if(txt->fp_old == NULL){
+		printf("open old file error: %s \n", txt->sfile);
+		return -1;
+	}
+	txt->fp_new = fopen(txt->dfile, "w");
+	if(txt->fp_new == NULL){
+		printf("open new file error: %s \n", txt->dfile);
+		fclose(txt->fp_old);
+		return -2;
+	}
+
+	switch_call(txt);
+	printf("switch OK : %u lines to %u lines   switch %u lines \n", txt->old_line, txt->new_line, txt->switch_line);
+
+	fclose(txt->fp_old);
+	fclose(txt->fp_new);
 
 	return 0;
+}
+
+static int txt_cmd(int argc, char **argv, struct txt_t *txt)
+{
+	int i=1;
+	
+	while(argv[++i])
+	{
+		if( strcmp(argv[i], "-s") == 0 && argv[++i])
+			txt->sfile = strdup(argv[i]);
+		else if( strcmp(argv[i], "-d") == 0 && argv[++i])
+			txt->dfile = strdup(argv[i]);
+		else if( strcmp(argv[i], "--debug") == 0)
+			debug = 1;
+		else{
+			printf("invalid param: %s \n", argv[i]);
+			txt_usage();
+			return -1;
+		}
+	}
+}
+
+int cmd_ntorn(int argc, char **argv)
+{
+	struct txt_t txt = {0};
+
+	if( txt_cmd(argc, argv, &txt) < 0 )
+		return -1;
+
+	return txt_switch(&txt, txt_ntorn);
+}
+
+int cmd_rnton(int argc, char **argv)
+{
+	struct txt_t txt = {0};
+
+	if( txt_cmd(argc, argv, &txt) < 0 )
+		return -1;
+
+	return txt_switch(&txt, txt_rnton);
+}
+
+int cmd_a1torn(int argc, char **argv)
+{
+	struct txt_t txt = {0};
+
+	if( txt_cmd(argc, argv, &txt) < 0 )
+		return -1;
+
+	return txt_switch(&txt, txt_a1torn);
 }
 
 int udp_check_recv(int hport)
@@ -726,6 +836,9 @@ int main(int argc, char **argv)
 			ret = cmd_ntorn(argc, argv);
 		else if( strcmp(argv[1], "rnton") == 0 )
 			ret = cmd_rnton(argc, argv);
+		else if( strcmp(argv[1], "a1torn") == 0 )
+			ret = cmd_a1torn(argc, argv);
+		
 		else if( strcmp(argv[1], "udp") == 0 )
 			cmd_udp(argc, argv);
 		else if( strcmp(argv[1], "gethost") == 0 )

@@ -63,6 +63,7 @@ int spdlog_printf(const char *fmt, ...)
         return 0;
 }
 
+#if ROUTER_360
 void print_strn(char *str, unsigned int max_num)
 {
 	printf("[print_strn]:");
@@ -74,6 +75,7 @@ void print_strn(char *str, unsigned int max_num)
 	}
 	printf("\n");
 }
+#endif
 
 struct speed_config
 {

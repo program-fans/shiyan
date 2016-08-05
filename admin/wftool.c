@@ -12,73 +12,10 @@
 #include <fcntl.h>
 #include <ctype.h>
 
+#include <sys/time.h>
+
 #include "libwf.h"
 
-void txt_usage()
-{
-	fprintf(stderr, "wftool txt usage: \n"
-		"wftool ntorn [-s src-file] [-d dst-file] [--debug] \n"
-		"wftool rnton [-s src-file] [-d dst-file] [--debug] \n"
-		"wftool a1torn [-s src-file] [-d dst-file] [--debug] \n"
-		);
-}
-
-void udp_usage()
-{
-	fprintf(stderr, "wftool udp usage: \n"
-		"wftool udp [send][recv][listen] [--ip] [--hport] [--dport] [--msg] [--pkt] [--resp-pkt] \n"
-		);
-}
-void gethost_usage()
-{
-	fprintf(stderr, "wftool gethost usage: \n"
-		"wftool gethost [url] [url] [...] \n"
-		);
-}
-void asc_usage()
-{
-	fprintf(stderr, "wftool asc usage: \n"
-		"wftool asc [-d] [-x] [-X] [-c] [-s] [--all] [--stage] \n"
-		);
-}
-void wol_usage()
-{
-	fprintf(stderr, "wftool wol usage: \n"
-		"wftool wol [-i ip-address] [-p port] [-o interface-dev-name] [--passwd xx-xx-xx-xx-xx-xx] mac \n"
-		);
-}
-
-void wftool_usage()
-{
-	fprintf(stderr, "wftool usage: \n"
-		"\twftool [cmd] [option] [...] \n"
-		"cmd list: \n"
-		"  help \n"
-		"  txt \n"
-		"  udp \n"
-		"  gethost \n"
-		"  asc \n"
-		"  wol \n"
-		"note:\"wftool help <cmd>\" for help on a specific cmd \n"
-		);
-}
-void print_usage(char *cmd)
-{
-	if(cmd == NULL)
-		wftool_usage();
-	else if( strcmp(cmd, "udp") == 0 )
-		udp_usage();
-	else if( strcmp(cmd, "gethost") == 0 )
-		gethost_usage();
-	else if( strcmp(cmd, "asc") == 0 )
-		asc_usage();
-	else if( strcmp(cmd, "wol") == 0 )
-		wol_usage();
-	else if( strcmp(cmd, "txt") == 0 )
-		txt_usage();
-	else
-		wftool_usage();
-}
 
 #define dprintf(fmt, ...)	do { \
 	if(debug)	printf(fmt, ##__VA_ARGS__);\
@@ -119,6 +56,14 @@ void close_pipe()
 char asc_buf[4096] = {'\0'};
 struct threadpool* thread_pool = NULL;
 
+void txt_usage()
+{
+	fprintf(stderr, "wftool txt usage: \n"
+		"wftool ntorn [-s src-file] [-d dst-file] [--debug] \n"
+		"wftool rnton [-s src-file] [-d dst-file] [--debug] \n"
+		"wftool a1torn [-s src-file] [-d dst-file] [--debug] \n"
+		);
+}
 
 struct txt_t
 {
@@ -206,6 +151,8 @@ static int txt_rnton(struct txt_t *txt)
 
 static int txt_a1torn(struct txt_t *txt)
 {
+// 处理GBK 编码
+// 0xA1A1 为全角空格
 	int line = 0;
 	int tmp_len = 0, i = 0, done = 0;
 	unsigned char *pbyte = (unsigned char *)&asc_buf[0];
@@ -326,6 +273,14 @@ int cmd_a1torn(int argc, char **argv)
 		return -1;
 
 	return txt_switch(&txt, txt_a1torn);
+}
+
+
+void udp_usage()
+{
+	fprintf(stderr, "wftool udp usage: \n"
+		"wftool udp [send][recv][listen] [--ip] [--hport] [--dport] [--msg] [--pkt] [--resp-pkt] \n"
+		);
 }
 
 int udp_check_recv(int hport)
@@ -478,6 +433,13 @@ void cmd_udp(int argc, char **argv)
 		break;
 	}
 
+}
+
+void gethost_usage()
+{
+	fprintf(stderr, "wftool gethost usage: \n"
+		"wftool gethost [url] [url] [...] \n"
+		);
 }
 
 struct gethost_job
@@ -633,6 +595,13 @@ int cmd_gethost(int argc, char **argv)
 	return 0;
 }
 
+void asc_usage()
+{
+	fprintf(stderr, "wftool asc usage: \n"
+		"wftool asc [-d] [-x] [-X] [-c] [-s] [--all] [--stage] \n"
+		);
+}
+
 int cmd_asc(int argc, char **argv)
 {
 	char asc_note[33][128] = {
@@ -755,6 +724,14 @@ int cmd_asc(int argc, char **argv)
 	return 0;
 }
 
+
+void wol_usage()
+{
+	fprintf(stderr, "wftool wol usage: \n"
+		"wftool wol [-i ip-address] [-p port] [-o interface-dev-name] [--passwd xx-xx-xx-xx-xx-xx] mac \n"
+		);
+}
+
 int cmd_wol(int argc, char **argv)
 {
 	int i=1, ret=0;
@@ -819,8 +796,96 @@ int cmd_wol(int argc, char **argv)
 	return 0;
 }
 
+static void time_usage()
+{
+	fprintf(stderr, "wftool time usage: \n"
+		"wftool time [-t time-num] [--now] \n"
+		);
+}
 
+int cmd_time(int argc, char **argv)
+{
+	int i=1, ret=0;
+	int set_now = 0;
+	int tm = 0;
+	time_t  time_now;
+	struct tm *local_time;
 
+	while(argv[++i])
+	{
+		if( strcmp(argv[i], "-t") == 0 && argv[++i]){
+			tm = atoi(argv[i]);
+			if(tm <= 0){
+				printf("invalid tm: %s \n", argv[i]);
+				return -1;
+			}
+		}
+		else if( strcmp(argv[i], "--now") == 0 ){
+			set_now = 1;
+		}
+		else{
+			time_usage();
+		}
+	}
+
+	if(tm > 0){
+		time_now = (time_t)tm;
+		local_time = localtime(&time_now);
+		printf("--- -t ---\n");
+		printf("time: %d \n", tm);
+		printf("localtime: %04d.%02d.%02d-%02d:%02d:%02d \n", 
+			local_time->tm_year+1900, local_time->tm_mon+1, local_time->tm_mday,
+			local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
+	}
+
+	if(set_now){
+		time(&time_now);
+		local_time = localtime(&time_now);
+		printf("--- now ---\n");
+		printf("time: %ld \n", time_now);
+		printf("localtime: %04d.%02d.%02d-%02d:%02d:%02d \n", 
+			local_time->tm_year+1900, local_time->tm_mon+1, local_time->tm_mday,
+			local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
+	}
+
+	return 0;
+}
+
+void wftool_usage()
+{
+	fprintf(stderr, "wftool usage: \n"
+		"\twftool [cmd] [option] [...] \n"
+		"cmd list: \n"
+		"  help \n"
+		"  txt \n"
+		"  udp \n"
+		"  gethost \n"
+		"  asc \n"
+		"  wol \n"
+		"  time \n"
+		"note:\"wftool help <cmd>\" for help on a specific cmd \n"
+		);
+}
+
+void print_usage(char *cmd)
+{
+	if(cmd == NULL)
+		wftool_usage();
+	else if( strcmp(cmd, "udp") == 0 )
+		udp_usage();
+	else if( strcmp(cmd, "gethost") == 0 )
+		gethost_usage();
+	else if( strcmp(cmd, "asc") == 0 )
+		asc_usage();
+	else if( strcmp(cmd, "wol") == 0 )
+		wol_usage();
+	else if( strcmp(cmd, "txt") == 0 )
+		txt_usage();
+	else if( strcmp(cmd, "time") == 0 )
+		time_usage();
+	else
+		wftool_usage();
+}
 
 int main(int argc, char **argv)
 {
@@ -847,6 +912,8 @@ int main(int argc, char **argv)
 			ret = cmd_asc(argc, argv);
 		else if( strcmp(argv[1], "wol") == 0 )
 			ret = cmd_wol(argc, argv);
+		else if( strcmp(argv[1], "time") == 0 )
+			ret = cmd_time(argc, argv);
 		else
 			wftool_usage();
 	}

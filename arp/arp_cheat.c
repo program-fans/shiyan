@@ -1,3 +1,9 @@
+/*
+欺骗同网段下其它主机
+向其它主机发送" 我是网关"的虚假arp 信息
+*/
+
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

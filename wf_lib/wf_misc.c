@@ -6,7 +6,7 @@
 #include <signal.h>
 #include <setjmp.h>
 #include <errno.h>
-#include<sys/wait.h>
+#include <sys/wait.h>
 #include <sys/ipc.h>
 #include <sys/types.h>
 #include <sys/sem.h>
@@ -496,13 +496,13 @@ int close_fd_self()
 	return 0;
 }
 
-int waitpid_time(pid_t pid, int *pstatus, unsigned int max_time)
+int waitpid_sec(pid_t pid, int *pstatus, unsigned int timecnt)
 {
 	unsigned int time_count = 0;
 
-	if(max_time){
+	if(timecnt){
 		while(1){
-			if(time_count >= max_time)
+			if(time_count >= timecnt)
 				return time_count;
 			if(waitpid(pid, pstatus, WNOHANG) > 0)
 				return time_count;
@@ -514,7 +514,25 @@ int waitpid_time(pid_t pid, int *pstatus, unsigned int max_time)
 		return waitpid(pid, pstatus, 0);
 }
 
-int create_child_process(const char *filename, char *const argv[], int close_std)
+int waitpid_100usec(pid_t pid, int *pstatus, unsigned int timecnt)
+{
+	unsigned int time_count = 0;
+
+	if(timecnt){
+		while(1){
+			if(time_count >= timecnt)
+				return time_count;
+			if(waitpid(pid, pstatus, WNOHANG) > 0)
+				return time_count;
+			usleep(100000);
+			++time_count;
+		}
+	}
+	else
+		return waitpid(pid, pstatus, 0);
+}
+
+int create_child_process(const char *exename, char *const argv[], int close_std, int *pipefd)
 {
 	pid_t pid;
 	int fd;
@@ -525,19 +543,82 @@ int create_child_process(const char *filename, char *const argv[], int close_std
 	else if(pid > 0)
 		return pid;
 
-	if(close_std){
+	if(pipefd){
+		dup2(pipefd[1],STDOUT_FILENO);
+		dup2(pipefd[1],STDERR_FILENO);
+		close(pipefd[0]);
+		close(pipefd[1]);
+	}
+
+	if(close_std && !pipefd){
 		fd = open("/dev/null", O_WRONLY);
 		if(fd >= 0){
 			if(fd != STDOUT_FILENO)
 				dup2(fd, STDOUT_FILENO);
 			if(fd != STDERR_FILENO)
 				dup2(fd, STDERR_FILENO);
+			close(fd);
 		}
 	}
 	
-	execvp(filename, argv);
+	execvp(exename, argv);
 	exit(1);
 }
+
+int create_child_wait_sec(const char *exename, char *const argv[], int close_std, int *pipefd, unsigned int timecnt)
+{
+	pid_t pid;
+	int wait_cnt = 0;
+
+	pid = create_child_process(exename, argv, close_std, pipefd);
+	if(pid < 0)
+		return pid;
+	wait_cnt = waitpid_sec(pid, NULL, timecnt);
+	if(timecnt == wait_cnt)
+		kill(pid, SIGKILL);
+	return wait_cnt;
+}
+
+int create_child_wait_100usec(const char *exename, char *const argv[], int close_std, int *pipefd, unsigned int timecnt)
+{
+	pid_t pid;
+	int wait_cnt = 0;
+
+	pid = create_child_process(exename, argv, close_std, pipefd);
+	if(pid < 0)
+		return pid;
+	wait_cnt = waitpid_100usec(pid, NULL, timecnt);
+	if(timecnt == wait_cnt)
+		kill(pid, SIGKILL);
+	return wait_cnt;
+}
+
+int pipe_init(int *pipefd)
+{
+	int fl;
+	
+	if( pipe(pipefd)<0 )
+		return -1;
+
+	fl = fcntl(pipefd[0], F_GETFL, 0);
+	if( fl == -1 )
+		return -1;
+	fcntl(pipefd[0], F_SETFL, fl |O_NONBLOCK);
+
+	fl = fcntl(pipefd[1], F_GETFL, 0);
+	if( fl == -1 )
+		return -1;
+	fcntl(pipefd[1], F_SETFL, fl |O_NONBLOCK);
+
+	return 0;
+}
+
+void pipe_close(int *pipefd)
+{
+	close(pipefd[0]);
+	close(pipefd[1]);
+}
+
 
 // void (*exit_call)(void)    void (*exit_call)(int)
 void wf_registe_exit_signal(__sighandler_t exit_call)
@@ -561,7 +642,7 @@ void wf_demon(__sighandler_t exit_call)
 
 void wf_daemon_action(int nochdir, int noclose, __sighandler_t exit_call)
 {
-	int i, fd0, fd1, fd2;
+	int i, fd;
 	pid_t pid;
 	struct rlimit rl;
 	struct sigaction sa;
@@ -601,9 +682,14 @@ void wf_daemon_action(int nochdir, int noclose, __sighandler_t exit_call)
 	}
 
 	if(!noclose){
-		fd0 = open("/dev/null", O_RDWR);
-		fd1 = dup(fd0);
-		fd2 = dup(fd0);
+		fd = open("/dev/null", O_WRONLY);
+		if(fd >= 0){
+			if(fd != STDOUT_FILENO)
+				dup2(fd, STDOUT_FILENO);
+			if(fd != STDERR_FILENO)
+				dup2(fd, STDERR_FILENO);
+			close(fd);
+		}
 	}
 
 	signal(SIGINT, exit_call);

@@ -133,8 +133,15 @@ extern long wf_getsys_uptime(unsigned long *up_time);
 extern int close_fd_self();
 #define close_fd_parent()	close_fd_self()
 
-extern int waitpid_time(pid_t pid, int *pstatus, unsigned int max_time);
-extern int create_child_process(const char *filename, char *const argv[], int close_std);
+extern int waitpid_sec(pid_t pid, int *pstatus, unsigned int timecnt);
+extern int waitpid_100usec(pid_t pid, int *pstatus, unsigned int timecnt);
+extern int create_child_process(const char *exename, char *const argv[], int close_std, int *pipefd);
+extern int create_child_wait_sec(const char *exename, char *const argv[], int close_std, int *pipefd, unsigned int timecnt);
+extern int create_child_wait_100usec(const char *exename, char *const argv[], int close_std, int *pipefd, unsigned int timecnt);
+
+extern int pipe_init(int *pipefd);
+extern void pipe_close(int *pipefd);
+
 
 #include <signal.h>
 extern void wf_registe_exit_signal(__sighandler_t exit_call);

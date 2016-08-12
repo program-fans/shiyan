@@ -139,7 +139,7 @@ static int icmpscan_recv_proc(struct icmpscan_t *icmpscan)
 		else{
 			if(set_tv)
 				break;
-			if(waitpid_time(icmpscan->child, NULL, 1) < 1)
+			if(waitpid_sec(icmpscan->child, NULL, 1) < 1)
 				set_tv = 1;
 		}
 	}

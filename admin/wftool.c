@@ -307,7 +307,7 @@ int udp_check_send(char *ip, int dport, int hport)
 	}
 	return 1;
 }
-void cmd_udp(int argc, char **argv)
+int cmd_udp(int argc, char **argv)
 {
 	int i=1, ret=0;
 	int hport = 0, dport = 0, sport = 0, send = 1;
@@ -351,7 +351,7 @@ void cmd_udp(int argc, char **argv)
 		}
 		else{
 			printf("invalid param: %s \n", argv[i]);
-			return;
+			return 0;
 		}
 	}
 
@@ -360,7 +360,7 @@ void cmd_udp(int argc, char **argv)
 	default:
 	case 0:		// send
 		if( !udp_check_send(ip, dport, hport) )
-			return;
+			return 0;
 		ret = udp_send_ip(ip, hport, dport, (unsigned char *)msg, strlen(msg));
 		if(ret > 0)
 			printf("send OK: %d bytes \n", ret);
@@ -369,7 +369,7 @@ void cmd_udp(int argc, char **argv)
 		break;
 	case 1:		// recv
 		if( !udp_check_recv(hport) )
-			return;
+			return 0;
 		ret = udp_recv_ip(hport, (unsigned char *)msg, sizeof(msg), ip, &sport);
 		if(ret > 0){
 			printf("recv OK: %d bytes from %s:%d \n", ret, ip, sport);
@@ -387,17 +387,17 @@ void cmd_udp(int argc, char **argv)
 
 			if(action == 2){
 				if( !udp_check_recv(hport) )
-					return;
+					return 0;
 			}
 			else if(action == 3){
 				if( !udp_check_send(ip, dport, hport) )
-					return;
+					return 0;
 			}
 			
 			sock = wf_udp_socket(hport, 0, NULL);
 			if(sock < 0){
 				printf("error: %s \n", wf_socket_error(NULL));
-				return;
+				return 0;
 			}
 
 			if(action == 3){
@@ -433,6 +433,7 @@ void cmd_udp(int argc, char **argv)
 		break;
 	}
 
+	return 0;
 }
 
 void gethost_usage()
@@ -825,6 +826,7 @@ int cmd_time(int argc, char **argv)
 		}
 		else{
 			time_usage();
+			return 0;
 		}
 	}
 
@@ -851,45 +853,107 @@ int cmd_time(int argc, char **argv)
 	return 0;
 }
 
+
+static void json_usage()
+{
+	fprintf(stderr, "wftool json usage: \n"
+		"wftool json [json-file] \n"
+		);
+}
+
+int cmd_json(int argc, char **argv)
+{
+	int i=1, ret=0;
+	cJSON *obj = NULL;
+	char *str = NULL;
+
+	if(argv[++i]){
+		obj = json_load_file(argv[i]);
+	}
+	else{
+		json_usage();
+		return 0;
+	}
+
+	if(obj){
+		printf("json parse OK \n\n");
+		str = cJSON_Print(obj);
+		if(str){
+			printf("%s \n", str);
+			free(str);
+		}
+		cJSON_Delete(obj);
+	}
+	else{
+		printf("json parse failed \n");
+	}
+
+	return 0;
+}
+
+struct cmd_t
+{
+	char cmd[16];
+	void (*usage_call)(void);
+	int (*cmd_call)(int argc, char **argv);
+};
+
+struct cmd_t cmd_list[] = {
+	{"ntorn", txt_usage, cmd_ntorn},
+	{"rnton", txt_usage, cmd_rnton},
+	{"a1torn", txt_usage, cmd_a1torn},
+	{"udp", udp_usage, cmd_udp},
+	{"gethost", gethost_usage, cmd_gethost},
+	{"asc", asc_usage, cmd_asc},
+	{"wol", wol_usage, cmd_wol},
+	{"time", time_usage, cmd_time},
+	{"json", json_usage, cmd_json},
+};
+
 void wftool_usage()
 {
+	int idx = 0;
+	
 	fprintf(stderr, "wftool usage: \n"
 		"\twftool [cmd] [option] [...] \n"
 		"cmd list: \n"
 		"  help \n"
-		"  txt \n"
-		"  udp \n"
-		"  gethost \n"
-		"  asc \n"
-		"  wol \n"
-		"  time \n"
-		"note:\"wftool help <cmd>\" for help on a specific cmd \n"
 		);
+
+	for(idx=0; idx<ARRAY_NUM(cmd_list); idx++){
+		fprintf(stderr, "  %s \n", cmd_list[idx].cmd);
+	}
+	
+	fprintf(stderr, "note:\"wftool help <cmd>\" for help on a specific cmd \n");
 }
 
 void print_usage(char *cmd)
 {
+	struct cmd_t *pcmd = NULL;
+	int idx = 0;
+	
 	if(cmd == NULL)
 		wftool_usage();
-	else if( strcmp(cmd, "udp") == 0 )
-		udp_usage();
-	else if( strcmp(cmd, "gethost") == 0 )
-		gethost_usage();
-	else if( strcmp(cmd, "asc") == 0 )
-		asc_usage();
-	else if( strcmp(cmd, "wol") == 0 )
-		wol_usage();
-	else if( strcmp(cmd, "txt") == 0 )
-		txt_usage();
-	else if( strcmp(cmd, "time") == 0 )
-		time_usage();
+	else{
+		for(idx=0; idx<ARRAY_NUM(cmd_list); idx++){
+			if(strcmp(cmd, cmd_list[idx].cmd) == 0){
+				pcmd = &cmd_list[idx];
+			}
+		}
+	}
+	if(pcmd)
+		pcmd->usage_call();
 	else
 		wftool_usage();
+
+	exit(0);
 }
 
 int main(int argc, char **argv)
 {
 	int ret=0;
+	struct cmd_t *pcmd = NULL;
+	int idx = 0;
 
 	if(argc >= 2)
 	{
@@ -897,23 +961,16 @@ int main(int argc, char **argv)
 			wftool_usage();
 		else if( strcmp(argv[1], "help") == 0 )
 			print_usage(argv[2]);
-		else if( strcmp(argv[1], "ntorn") == 0 )
-			ret = cmd_ntorn(argc, argv);
-		else if( strcmp(argv[1], "rnton") == 0 )
-			ret = cmd_rnton(argc, argv);
-		else if( strcmp(argv[1], "a1torn") == 0 )
-			ret = cmd_a1torn(argc, argv);
-		
-		else if( strcmp(argv[1], "udp") == 0 )
-			cmd_udp(argc, argv);
-		else if( strcmp(argv[1], "gethost") == 0 )
-			ret = cmd_gethost(argc, argv);
-		else if( strcmp(argv[1], "asc") == 0 )
-			ret = cmd_asc(argc, argv);
-		else if( strcmp(argv[1], "wol") == 0 )
-			ret = cmd_wol(argc, argv);
-		else if( strcmp(argv[1], "time") == 0 )
-			ret = cmd_time(argc, argv);
+		else{
+			for(idx=0; idx<ARRAY_NUM(cmd_list); idx++){
+				if(strcmp(argv[1], cmd_list[idx].cmd) == 0){
+					pcmd = &cmd_list[idx];
+				}
+			}
+		}
+
+		if(pcmd)
+			pcmd->cmd_call(argc, argv);
 		else
 			wftool_usage();
 	}

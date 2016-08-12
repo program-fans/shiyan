@@ -134,7 +134,7 @@ struct speed_child
 //#define SPEEDTEST_UPLOAD_XML				"/tmp/speedtest_upload.xml"
 
 #if ROUTER_360
-static int waitpid_time(pid_t pid, int *pstatus, unsigned int max_time)
+static int waitpid_sec(pid_t pid, int *pstatus, unsigned int max_time)
 {
 	unsigned int time_count = 0;
 
@@ -152,7 +152,7 @@ static int waitpid_time(pid_t pid, int *pstatus, unsigned int max_time)
 		return waitpid(pid, pstatus, 0);
 }
 
-static int create_child_process(const char *filename, char *const argv[], int close_std)
+static int create_child_process(const char *exename, char *const argv[], int close_std, int *pipefd)
 {
 	pid_t pid;
 	int fd;
@@ -163,17 +163,25 @@ static int create_child_process(const char *filename, char *const argv[], int cl
 	else if(pid > 0)
 		return pid;
 
-	if(close_std){
+	if(pipefd){
+		dup2(pipefd[1],STDOUT_FILENO);
+		dup2(pipefd[1],STDERR_FILENO);
+		close(pipefd[0]);
+		close(pipefd[1]);
+	}
+
+	if(close_std && !pipefd){
 		fd = open("/dev/null", O_WRONLY);
 		if(fd >= 0){
 			if(fd != STDOUT_FILENO)
 				dup2(fd, STDOUT_FILENO);
 			if(fd != STDERR_FILENO)
 				dup2(fd, STDERR_FILENO);
+			close(fd);
 		}
 	}
 	
-	execvp(filename, argv);
+	execvp(exename, argv);
 	exit(1);
 }
 #endif
@@ -206,7 +214,7 @@ int speedtest_child(int option, void *data, char *if_name)
 		argv[++i] = SPEEDTEST_CONFIG_XML;
 		argv[++i] = SPEEDTEST_CONFIG_URL;
 		argv[++i] = NULL;
-		ret = create_child_process(WGET_PATH, argv, 0);
+		ret = create_child_process(WGET_PATH, argv, 0, NULL);
 		break;
 	case WGET_SERVER_LIST1:
 	case WGET_SERVER_LIST2:
@@ -224,7 +232,7 @@ int speedtest_child(int option, void *data, char *if_name)
 		else if(option == WGET_SERVER_LIST4)
 			argv[++i] = SPEEDTEST_SERVERLIST_URL4;
 		argv[++i] = NULL;
-		ret = create_child_process(WGET_PATH, argv, 0);
+		ret = create_child_process(WGET_PATH, argv, 0, NULL);
 		break;
 	case WGET_DOWNLOAD:
 		argv[++i] = "wget";
@@ -236,7 +244,7 @@ int speedtest_child(int option, void *data, char *if_name)
 		}
 		argv[++i] = (char *)data;
 		argv[++i] = NULL;
-		ret = create_child_process(WGET_PATH, argv, 1);
+		ret = create_child_process(WGET_PATH, argv, 1, NULL);
 		break;
 	case WGET_POST_UPLOAD:
 		argv[++i] = "wget";
@@ -245,7 +253,7 @@ int speedtest_child(int option, void *data, char *if_name)
 		argv[++i] = "/dev/null";
 		argv[++i] = (char *)data;
 		argv[++i] = NULL;
-		ret = create_child_process(WGET_PATH, argv, 1);
+		ret = create_child_process(WGET_PATH, argv, 1, NULL);
 		break;
 	default:
 		break;
@@ -473,7 +481,7 @@ int getconfig(struct speed_config *config)
 		DEBUG("get "SPEEDTEST_CONFIG_XML" failed \n");
 		return -1;
 	}
-	waitpid_time(ret, NULL, 0);
+	waitpid_sec(ret, NULL, 0);
 
 	if(access(SPEEDTEST_CONFIG_XML, F_OK)){
 		DEBUG("get "SPEEDTEST_CONFIG_XML" failed \n");
@@ -654,7 +662,7 @@ int get_server_lists(struct speed_config *config, struct speed_server_list *list
 			DEBUG("get "SPEEDTEST_SERVER_LIST_XML" failed \n");
 			goto NEXT;
 		}
-		waitpid_time(ret, NULL, 0);
+		waitpid_sec(ret, NULL, 0);
 
 		if(access(SPEEDTEST_SERVER_LIST_XML, F_OK)){
 			DEBUG("get "SPEEDTEST_SERVER_LIST_XML" failed \n");

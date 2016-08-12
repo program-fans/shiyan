@@ -129,9 +129,6 @@ int icmp_send_echo(int sockfd, unsigned short icmpSeq, struct sockaddr_in *dest_
 
 int icmp_send_echo_ip(int sockfd, unsigned short icmpSeq, char *ip)
 {
-	int sendlen = 0;
-	unsigned int packetsize = 0;
-	unsigned char sendpacket[4096];
 	struct sockaddr_in dest_addr;
 
 	if(!ip)

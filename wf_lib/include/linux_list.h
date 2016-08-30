@@ -206,6 +206,21 @@ static inline void list_splice_init(struct list_head *list,
 /*预取指针，以提高效率 */
 static inline void prefetch(const void *x) {;}
 
+#undef offsetof
+#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+
+/**
+ * container_of - cast a member of a structure out to the containing structure
+ *
+ * @ptr:	the pointer to the member.
+ * @type:	the type of the container struct this is embedded in.
+ * @member:	the name of the member within the struct.
+ *
+ */
+#define container_of(ptr, type, member) ({			\
+        const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
+        (type *)( (char *)__mptr - offsetof(type,member) );})
+
 /**
  * list_entry - get the struct for this entry
  * @ptr:	the &struct list_head pointer.
@@ -214,6 +229,7 @@ static inline void prefetch(const void *x) {;}
  */
 #define list_entry(ptr, type, member) \
 	((type *)((char *)(ptr)-(unsigned long)(&((type *)0)->member)))
+//#define list_entry(ptr, type, member)	container_of(ptr, type, member)
 
 /**
  * list_first_entry - get the first element from a list

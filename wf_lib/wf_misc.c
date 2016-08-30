@@ -27,45 +27,6 @@
 
 
 #if 0
-/*
-相关函数：longjmp, siglongjmp, setjmp
-表头文件：#include <setjmp.h>
-函数定义：int sigsetjmp(sigjmp_buf env, int savesigs)
-函数说明：sigsetjmp()会保存目前堆栈环境，然后将目前的地址作一个记号，
-而在程序其他地方调用siglongjmp()时便会直接跳到这个记号位置，然后还原堆栈，继续程序的执行。
-参数env为用来保存目前堆栈环境，一般声明为全局变量
-参数savesigs若为非0则代表搁置的信号集合也会一块保存
-当sigsetjmp()返回0时代表已经做好记号上，若返回非0则代表由siglongjmp（）跳转回来。
-返回：若直接调用则为0，若从siglongjmp调用返回则为非0
-
-应用: 可以配合alarm闹钟实现函数超时返回
-*/
-static sigjmp_buf jmp_env;
-static volatile sig_atomic_t canjump = 0;
-static void connect_alarm(int)
-{
-	if(canjump == 0) // 在sigjmp_buf 被sigsetjmp初始化完成之前，防止调用siglongjmp
-		return;
-	canjump = 0;
-	siglongjmp(jmp_env, 1);
-}
-int test_jmp()
-{
-	signal(SIGALRM, connect_alarm);
-	if (sigsetjmp(jmp_env, 1))
-	{
-		printf("timeout\n");
-		return 1;
-	}
-	canjump = 1;
-	alarm(3);
-
-	sleep(5); // 执行可能超时的任务
-
-	return 0;
-}
-#endif
-#if 0
 void abort()			// POSIX-style abort() function
 {
 	sigset_t mask;
@@ -379,6 +340,57 @@ void alarm_again(unsigned int seconds)
 void alarm_cancel()
 {
 	alarm(0);
+}
+
+
+/*
+相关函数：longjmp, siglongjmp, setjmp
+表头文件：#include <setjmp.h>
+函数定义：int sigsetjmp(sigjmp_buf env, int savesigs)
+函数说明：sigsetjmp()会保存目前堆栈环境，然后将目前的地址作一个记号，
+而在程序其他地方调用siglongjmp()时便会直接跳到这个记号位置，然后还原堆栈，继续程序的执行。
+参数env为用来保存目前堆栈环境，一般声明为全局变量
+参数savesigs若为非0则代表搁置的信号集合也会一块保存
+当sigsetjmp()返回0时代表已经做好记号上，若返回非0则代表由siglongjmp（）跳转回来。
+返回：若直接调用则为0，若从siglongjmp调用返回则为非0
+
+应用: 可以配合alarm闹钟实现函数超时返回
+*/
+static sigjmp_buf run_with_timeout_env;
+static volatile sig_atomic_t canjump = 0;
+static void abort_run_with_timeout(int sig)
+{
+	if(canjump == 0) // 在sigjmp_buf 被sigsetjmp初始化完成之前，防止调用siglongjmp
+		return;
+	
+	if(sig == SIGALRM){
+		siglongjmp(run_with_timeout_env, 1);
+		canjump = 0;
+	}
+}
+int run_with_timeout (int timeout, void (*fun) (void *), void *arg)
+{
+	if (timeout == 0)
+	{
+		fun(arg);
+		return 0;
+	}
+
+	signal(SIGALRM, abort_run_with_timeout);
+	if (sigsetjmp(run_with_timeout_env, 1) != 0)
+	{
+		/* Longjumped out of FUN with a timeout. */
+		signal (SIGALRM, SIG_DFL);
+		return 1;
+	}
+	
+	canjump = 1;
+	alarm(timeout);
+	fun(arg);
+
+	alarm(0);
+	signal(SIGALRM, SIG_DFL);
+	return 0;
 }
 
 
@@ -802,9 +814,20 @@ void schedule()
 	show_cursor();
 }
 
+static int sleep_tm;
+void sleep_time(void *arg)
+{
+	int *tm = (int *)arg;
+	sleep(*tm);
+}
+
 void main()
 {
-	schedule();
+	int ret = -1;
+	sleep_tm = 5;
+	ret = run_with_timeout(3, sleep_time, &sleep_tm);
+	printf("ret = %d \n", ret);
+	//schedule();
 	//printf("%lu \n", get_system_uptime(NULL));
 }
 #endif

@@ -1,9 +1,13 @@
 #ifndef WF_CHAR_H_
 #define WF_CHAR_H_
 
+extern char *get_row(char *linestr, int index, char *dst, unsigned int size);
+extern char *get_row_int(char *linestr, int index, int *dst, char *fmt);
+
 extern int urlencode( unsigned char *src, unsigned char *dest );
 
 extern char *str_skip_blank(char *str);
+extern char *str_find_blank(char *str);
 extern int str_replace(char *str, char *substr, char *repace, char *out);
 
 extern int str_asc_num(char *str, int size);

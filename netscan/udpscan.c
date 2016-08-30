@@ -137,7 +137,7 @@ static int uscan_icmp_proc(struct udpscan_t *uscan)
 		else{
 			if(set_tv)
 				break;
-			if(waitpid_time(uscan->child, NULL, 1) < 1)
+			if(waitpid_sec(uscan->child, NULL, 1) < 1)
 				set_tv = 1;
 		}
 	}

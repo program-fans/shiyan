@@ -116,6 +116,7 @@ extern void alarm_start(unsigned int seconds, void (*func)(int));
 extern void alarm_again(unsigned int seconds);
 extern void alarm_cancel();
 
+extern int run_with_timeout (int timeout, void (*fun) (void *), void *arg);
 
 
 

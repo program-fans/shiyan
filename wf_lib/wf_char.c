@@ -5,6 +5,55 @@
 #include "wf_char.h"
 
 
+char *get_row(char *linestr, int index, char *dst, unsigned int size)
+{
+	int idx = -1;
+	char *str = linestr, *node = NULL, *tmp = NULL;
+	unsigned int copy_len = 0;
+
+	if(!linestr || index < 0 || !dst || !size)
+		return NULL;
+//	printf("get_row linestr: %s \n", linestr);
+	while(str)
+	{
+		node = str_skip_blank(str);
+		++idx;
+		if(node){
+			tmp = str_find_blank(node);
+			str = tmp;
+		}
+		else
+			break;
+		if(idx == index){
+			if(node){
+				if(tmp){
+					copy_len = tmp - node;
+					if(copy_len > size)
+						copy_len = size;
+				}
+				else
+					copy_len = size;
+				strncpy(dst, node, copy_len);
+				dst[copy_len] = '\0';
+//				printf("get_row [idx: %d][len: %d]: %s \n", index, copy_len, dst);
+			}
+			return node;
+		}
+	}
+	return NULL;
+}
+
+char *get_row_int(char *linestr, int index, int *dst, char *fmt)
+{
+	char buf[16] = {0}, *str = NULL;
+
+	str = get_row(linestr, index, buf, sizeof(buf)-1);
+	if(str){
+		sscanf(buf, fmt, dst);
+	}
+	return str;
+}
+
 static unsigned char url_to_hex(unsigned char code)
 {
 	static char hex[] = "0123456789abcdef";
@@ -60,7 +109,22 @@ char *str_skip_blank(char *str)
 		else
 			return s;
 	}
-	return s;
+	return NULL;
+}
+
+char *str_find_blank(char *str)
+{
+	char *s = str;
+	if(s == NULL)
+		return NULL;
+	while(*s != '\0')
+	{
+		if( *s == ' ' || *s == '\t' )
+			return s;
+		else
+			++s;
+	}
+	return NULL;
 }
 
 int str_replace(char *str, char *substr, char *repace, char *out)

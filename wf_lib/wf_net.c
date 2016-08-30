@@ -8,7 +8,8 @@
 #include <net/if.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>  //for in_addr   
-#include <linux/rtnetlink.h>    //for rtnetlink   
+//#include <linux/route.h> // for struct rtentry
+//#include <linux/rtnetlink.h>    //for rtnetlink   
 #include <errno.h>
 
 #include "wf_char.h"
@@ -255,8 +256,263 @@ int get_netdev_ifindex(const char *ifname)
 
 	return ifindex;
 }
+/*
+int get_netdev_gw(const char *ifname, char *gateway, unsigned int *gwaddr)
+{
+	int sock = -1;
+	struct rtentry route;  // route item struct 
 
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if( sock < 0)
+		return -1;
 
+	if (ioctl(sock, SIOCRTMSG, &route) < 0){
+		close(sock);
+		return -1;
+	}
+	printf("gateway: %s\n",inet_ntoa(((struct sockaddr_in*)(&route.rt_gateway))->sin_addr));
+	printf("dst: %s\n",inet_ntoa(((struct sockaddr_in*)(&route.rt_dst))->sin_addr));
+	printf("dev: %s\n", route.rt_dev);
+	printf("flags: %x\n", route.rt_flags);
+
+	close(sock);
+	return 0;
+}
+*/
+
+int arp_ip2mac(char *ip, unsigned char *mac)
+{
+	char linebuf[1024] = {0}, ip_str[16] = {0}, mac_str[24] = {0}, mask_str[16] = {0}, dev_str[24] = {0};
+	int hw_type = 0, flags = 0;
+	int num = 0, select = 0;
+	FILE *fp = NULL;
+
+	fp = fopen("/proc/net/arp", "r");
+	if(!fp)
+		return -1;
+
+	if(fgets(linebuf, sizeof(linebuf)-1, fp) == NULL){
+		fclose(fp);
+		return -2;
+	}
+
+	while(fgets(linebuf, sizeof(linebuf)-1, fp) != NULL){
+		num = sscanf(linebuf, "%s 0x%x 0x%x %100s %100s %100s\n",
+			 ip_str, &hw_type, &flags, mac_str, mask_str, dev_str);
+		if(num < 4)
+			continue;
+		if(!strcmp(ip_str, ip)){
+			select = 1;
+			break;
+		}
+	}
+	fclose(fp);
+
+	if(select)
+		return str2mac(mac_str, mac);
+	return -3;
+}
+
+int arp_mac2ip(unsigned char *mac, char *ip)
+{
+	char linebuf[1024] = {0}, ip_str[16] = {0}, mac_str[24] = {0}, mask_str[16] = {0}, dev_str[24] = {0};
+	unsigned char mac_hex[6] = {0};
+	int hw_type = 0, flags = 0;
+	int num = 0, select = 0;
+	FILE *fp = NULL;
+
+	fp = fopen("/proc/net/arp", "r");
+	if(!fp)
+		return -1;
+
+	if(fgets(linebuf, sizeof(linebuf)-1, fp) == NULL){
+		fclose(fp);
+		return -2;
+	}
+
+	while(fgets(linebuf, sizeof(linebuf)-1, fp) != NULL){
+		num = sscanf(linebuf, "%s 0x%x 0x%x %100s %100s %100s\n",
+			 ip_str, &hw_type, &flags, mac_str, mask_str, dev_str);
+		if(num < 4)
+			continue;
+		str2mac(mac_str, mac_hex);
+		if(!memcmp(mac_hex, mac, 6)){
+			select = 1;
+			break;
+		}
+	}
+	fclose(fp);
+
+	if(select)
+		return sprintf(ip, "%s", ip_str);
+	return -3;
+}
+
+/* from <linux/route.h>
+#define RTF_UP          0x0001          // route usable                 
+#define RTF_GATEWAY     0x0002          // destination is a gateway     
+#define RTF_HOST        0x0004          // host entry (net otherwise)   
+#define RTF_REINSTATE   0x0008          // reinstate route after tmout  
+#define RTF_DYNAMIC     0x0010          // created dyn. (by redirect)   
+#define RTF_MODIFIED    0x0020          // modified dyn. (by redirect)  
+#define RTF_MTU         0x0040          // specific MTU for this route  
+#define RTF_MSS         RTF_MTU         // Compatibility :-(            
+#define RTF_WINDOW      0x0080          // per route window clamping    
+#define RTF_IRTT        0x0100          // Initial round trip time      
+#define RTF_REJECT      0x0200          // Reject route                 
+*/
+#define RT_FLAG_U		1
+#define RT_FLAG_G		2
+#define RT_FLAG_UG		3
+#define RT_FLAG_H		4
+struct route_t
+{
+	char iface[24];
+	unsigned int destination;
+	unsigned int gateway;
+	unsigned int flags;
+	unsigned int refcnt;
+	unsigned int use;
+	unsigned int metric;
+	unsigned int mask;
+	unsigned int mtu;
+	unsigned int window;
+	unsigned int irtt;
+};
+/*
+int read_route(struct route_t *rt, int count)
+{
+	FILE *fp = NULL;
+	char linebuf[1024] = {0}, char row[32] = {0};
+	char *str = NULL;
+	int num = -1;
+
+	fp = fopen("/proc/net/route", "r");
+	if(!fp)
+		return -1;
+
+	while(fgets(linebuf, sizeof(linebuf)-1, fp) != NULL)
+	{
+		++num;
+		if(num <= 0)
+			continue;
+		
+		if(num >= count)
+			break;
+		str = get_row(linebuf, 0, rt[num].iface, sizeof(15));
+		if(!str)
+			continue;
+
+		str = get_row(str, 1, row, sizeof(row)-1);
+		if(!str)
+			continue;
+		sscanf(row, "%X", &rt[num].destination);
+		
+		str = get_row(str, 1, row, sizeof(row)-1);
+		if(!str)
+			continue;
+		sscanf(row, "%X", &rt[num].gateway);
+
+		str = get_row(str, 1, row, sizeof(row)-1);
+		if(!str)
+			continue;
+		sscanf(row, "%d", &rt[num].flags);
+
+		str = get_row(str, 1, row, sizeof(row)-1);
+		if(!str)
+			continue;
+		sscanf(row, "%d", &rt[num].refcnt);
+
+		str = get_row(str, 1, row, sizeof(row)-1);
+		if(!str)
+			continue;
+		sscanf(row, "%d", &rt[num].use);
+
+		str = get_row(str, 1, row, sizeof(row)-1);
+		if(!str)
+			continue;
+		sscanf(row, "%d", &rt[num].metric);
+
+		str = get_row(str, 1, row, sizeof(row)-1);
+		if(!str)
+			continue;
+		sscanf(row, "%X", &rt[num].mask);
+
+		str = get_row(str, 1, row, sizeof(row)-1);
+		if(!str)
+			continue;
+		sscanf(row, "%d", &rt[num].mtu);
+
+		str = get_row(str, 1, row, sizeof(row)-1);
+		if(!str)
+			continue;
+		sscanf(row, "%d", &rt[num].window);
+
+		str = get_row(str, 1, row, sizeof(row)-1);
+		if(!str)
+			continue;
+		sscanf(row, "%d", &rt[num].irtt);
+	}
+
+	fclose(fp);
+	return num;
+}
+*/
+int get_host_gateway(char *gateway, unsigned int *gwaddr, char *ifname)
+{
+	FILE *fp = NULL;
+	char linebuf[1024] = {0}, row[32] = {0};
+	char *str = NULL;
+	int num = -1;
+	struct route_t rt, *selct = NULL;
+	struct in_addr gw;
+
+	fp = fopen("/proc/net/route", "r");
+	if(!fp)
+		return -1;
+
+	if(fgets(linebuf, sizeof(linebuf)-1, fp) == NULL){
+		fclose(fp);
+		return -2;
+	}
+
+	while(fgets(linebuf, sizeof(linebuf)-1, fp) != NULL)
+	{
+		memset(&rt, 0, sizeof(rt));
+		num = sscanf(linebuf, "%23s %X %X %d %d %d %d %X %d %d %d\n",
+			 rt.iface, &rt.destination, &rt.gateway, &rt.flags, &rt.refcnt, &rt.use, &rt.metric, &rt.mask, &rt.mtu, &rt.window, &rt.irtt);
+		if(num < 4)
+			continue;
+
+		if(ifname){
+			if(!strcmp(ifname, rt.iface) && (rt.flags & RT_FLAG_U) && (rt.flags & RT_FLAG_G)){
+				selct = &rt;
+				break;
+			}
+		}
+		else{
+			if((rt.flags & RT_FLAG_U) && (rt.flags & RT_FLAG_G)){
+				selct = &rt;
+				break;
+			}
+		}
+	}
+	fclose(fp);
+	
+	if(selct){
+		if(gwaddr)
+			*gwaddr = selct->gateway;
+		if(gateway){
+			gw.s_addr = selct->gateway;
+			sprintf(gateway, "%s",(char *)inet_ntoa(gw));
+		}
+		return 0;
+	}
+
+	return -3;
+}
+
+/**************** rtnetlink ***************
 #define BUFSIZE 8192
 struct route_info{   
 	unsigned int dstAddr;   
@@ -303,14 +559,15 @@ static int parseRoutes(struct nlmsghdr *nlHdr, struct route_info *rtInfo)
 {   
 	struct rtmsg *rtMsg;   
 	struct rtattr *rtAttr;   
-	int rtLen;
+	int rtLen, mark=0;
 	
 	rtMsg = (struct rtmsg *)NLMSG_DATA(nlHdr);   
 	// If the route is not for AF_INET or does not belong to main routing table   
 	//then return.    
-	if((rtMsg->rtm_family != AF_INET) || (rtMsg->rtm_table != RT_TABLE_MAIN))   
+	if(rtMsg->rtm_family != AF_INET)   
+	//if((rtMsg->rtm_family != AF_INET) || (rtMsg->rtm_table != RT_TABLE_MAIN))   
 		return 0;   
-//	printf("flags=%d \n", rtMsg->rtm_flags);
+	printf("flags=%d \n", rtMsg->rtm_flags);
 	rtAttr = (struct rtattr *)RTM_RTA(rtMsg);   
 	rtLen = RTM_PAYLOAD(nlHdr);   
 	for(;RTA_OK(rtAttr,rtLen);rtAttr = RTA_NEXT(rtAttr,rtLen))
@@ -319,19 +576,23 @@ static int parseRoutes(struct nlmsghdr *nlHdr, struct route_info *rtInfo)
 		{   
 		case RTA_OIF:   // 4
 			if_indextoname(*(int *)RTA_DATA(rtAttr), rtInfo->ifName);
-//			printf("RTA_OIF: %s \n", rtInfo->ifName);
+			printf("RTA_OIF: %s \n", rtInfo->ifName);
 			break;   
 		case RTA_GATEWAY:   // 5
 			rtInfo->gateWay = *(u_int *)RTA_DATA(rtAttr);
-//			printf("RTA_GATEWAY: 0x%x \n", rtInfo->gateWay);
+			printf("RTA_GATEWAY: 0x%x \n", rtInfo->gateWay);
 			break;   
 		case RTA_PREFSRC:  // 7  
 			rtInfo->srcAddr = *(u_int *)RTA_DATA(rtAttr);
-//			printf("RTA_PREFSRC: 0x%x \n", rtInfo->srcAddr);
+			printf("RTA_PREFSRC: 0x%x \n", rtInfo->srcAddr);
 			break;   
 		case RTA_DST:  // 1 
 			rtInfo->dstAddr = *(u_int *)RTA_DATA(rtAttr);
-//			printf("RTA_DST: 0x%x \n", rtInfo->dstAddr);
+			printf("RTA_DST: 0x%x \n", rtInfo->dstAddr);
+			break;
+		case RTA_MARK:  // 16 
+			mark = *(u_int *)RTA_DATA(rtAttr);
+			printf("RTA_MARK: 0x%x \n", mark);
 			break;
 		case RTA_TABLE:	// 15
 		default:
@@ -345,18 +606,18 @@ static int parseRoutes(struct nlmsghdr *nlHdr, struct route_info *rtInfo)
 static struct route_info *select_route(struct route_info *rtInfo, unsigned int rt_num, char *ifname)
 {
 	unsigned int i=0;
-//	struct in_addr tmp_addr;
+	struct in_addr tmp_addr;
 
 	for(; i<rt_num; i++)
 	{
-/*		printf("oif:%s  ",rtInfo[i].ifName);
+		printf("oif:%s  ",rtInfo[i].ifName);
 		tmp_addr.s_addr = rtInfo[i].gateWay;
 		printf("%s\n",(char *)inet_ntoa(tmp_addr));
 		tmp_addr.s_addr = rtInfo[i].srcAddr;   
 		printf("src:%s\n",(char *)inet_ntoa(tmp_addr));
 		tmp_addr.s_addr = rtInfo[i].dstAddr;   
 		printf("dst:%s\n",(char *)inet_ntoa(tmp_addr));
-*/
+
 		if(ifname){
 			if(strcmp(rtInfo[i].ifName, ifname) == 0 && rtInfo[i].gateWay != 0)
 				return &rtInfo[i];
@@ -368,7 +629,7 @@ static struct route_info *select_route(struct route_info *rtInfo, unsigned int r
 }
 
 int get_host_gateway(char *gateway, unsigned int *gwaddr, char *ifname)
-{   
+{
 	struct nlmsghdr *nlMsg;   
 	struct rtmsg *rtMsg;   
 	struct route_info rtInfo[8], *prt = NULL;
@@ -431,8 +692,9 @@ int get_host_gateway(char *gateway, unsigned int *gwaddr, char *ifname)
 END:
 	free(msgBuf);   
 	close(sock);   
-	return ret;   
+	return ret;
 }   
+**************** rtnetlink ***************/
 
 int getHostIP_2(char *prior_if, char *ip, char *broadip, char *ifname, int *ifindex)
 {

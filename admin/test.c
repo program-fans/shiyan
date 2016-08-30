@@ -519,29 +519,42 @@ int time_test(int argc, char **argv)
 
 int net_test(int argc, char **argv)
 {
+	char def_if[] = "eth0", *ifname = def_if;
 	char ip[16] = {'\0'};
 	unsigned char mac[6] = {0};
+	int ret = 0;
 
-	get_netdev_mac("eth0", mac);
+	if(argv[2])
+		ifname = argv[2];
+
+	get_netdev_mac(ifname, mac);
 	printf("mac: "MAC_FORMAT_STRING_CAPITAL"\n", MAC_FORMAT_SPLIT(mac));
 
-	get_netdev_ip("eth0", ip);
+	get_netdev_ip(ifname, ip);
 	printf("get_netdev_ip: %s \n", ip);
 
-	get_netdev_dstip("eth0", ip);
+	get_netdev_dstip(ifname, ip);
 	printf("get_netdev_dstip: %s \n", ip);
 
-	get_netdev_broadip("eth0", ip);
+	get_netdev_broadip(ifname, ip);
 	printf("get_netdev_broadip: %s \n", ip);
 
-	get_netdev_mask("eth0", ip, NULL);
+	get_netdev_mask(ifname, ip, NULL);
 	printf("get_netdev_mask: %s \n", ip);
 
-	printf("get_netdev_mtu: %d \n", get_netdev_mtu("eth0"));
-	printf("get_netdev_ifindex: %d \n", get_netdev_ifindex("eth0"));
+	printf("get_netdev_mtu: %d \n", get_netdev_mtu(ifname));
+	printf("get_netdev_ifindex: %d \n", get_netdev_ifindex(ifname));
 
-	get_host_gateway(ip, NULL, "eth0");
-	printf("get_host_gateway: %s \n", ip);
+	ret = get_host_gateway(ip, NULL, ifname);
+	printf("get_host_gateway[%d]: %s \n", ret, ip);
+
+	ret = arp_ip2mac(ip, mac);
+	printf("arp_ip2mac[%d]: "MAC_FORMAT_STRING_KERNEL"\n", ret, MAC_FORMAT_SPLIT(mac));
+
+	ret = arp_mac2ip(mac, ip);
+	printf("arp_mac2ip[%d]: %s \n", ret, ip);
+
+	return 0;
 }
 
 

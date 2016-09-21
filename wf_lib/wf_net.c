@@ -1275,8 +1275,10 @@ int wf_recvfrom(int sock, unsigned char *buf, int total_len, int flag, void *add
 
 		if(len >= 0)
 			break;
-		else if(errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+		else if(errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR){
+			//printf("recvfrom error: %s \n", strerror(errno));
 			continue;
+		}
 		else
 			return -1;
 	}

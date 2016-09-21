@@ -157,6 +157,7 @@ extern void wf_daemon_action(int nochdir, int noclose, __sighandler_t exit_call)
 extern int getSysCmd_output(char *cmd,char *output, unsigned int size);
 extern int exe_exist_check(char *name);
 extern void wf_check_exit(int semkey, char *name);
+extern int already_running(const char *filename);
 
 
 extern char *wf_std_error(int *errcode);

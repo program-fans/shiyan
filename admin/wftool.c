@@ -279,7 +279,15 @@ int cmd_a1torn(int argc, char **argv)
 void udp_usage()
 {
 	fprintf(stderr, "wftool udp usage: \n"
-		"wftool udp [send][recv][listen] [--ip] [--hport] [--dport] [--msg] [--pkt] [--resp-pkt] \n"
+		"wftool udp [cmd] [option] \n"
+		"    cmd: send listen send-listen \n"
+		"    --dev: bind network device \n"
+		"    --ip \n"
+		"    --hport \n"
+		"    --dport \n"
+		"    --msg: send data \n"
+		"    --pkt: send packets. when cmd is listen: listen packets \n"
+		"    --resp-pkt: listen packets \n"
 		);
 }
 
@@ -307,32 +315,60 @@ int udp_check_send(char *ip, int dport, int hport)
 	}
 	return 1;
 }
+
+#define UDP_ACTION_SEND			0
+#define UDP_ACTION_LISTEN			1
+#define UDP_ACTION_SEND_LISTEN	2
+struct cmd_udp_t
+{
+	int action;
+	int udp_sock, pkt_cnt, host_cnt;
+	unsigned long bytes_cnt;
+	
+};
+struct cmd_udp_t cmd_udp_globel;
+void udp_exit_call(int sig)
+{
+	if(cmd_udp_globel.udp_sock > 0)
+		close(cmd_udp_globel.udp_sock);
+	if(cmd_udp_globel.action == UDP_ACTION_LISTEN || cmd_udp_globel.action == UDP_ACTION_SEND_LISTEN){
+		printf("\nrecv finish: %lu bytes  %d packets  from %u hosts \n", 
+			cmd_udp_globel.bytes_cnt, cmd_udp_globel.pkt_cnt, wf_get_kv_count());
+		wf_kv_table_destory();
+	}
+	printf("exit...\n");
+	exit(0);
+}
+
 int cmd_udp(int argc, char **argv)
 {
 	int i=1, ret=0;
-	int hport = 0, dport = 0, sport = 0, send = 1;
-	int pkt = 1;
+	int hport = 0, dport = 0, sport = 0;
+	int pkt = 1, resp_pkt = 1;
 	int action = 0;	// 0: send; 1: recv; 2: listen; 3: send-listen
-	char ip[16] = {'\0'};
-	char msg[1024] = {'\0'};
-	int resp_pkt = 0;
+	char *ip = NULL, *msg = NULL, *dev = NULL;
+	char from_ip[16] = {0};
+	int sock_flag = 0;
 
 	++i;
 	if( strcmp(argv[i], "send") == 0 )
-		action = 0;
-	else if( strcmp(argv[i], "recv") == 0 )
-		action = 1;
+		action = UDP_ACTION_SEND;
 	else if( strcmp(argv[i], "listen") == 0 )
-		action = 2;
+		action = UDP_ACTION_LISTEN;
+	else if( strcmp(argv[i], "send-listen") == 0 )
+		action = UDP_ACTION_SEND_LISTEN;
 	else
 		--i;
+	cmd_udp_globel.action = action;
 
 	while(argv[++i])
 	{
 		if( strcmp(argv[i], "--ip") == 0 && argv[++i])
-			strcpy(ip, argv[i]);
+			ip = argv[i];
+		else if( strcmp(argv[i], "--dev") == 0 && argv[++i])
+			dev = argv[i];
 		else if( strcmp(argv[i], "--msg") == 0 && argv[++i])
-			strcpy(msg, argv[i]);
+			msg = argv[i];
 		else if( strcmp(argv[i], "--hport") == 0 && argv[++i])
 			hport = atoi(argv[i]);
 		else if( strcmp(argv[i], "--dport") == 0 && argv[++i])
@@ -345,94 +381,74 @@ int cmd_udp(int argc, char **argv)
 		else if( strcmp(argv[i], "--resp-pkt") == 0 && argv[++i]){
 			resp_pkt = atoi(argv[i]);
 			if(resp_pkt<=0)
-				resp_pkt = 0;
-			if(resp_pkt && action == 0)
-				action = 3;
+				resp_pkt = 1;
 		}
+		else if( strcmp(argv[i], "--no-wait") == 0 )
+			sock_flag = MSG_DONTWAIT;
 		else{
 			printf("invalid param: %s \n", argv[i]);
 			return 0;
 		}
 	}
 
-	switch(action)
-	{
-	default:
-	case 0:		// send
-		if( !udp_check_send(ip, dport, hport) )
-			return 0;
-		ret = udp_send_ip(ip, hport, dport, (unsigned char *)msg, strlen(msg));
-		if(ret > 0)
-			printf("send OK: %d bytes \n", ret);
-		else
-			printf("error: %s \n", wf_socket_error(NULL));
-		break;
-	case 1:		// recv
+	if(action == UDP_ACTION_LISTEN){
+		if(resp_pkt == 1 && pkt > 1)
+			resp_pkt = pkt;
 		if( !udp_check_recv(hport) )
 			return 0;
-		ret = udp_recv_ip(hport, (unsigned char *)msg, sizeof(msg), ip, &sport);
-		if(ret > 0){
-			printf("recv OK: %d bytes from %s:%d \n", ret, ip, sport);
-			printf("\t%s \n", msg);
+	}
+	else if(action == UDP_ACTION_SEND || action == UDP_ACTION_SEND_LISTEN){
+		if( !udp_check_send(ip, dport, hport) )
+			return 0;
+		if(!msg){
+			printf("have no send data \n");
+			return 0;
 		}
-		else
-			printf("error: %s \n", wf_socket_error(NULL));
-		break;
-	case 2:		// listen
-	case 3:		// send-listen
-		{
-			int sock, pkt_cnt = 0, host_cnt = 0;
-			unsigned long bytes_cnt = 0;
-			char old_ip[16] = {'\0'};
-
-			if(action == 2){
-				if( !udp_check_recv(hport) )
-					return 0;
-			}
-			else if(action == 3){
-				if( !udp_check_send(ip, dport, hport) )
-					return 0;
-			}
-			
-			sock = wf_udp_socket(hport, 0, NULL);
-			if(sock < 0){
-				printf("error: %s \n", wf_socket_error(NULL));
-				return 0;
-			}
-
-			if(action == 3){
-				ret = wf_sendto_ip(sock, (unsigned char *)msg, strlen(msg), 0,ip, dport);
-				if(ret > 0)
-					printf("send OK: %d bytes \n", ret);
-				else
-					printf("error: %s \n", wf_socket_error(NULL));
-				memset(ip, 0, sizeof(ip));
-				memset(msg, 0, sizeof(msg));
-				printf("-------------------------------------\n");
-			}
-
-			while(pkt)
-			{
-				strcpy(old_ip, ip);
-				ret = wf_recvfrom_ip(sock, (unsigned char *)msg, sizeof(msg), 0, ip, &sport);
-				if(ret > 0){
-					++pkt_cnt; --pkt; bytes_cnt += ret;
-					if( strcmp(old_ip, ip) )
-						++host_cnt;
-					printf("recv OK: %d bytes from %s:%d  [pkt: %d]\n", ret, ip, sport, pkt_cnt);
-					printf("\t%s \n", msg);
-				}
-				else{
-					printf("error: %s \n", wf_socket_error(NULL));
-					//return;
-				}
-			}
-			close(sock);
-			printf("recv finish: %lu bytes  %d packets  from %d hosts \n", bytes_cnt, pkt_cnt, host_cnt);
-		}
-		break;
+	}
+	
+	cmd_udp_globel.udp_sock= wf_udp_socket(hport, 0, dev);
+	if(cmd_udp_globel.udp_sock < 0){
+		printf("error: %s \n", wf_socket_error(NULL));
+		return 0;
 	}
 
+	wf_registe_exit_signal(udp_exit_call);
+
+	if(action == UDP_ACTION_SEND || action == UDP_ACTION_SEND_LISTEN){
+		while(pkt)
+		{
+			ret = wf_sendto_ip(cmd_udp_globel.udp_sock, (unsigned char *)msg, strlen(msg), 0,ip, dport);
+			if(ret > 0)
+				printf("send OK: %d bytes \n", ret);
+			else
+				printf("error: %s \n", wf_socket_error(NULL));
+			--pkt;
+		}
+		
+		if(action == UDP_ACTION_SEND){
+			close(cmd_udp_globel.udp_sock);
+			return 0;
+		}
+	}
+
+	while(resp_pkt)
+	{
+		memset(from_ip, 0, sizeof(from_ip));
+		memset(asc_buf, 0, sizeof(asc_buf));
+		ret = wf_recvfrom_ip(cmd_udp_globel.udp_sock, (unsigned char *)&asc_buf[0], sizeof(asc_buf), sock_flag, from_ip, &sport);
+		if(ret > 0){
+			++cmd_udp_globel.pkt_cnt; --resp_pkt; cmd_udp_globel.bytes_cnt += ret;
+			wf_string_put_kv(from_ip, from_ip);
+			printf("recv OK: %d bytes from %s:%d  [pkt id: %d]\n", ret, from_ip, sport, cmd_udp_globel.pkt_cnt);
+			printf("\t%s \n", asc_buf);
+		}
+		else{
+			printf("error: %s \n", wf_socket_error(NULL));
+			//return;
+		}
+	}
+	
+	udp_exit_call(0);
 	return 0;
 }
 
@@ -845,9 +861,9 @@ int cmd_time(int argc, char **argv)
 		local_time = localtime(&time_now);
 		printf("--- now ---\n");
 		printf("time: %ld \n", time_now);
-		printf("localtime: %04d.%02d.%02d-%02d:%02d:%02d \n", 
+		printf("localtime: %04d.%02d.%02d-%02d:%02d:%02d  week: %d \n", 
 			local_time->tm_year+1900, local_time->tm_mon+1, local_time->tm_mday,
-			local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
+			local_time->tm_hour, local_time->tm_min, local_time->tm_sec, local_time->tm_wday);
 	}
 
 	return 0;
@@ -955,6 +971,7 @@ int main(int argc, char **argv)
 	struct cmd_t *pcmd = NULL;
 	int idx = 0;
 
+	printf("sid: %d  pgid: %d  pid: %d  ppid: %d \n", getsid(0), getpgid(0), getpid(), getppid());	
 	if(argc >= 2)
 	{
 		if( strcmp(argv[1], "-h") == 0 )

@@ -15,22 +15,24 @@ struct wf_kv_t
 	unsigned int value_size;
 };
 
+#define KV_TABLE_LIST_NUM		255
 struct wf_kv_table
 {
 	unsigned int init;
 	unsigned int count;
-	struct list_head kv_head[255];
+	struct list_head kv_head[KV_TABLE_LIST_NUM];
 };
 
 static struct wf_kv_table kv_table;
 
-static void kv_init_check()
+static void kv_table_init_check(struct wf_kv_table *t)
 {
 	int i=0;
-	if( kv_table.init )	return;
-	kv_table.count = 0;
-	for(i=0; i<255; i++)	INIT_LIST_HEAD(&(kv_table.kv_head[i]));
-	kv_table.init = 1;
+	if( !t || t->init )	return;
+	t->count = 0;
+	for(i=0; i<KV_TABLE_LIST_NUM; i++)
+		INIT_LIST_HEAD(&(t->kv_head[i]));
+	t->init = 1;
 }
 
 static void kv_free(struct wf_kv_t *kv)
@@ -40,6 +42,26 @@ static void kv_free(struct wf_kv_t *kv)
 	if(kv->value)	free(kv->value);
 	//if( !list_empty_careful(&(kv->list)) )
 	free(kv);
+}
+
+static void kv_table_destory(struct wf_kv_table *t)
+{
+	int i=0;
+	struct wf_kv_t *pos, *n;
+	
+	if(!t || !t->init)
+		return;
+	for(i=0; i<KV_TABLE_LIST_NUM; i++)
+	{
+		if(list_empty_careful(&(t->kv_head[i])))
+			continue;
+		list_for_each_entry_safe(pos, n, &(t->kv_head[i]), list){
+			//list_del_init(&(pos->list));
+			kv_free(pos);
+		}
+	}
+	t->init = 0;
+	kv_table_init_check(t);
 }
 
 static int get_kv_index(void *key, unsigned int size)
@@ -148,7 +170,7 @@ int wf_put_kv(void *key, unsigned int key_size, void *value, unsigned int value_
 	int kv_index = 0;
 
 	if( !wf_kv_param_check(key, key_size, value, value_size) )	return -1;
-	kv_init_check();
+	kv_table_init_check(&kv_table);
 	
 	kv_index = get_kv_index(key, key_size);
 	if( find_kv(kv_index, key, key_size) )	return -1;
@@ -166,7 +188,7 @@ int wf_get_kv(void *key, unsigned int key_size, void *value, unsigned int value_
 	struct wf_kv_t *kv=NULL;
 	
 	if( !wf_kv_param_check(key, key_size, value, value_size) )	return -1;
-	kv_init_check();
+	kv_table_init_check(&kv_table);
 
 	kv_index = get_kv_index(key, key_size);
 
@@ -178,13 +200,18 @@ int wf_get_kv(void *key, unsigned int key_size, void *value, unsigned int value_
 	return kv->value_size;
 }
 
+unsigned int wf_get_kv_count()
+{
+	return kv_table.count;
+}
+
 int wf_replace_kv(void *key, unsigned int key_size, void *value, unsigned int value_size)
 {
 	int kv_index = 0;
 	struct wf_kv_t *kv=NULL;
 	
 	if( !wf_kv_param_check(key, key_size, value, value_size) )	return -1;
-	kv_init_check();
+	kv_table_init_check(&kv_table);
 
 	kv_index = get_kv_index(key, key_size);
 
@@ -200,7 +227,7 @@ int wf_del_kv(void *key, unsigned int key_size)
 	struct wf_kv_t *kv=NULL;
 	
 	if( !key_check(key, key_size) )	return -1;
-	kv_init_check();
+	kv_table_init_check(&kv_table);
 
 	kv_index = get_kv_index(key, key_size);
 
@@ -210,6 +237,11 @@ int wf_del_kv(void *key, unsigned int key_size)
 	remove_kv(kv);
 	kv_free(kv);
 	return 0;
+}
+
+void wf_kv_table_destory()
+{
+	kv_table_destory(&kv_table);
 }
 
 #if 0

@@ -19,8 +19,5 @@ $(TARGET):$(OBJS)
 %.o:%.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
-pack:clean
-	#nothing
-
 clean:
 	$(RM) -f *.o $(TARGET)

@@ -20,8 +20,5 @@ $(TAG):$(OBJS)
 %.o:%.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
-pack: clean
-	#nothing
-
 clean:
 	rm -f *.o $(TAG)

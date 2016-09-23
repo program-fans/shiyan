@@ -20,9 +20,6 @@ $(TARGET).so: $(obj)
 %.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
-pack: clean
-	zip -qr $(TARGET).zip ./
-
 clean:
 	$(RM) -f *.o $(TARGET).a $(TARGET).so
 

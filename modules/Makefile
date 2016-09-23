@@ -14,9 +14,6 @@ install:
 unstall:
 	rmmod $(TAR)
 
-pack: clean
-	#nothing
-
 clean:
 	rm -f *.o *.ko *.mod.c *.order .*.cmd *.symvers
 	rm -rf .tmp_versions

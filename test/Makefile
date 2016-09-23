@@ -10,12 +10,6 @@ all:
 	done; \
 	echo OK: test
 
-pack:
-	@for d in $(test_list); do \
-                make -C $$d pack; \
-	done
-	@echo OK: test
-
 clean:
 	@for d in $(test_list); do \
 		make -C $$d clean; \

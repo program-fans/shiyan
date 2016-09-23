@@ -29,10 +29,7 @@ all:
 	done; \
 	echo OK: done
 
-pack:
-	@for d in $(app_list); do \
-                make -C $$d pack; \
-	done
+pack:clean
 	zip -qr wolf_shiyan.zip ./
 	@echo OK: wolf_shiyan.zip
 

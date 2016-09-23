@@ -11,8 +11,5 @@ arp_cheat:arp_cheat.c
 arp_turn:arp_turn.c
 	$(CC) arp_turn.c -I$(INCLUDE) -L$(LIB) -o arp_turn
 
-pack: clean
-	#nothing
-
 clean:
 	rm -f *.o arp_cheat arp_turn

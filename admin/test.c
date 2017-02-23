@@ -133,6 +133,8 @@ struct test_t
 	//	free(pos);
 	slist_while_get_head_entry(pos, &new_list, slist)
 		free(pos);
+	slist_free_all_node(pos, &new_list, slist, free);
+	printf("free new_list OK \n");
 }
 
 void ipc_test()
@@ -548,10 +550,10 @@ int net_test(int argc, char **argv)
 	ret = get_host_gateway(ip, NULL, ifname);
 	printf("get_host_gateway[%d]: %s \n", ret, ip);
 
-	ret = arp_ip2mac(ip, mac);
+	ret = arp_ip2mac(ip, mac, 0x6);
 	printf("arp_ip2mac[%d]: "MAC_FORMAT_STRING_KERNEL"\n", ret, MAC_FORMAT_SPLIT(mac));
 
-	ret = arp_mac2ip(mac, ip);
+	ret = arp_mac2ip(mac, ip, 0x6);
 	printf("arp_mac2ip[%d]: %s \n", ret, ip);
 
 	return 0;

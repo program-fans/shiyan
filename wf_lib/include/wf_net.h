@@ -23,8 +23,8 @@ extern int get_netdev_mask(const char * ifname, char * maskstr, unsigned int * m
 extern int get_netdev_mtu(const char * ifname);
 extern int get_netdev_ifindex(const char * ifname);
 
-extern int arp_ip2mac(char *ip, unsigned char *mac);
-extern int arp_mac2ip(unsigned char *mac, char *ip);
+extern int arp_ip2mac(char *ip, unsigned char *mac, unsigned int flag_mask);
+extern int arp_mac2ip(unsigned char *mac, char *ip, unsigned int flag_mask);
 
 extern int get_host_gateway(char *gateway, unsigned int *gwaddr, char *ifname);
 

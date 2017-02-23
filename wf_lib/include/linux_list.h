@@ -577,7 +577,7 @@ static inline void slist_del_head(struct slist_head *list)
 #define slist_head_entry(list, type, member)	slist_entry((list)->head, type, member)
 #define slist_tail_entry(list, type, member)	slist_entry((list)->tail, type, member)
 
-static struct slist_node *slist_del_get_head(struct slist_head *list)
+static inline struct slist_node *slist_del_get_head(struct slist_head *list)
 {
 	struct slist_node *head = list->head;
 	slist_del_head(list);
@@ -593,6 +593,13 @@ static struct slist_node *slist_del_get_head(struct slist_head *list)
 #define slist_while_get_head_entry(pos, list, member)	\
 	for (pos = slist_del_get_head_entry(list, typeof(*pos), member); pos != NULL; \
 		pos = slist_del_get_head_entry(list, typeof(*pos), member))
+
+#define slist_free_all_node(pos, list, member, free_func) do { \
+	if(!slist_empty(list)){ \
+		slist_while_get_head_entry(pos, list, member) \
+			free_func(pos); \
+	} \
+} while (0)
 
 static inline void __slist_splice(struct slist_head *newList, struct slist_head *list)
 {

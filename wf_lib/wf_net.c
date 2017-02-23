@@ -280,9 +280,9 @@ int get_netdev_gw(const char *ifname, char *gateway, unsigned int *gwaddr)
 }
 */
 
-int arp_ip2mac(char *ip, unsigned char *mac)
+int arp_ip2mac(char *ip, unsigned char *mac, unsigned int flag_mask)
 {
-	char linebuf[1024] = {0}, ip_str[16] = {0}, mac_str[24] = {0}, mask_str[16] = {0}, dev_str[24] = {0};
+	char linebuf[256] = {0}, ip_str[16] = {0}, mac_str[24] = {0}, mask_str[16] = {0}, dev_str[24] = {0};
 	int hw_type = 0, flags = 0;
 	int num = 0, select = 0;
 	FILE *fp = NULL;
@@ -301,7 +301,7 @@ int arp_ip2mac(char *ip, unsigned char *mac)
 			 ip_str, &hw_type, &flags, mac_str, mask_str, dev_str);
 		if(num < 4)
 			continue;
-		if(!strcmp(ip_str, ip)){
+		if( !strcmp(ip_str, ip) && (!flag_mask || (flag_mask & flags)) ){
 			select = 1;
 			break;
 		}
@@ -313,9 +313,9 @@ int arp_ip2mac(char *ip, unsigned char *mac)
 	return -3;
 }
 
-int arp_mac2ip(unsigned char *mac, char *ip)
+int arp_mac2ip(unsigned char *mac, char *ip, unsigned int flag_mask)
 {
-	char linebuf[1024] = {0}, ip_str[16] = {0}, mac_str[24] = {0}, mask_str[16] = {0}, dev_str[24] = {0};
+	char linebuf[256] = {0}, ip_str[16] = {0}, mac_str[24] = {0}, mask_str[16] = {0}, dev_str[24] = {0};
 	unsigned char mac_hex[6] = {0};
 	int hw_type = 0, flags = 0;
 	int num = 0, select = 0;
@@ -336,7 +336,7 @@ int arp_mac2ip(unsigned char *mac, char *ip)
 		if(num < 4)
 			continue;
 		str2mac(mac_str, mac_hex);
-		if(!memcmp(mac_hex, mac, 6)){
+		if( !memcmp(mac_hex, mac, 6)  && (!flag_mask || (flag_mask & flags)) ){
 			select = 1;
 			break;
 		}

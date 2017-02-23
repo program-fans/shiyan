@@ -63,7 +63,7 @@ int get_info(char *ifname)
 	if(!cheat_ip)
 		cheat_ip = gw_ip;
 
-	if( arp_ip2mac(gw, gw_mac) < 0){
+	if( arp_ip2mac(gw, gw_mac, 0x6) < 0){
 		printf("get gateway mac failed \n");
 		return -1;
 	}

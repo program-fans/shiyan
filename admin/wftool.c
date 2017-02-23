@@ -14,8 +14,15 @@
 
 #include <sys/time.h>
 
+#include <dirent.h>
+#include <sys/stat.h>
+
 #include "libwf.h"
 
+#define WFT_DEBUG(fmt, ...)	printf("[%s %d] "fmt, __FUNCTION__, __LINE__, ##__VA_ARGS__);
+
+static char print_name[32] = "wftool";
+#define wfprintf(fmt, ...)	printf("[%s] "fmt, print_name, ##__VA_ARGS__);
 
 #define dprintf(fmt, ...)	do { \
 	if(debug)	printf(fmt, ##__VA_ARGS__);\
@@ -52,9 +59,8 @@ void close_pipe()
 	close(pipe_fd[1]);
 }
 
-
-char asc_buf[4096] = {'\0'};
-struct threadpool* thread_pool = NULL;
+static char asc_buf[4096] = {'\0'};
+static struct threadpool* thread_pool = NULL;
 
 void txt_usage()
 {
@@ -907,6 +913,124 @@ int cmd_json(int argc, char **argv)
 	return 0;
 }
 
+static void exeindir_usage()
+{
+	fprintf(stderr, "wftool exeindir usage: \n"
+		"wftool exeindir [--all] [--depth number] [--cmd \"cmd string\"] \n"
+		);
+}
+
+static char *cmd_exeindir_cmd = NULL;
+static int cmd_exeindir_depth = 0;
+
+static int __exeindir(char *dir, char *parent_dir, int depth)
+{
+	DIR *d = NULL;
+	struct dirent *file = NULL;
+	struct stat sb;
+	char cur_dir[256] = {0};
+
+	if(dir){
+		if(!depth)
+			return 0;
+		chdir(dir);
+		--depth;
+		getcwd(cur_dir, sizeof(cur_dir));
+		wfprintf(">>>> in %s \n", cur_dir);
+	}	
+	else{
+		getcwd(cur_dir, sizeof(cur_dir));
+		dir = &cur_dir[0];
+	}
+
+	d = opendir(cur_dir);
+	if(!d){
+		wfprintf("error opendir: %s \n", cur_dir);
+		return -1;
+	}
+
+	while((file = readdir(d)) != NULL){
+		if(strncmp(file->d_name, ".", 1) == 0)
+			continue;
+
+		if( stat(file->d_name, &sb) >= 0 && S_ISDIR(sb.st_mode) ){
+			__exeindir(file->d_name, cur_dir, depth);
+		}
+	}
+	closedir(d);
+
+	printf("\n");
+	system(cmd_exeindir_cmd);
+	printf("\n");
+	
+	if(parent_dir){
+		wfprintf(">>>> out %s \n", cur_dir);
+		chdir(parent_dir);
+	}
+
+	return 0;
+}
+
+int cmd_exeindir(int argc, char **argv)
+{
+	int i=1, ret=0;
+	int all = 0;
+	char **exe_dir = NULL;
+	int dir_num = 0;
+	char cur_dir[256] = {0};
+	struct stat sb;
+
+	exe_dir = (char **)malloc(sizeof(char *) * argc);
+	while(argv[++i])
+	{
+		if( strcmp(argv[i], "--cmd") == 0 && argv[++i]){
+			cmd_exeindir_cmd = argv[i];
+		}
+		else if( strcmp(argv[i], "--depth") == 0 && argv[++i]){
+			cmd_exeindir_depth = atoi(argv[i]);
+			if(cmd_exeindir_depth < 0)
+				cmd_exeindir_depth = 0;
+		}
+		else if( strcmp(argv[i], "--all") == 0 ){
+			all= 1;
+		}
+		else{
+			if(!exe_dir){
+				wfprintf("malloc error \n");
+				return 0;
+			}
+			//if(strncmp(argv[i], ".", 1))		// not need
+				exe_dir[dir_num++] = argv[i];
+			//WFT_DEBUG("%p  %s    %p  %s \n", argv[i], argv[i], exe_dir[dir_num-1], exe_dir[dir_num-1]);
+		}
+	}
+
+	//WFT_DEBUG("all=%d  dir_num=%d \n", all, dir_num);
+	if(all){
+		__exeindir(NULL, NULL, cmd_exeindir_depth);
+	}
+	else if(dir_num > 0){
+		if(cmd_exeindir_depth < 1)
+			cmd_exeindir_depth = 1;
+		getcwd(cur_dir, sizeof(cur_dir));
+		for(i=0; i<dir_num; i++){
+			//WFT_DEBUG("%p  exe_dir: %s \n", exe_dir[i], exe_dir[i]);
+			if( stat(exe_dir[i], &sb) >= 0 && S_ISDIR(sb.st_mode) ){
+				__exeindir(exe_dir[i], cur_dir, cmd_exeindir_depth);
+			}
+			else
+				wfprintf("%s is not directory \n", exe_dir[i]);
+		}	
+	}
+	else
+		system(cmd_exeindir_cmd);
+
+	if(exe_dir)
+		free(exe_dir);
+
+	return 0;
+}
+
 struct cmd_t
 {
 	char cmd[16];
@@ -924,6 +1048,7 @@ struct cmd_t cmd_list[] = {
 	{"wol", wol_usage, cmd_wol},
 	{"time", time_usage, cmd_time},
 	{"json", json_usage, cmd_json},
+	{"exeindir", exeindir_usage, cmd_exeindir},
 };
 
 void wftool_usage()
@@ -957,8 +1082,12 @@ void print_usage(char *cmd)
 			}
 		}
 	}
-	if(pcmd)
-		pcmd->usage_call();
+	if(pcmd){
+		if(pcmd->usage_call)
+			pcmd->usage_call();
+		else
+			wfprintf("no usage \n");
+	}
 	else
 		wftool_usage();
 
@@ -986,8 +1115,14 @@ int main(int argc, char **argv)
 			}
 		}
 
-		if(pcmd)
-			pcmd->cmd_call(argc, argv);
+		if(pcmd){
+			if(pcmd->cmd_call){
+				strcpy(print_name, pcmd->cmd);
+				pcmd->cmd_call(argc, argv);
+			}
+			else
+				wfprintf("error: can't execute %s \n", pcmd->cmd);
+		}
 		else
 			wftool_usage();
 	}

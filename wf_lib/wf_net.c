@@ -1031,7 +1031,7 @@ ERR:
 	return sock;
 }
 
-int wf_tcp_socket(int port, int keepalive)
+int wf_tcp_socket(int port, int keepalive, char *if_name)
 {
 	int optval = 1;
 	int sock = -1, ret = -1;
@@ -1051,6 +1051,11 @@ int wf_tcp_socket(int port, int keepalive)
 	if(keepalive){
 		ret = setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof (optval));
 		if(ret)
+			goto ERR;
+	}
+	if(if_name){
+		ret = setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, if_name, strlen(if_name) + 1);
+		if(ret < 0)
 			goto ERR;
 	}
 
@@ -1105,6 +1110,23 @@ int wf_accept(int sock, void *client_addr, int *addr_len)
 	return client_sock;
 }
 
+int wf_accept_ip(int sock, char *client_ip, int *client_port)
+{
+	int client_sock = -1;
+	socklen_t len;
+	struct sockaddr_in c_addr;
+	len = sizeof(struct sockaddr_in);
+	
+	client_sock = accept(sock, (struct sockaddr *)&c_addr, &len);
+
+	if(client_ip)
+		sprintf(client_ip, "%s", inet_ntoa(c_addr.sin_addr));
+	if(client_port)
+		*client_port = (int)ntohs(c_addr.sin_port);
+
+	return client_sock;
+}
+
 int wf_connect(int clientSock, char *serverName, int serverPort)
 {
 	struct sockaddr_in addr;
@@ -1142,11 +1164,11 @@ int wf_connect_addr(int clientSock, unsigned int serverAddr, int serverPort)
 	return connect(clientSock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
 }
 
-int wf_connect_socket(char *serverName, int serverPort, int clientPort, int keepalive)
+int wf_connect_socket(char *serverName, int serverPort, int clientPort, int keepalive, char *if_name)
 {
 	int sock = -1, ret = -1;
 	
-	sock = wf_tcp_socket(clientPort, keepalive);
+	sock = wf_tcp_socket(clientPort, keepalive, if_name);
 	if(sock < 0)
 		return sock;
 	
@@ -1159,11 +1181,11 @@ int wf_connect_socket(char *serverName, int serverPort, int clientPort, int keep
 	return sock;
 }
 
-int wf_listen_socket(int port, int listen_num)
+int wf_listen_socket(int port, int listen_num, char *if_name)
 {
 	int sock = -1, ret = -1;
 
-	sock = wf_tcp_socket(port, 0);
+	sock = wf_tcp_socket(port, 0, if_name);
 	if(sock < 0)
 		return sock;
 

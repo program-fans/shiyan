@@ -268,8 +268,8 @@ int main(int argc, char **argv)
 	get_system_uptime(&start_time);
 
 	memset(&g_tscan, 0, sizeof(g_tscan));
-	ip_atoh("192.168.0.1", &g_tscan.scan.saddr);
-	ip_atoh("192.168.0.2", &g_tscan.scan.eaddr);
+	ip_atoh("192.48.48.11", &g_tscan.scan.saddr);
+	ip_atoh("192.48.48.12", &g_tscan.scan.eaddr);
 	//ip_atoh("192.168.0.3", &g_tscan.scan.eaddr);
 	set_bit(SCAN_FLAG_ADDR_CONTINUE, &g_tscan.scan.flags);
 	g_tscan.scan.port = (unsigned short *)malloc(sizeof(unsigned short) * 6);
@@ -277,8 +277,8 @@ int main(int argc, char **argv)
 		return -1;
 	}
 	g_tscan.scan.port[++i] = 80;
-	g_tscan.scan.port[++i] = 83;
-	g_tscan.scan.port[++i] = 49152;
+	g_tscan.scan.port[++i] = 23;
+	g_tscan.scan.port[++i] = 67;
 	g_tscan.scan.port[++i] = 49153;
 	g_tscan.scan.port[++i] = 49154;
 	g_tscan.scan.port[++i] = 49155;

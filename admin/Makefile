@@ -12,7 +12,7 @@ wolf:wolf.c
 	$(CC) wolf.c -I$(INCLUDE) -L$(LIB) -o wolf
 
 wftool:wftool.c
-	$(CC) wftool.c -I$(INCLUDE) -L$(LIB) -o wftool
+	$(CC) wftool.c -g -I$(INCLUDE) -L$(LIB) -o wftool
 	cp -f wftool /usr/sbin/
 
 test:test.c

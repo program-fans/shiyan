@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
+#include <sys/epoll.h>
 
 #include <fcntl.h>
 #include <ctype.h>
@@ -294,6 +295,7 @@ void udp_usage()
 		"    --msg: send data \n"
 		"    --pkt: send packets. when cmd is listen: listen packets \n"
 		"    --resp-pkt: listen packets \n"
+		"    --no-wait \n"
 		);
 }
 
@@ -322,12 +324,16 @@ int udp_check_send(char *ip, int dport, int hport)
 	return 1;
 }
 
-#define UDP_ACTION_SEND			0
-#define UDP_ACTION_LISTEN			1
-#define UDP_ACTION_SEND_LISTEN	2
+enum TCP_UDP_ACT{
+	TCP_UDP_ACT_SEND,
+	TCP_UDP_ACT_LISTEN,
+	UDP_ACT_SEND_LISTEN,
+	TCP_ACT_CONNECT,
+};
+
 struct cmd_udp_t
 {
-	int action;
+	enum TCP_UDP_ACT action;
 	int udp_sock, pkt_cnt, host_cnt;
 	unsigned long bytes_cnt;
 	
@@ -337,7 +343,7 @@ void udp_exit_call(int sig)
 {
 	if(cmd_udp_globel.udp_sock > 0)
 		close(cmd_udp_globel.udp_sock);
-	if(cmd_udp_globel.action == UDP_ACTION_LISTEN || cmd_udp_globel.action == UDP_ACTION_SEND_LISTEN){
+	if(cmd_udp_globel.action == TCP_UDP_ACT_LISTEN || cmd_udp_globel.action == UDP_ACT_SEND_LISTEN){
 		printf("\nrecv finish: %lu bytes  %d packets  from %u hosts \n", 
 			cmd_udp_globel.bytes_cnt, cmd_udp_globel.pkt_cnt, wf_get_kv_count());
 		wf_kv_table_destory();
@@ -351,18 +357,18 @@ int cmd_udp(int argc, char **argv)
 	int i=1, ret=0;
 	int hport = 0, dport = 0, sport = 0;
 	int pkt = 1, resp_pkt = 1;
-	int action = 0;	// 0: send; 1: recv; 2: listen; 3: send-listen
+	enum TCP_UDP_ACT action = TCP_UDP_ACT_SEND;
 	char *ip = NULL, *msg = NULL, *dev = NULL;
 	char from_ip[16] = {0};
 	int sock_flag = 0;
 
 	++i;
 	if( strcmp(argv[i], "send") == 0 )
-		action = UDP_ACTION_SEND;
+		action = TCP_UDP_ACT_SEND;
 	else if( strcmp(argv[i], "listen") == 0 )
-		action = UDP_ACTION_LISTEN;
+		action = TCP_UDP_ACT_LISTEN;
 	else if( strcmp(argv[i], "send-listen") == 0 )
-		action = UDP_ACTION_SEND_LISTEN;
+		action = UDP_ACT_SEND_LISTEN;
 	else
 		--i;
 	cmd_udp_globel.action = action;
@@ -397,13 +403,13 @@ int cmd_udp(int argc, char **argv)
 		}
 	}
 
-	if(action == UDP_ACTION_LISTEN){
+	if(action == TCP_UDP_ACT_LISTEN){
 		if(resp_pkt == 1 && pkt > 1)
 			resp_pkt = pkt;
 		if( !udp_check_recv(hport) )
 			return 0;
 	}
-	else if(action == UDP_ACTION_SEND || action == UDP_ACTION_SEND_LISTEN){
+	else if(action == TCP_UDP_ACT_SEND || action == UDP_ACT_SEND_LISTEN){
 		if( !udp_check_send(ip, dport, hport) )
 			return 0;
 		if(!msg){
@@ -420,7 +426,7 @@ int cmd_udp(int argc, char **argv)
 
 	wf_registe_exit_signal(udp_exit_call);
 
-	if(action == UDP_ACTION_SEND || action == UDP_ACTION_SEND_LISTEN){
+	if(action == TCP_UDP_ACT_SEND || action == UDP_ACT_SEND_LISTEN){
 		while(pkt)
 		{
 			ret = wf_sendto_ip(cmd_udp_globel.udp_sock, (unsigned char *)msg, strlen(msg), 0,ip, dport);
@@ -431,7 +437,7 @@ int cmd_udp(int argc, char **argv)
 			--pkt;
 		}
 		
-		if(action == UDP_ACTION_SEND){
+		if(action == TCP_UDP_ACT_SEND){
 			close(cmd_udp_globel.udp_sock);
 			return 0;
 		}
@@ -455,6 +461,335 @@ int cmd_udp(int argc, char **argv)
 	}
 	
 	udp_exit_call(0);
+	return 0;
+}
+
+void tcp_usage()
+{
+	fprintf(stderr, "wftool tcp usage: \n"
+		"wftool tcp [cmd] [option] \n"
+		"    cmd: send listen connect \n"
+		"    --dev: bind network device \n"
+		"    --ip \n"
+		"    --hport \n"
+		"    --dport \n"
+		"    --msg: send data \n"
+		"    --pkt: send packets. \n"
+		"    --listen_num: listen the number of socket \n"
+		"    --keepalive \n"
+		"    --no-wait \n"
+		);
+}
+
+struct tcp_client
+{
+	struct list_head node;
+	int sock;
+	char client_ip[16];
+	int client_port;
+};
+struct cmd_tcp_t
+{
+	enum TCP_UDP_ACT action;
+	int tcp_sock;
+	int epfd;
+	unsigned long bytes_cnt;
+	int sock_flag;
+	struct list_head client_list;
+	int client_cur_num;
+	int accept_num;
+	int client_total_num;
+};
+struct cmd_tcp_t cmd_tcp_globel;
+
+static struct tcp_client *create_tcp_client(int client_sock, char *client_ip, int client_port)
+{
+	struct tcp_client *client = (struct tcp_client *)malloc(sizeof(struct tcp_client));
+	
+	if(!client){
+		printf("error: %s \n", wf_socket_error(NULL));
+		return NULL;
+	}
+	
+	client->sock = client_sock;
+	strcpy(client->client_ip, client_ip);
+	client->client_port = client_port;
+	INIT_LIST_HEAD(&(client->node));
+	return client;
+	
+}
+static void remove_tcp_client(struct tcp_client *client)
+{
+	struct epoll_event ep_event = {0};
+
+	printf("remove  client %s:%d \n", client->client_ip, client->client_port);
+	list_del(&(client->node));
+	--cmd_tcp_globel.client_cur_num;
+	ep_event.events = EPOLLIN | EPOLLOUT | EPOLLERR;
+	ep_event.data.fd = client->sock;
+	epoll_ctl(cmd_tcp_globel.epfd, EPOLL_CTL_DEL, client->sock, &ep_event);
+	close(client->sock);
+	free(client);
+}
+static int add_tcp_client(struct tcp_client *client)
+{
+	struct epoll_event ep_event = {0};
+	
+	list_add(&(client->node), &cmd_tcp_globel.client_list);
+	++cmd_tcp_globel.client_cur_num;
+	++cmd_tcp_globel.client_total_num;
+
+	ep_event.events = EPOLLIN | EPOLLOUT | EPOLLERR;
+	ep_event.data.fd = client->sock;
+	ep_event.data.ptr = client;
+	if(epoll_ctl(cmd_tcp_globel.epfd, EPOLL_CTL_ADD, client->sock, &ep_event) < 0){
+		printf("error: %s \n", wf_socket_error(NULL));
+		remove_tcp_client(client);
+		return -1;
+	}
+	printf("add  client %s:%d  sock fd: %d \n", client->client_ip, client->client_port, client->sock);
+	
+	return 0;
+}
+static void remove_all_tcp_client()
+{
+	struct tcp_client *pos, *n;
+	struct epoll_event ep_event = {0};
+
+	if(list_empty(&cmd_tcp_globel.client_list)){
+		cmd_tcp_globel.client_cur_num = 0;
+		return;
+	}
+	
+	list_for_each_entry_safe(pos, n, &cmd_tcp_globel.client_list, node){
+		ep_event.events = EPOLLIN | EPOLLOUT | EPOLLERR;
+		ep_event.data.fd = pos->sock;
+		epoll_ctl(cmd_tcp_globel.epfd, EPOLL_CTL_DEL, pos->sock, &ep_event);
+		close(pos->sock);
+		free(pos);
+	}
+
+	cmd_tcp_globel.client_cur_num = 0;
+	INIT_LIST_HEAD(&cmd_tcp_globel.client_list);
+}
+
+void tcp_exit_call(int sig)
+{
+	if(cmd_tcp_globel.tcp_sock> 0)
+		close(cmd_tcp_globel.tcp_sock);
+	
+	if(cmd_tcp_globel.action == TCP_UDP_ACT_LISTEN){
+		if(cmd_tcp_globel.epfd > 0)
+			close(cmd_tcp_globel.epfd);
+		remove_all_tcp_client();
+		printf("\nrecv finish: %lu bytes   from %u hosts  accept %u times\n", cmd_tcp_globel.bytes_cnt, wf_get_kv_count(), 
+			cmd_tcp_globel.accept_num);
+		wf_kv_table_destory();
+	}
+	
+	printf("exit...\n");
+	exit(0);
+}
+
+int tcp_listen(int listen_num)
+{
+	int client_sock = -1;
+	int ret = 0, event_num = 0, i = 0;
+	struct epoll_event ep_event;
+	struct epoll_event event_list[48];
+	struct tcp_client *client = NULL;
+	char client_ip[16] = {0};
+	int client_port = 0;
+	
+	cmd_tcp_globel.epfd = epoll_create(listen_num+1);
+	if(cmd_tcp_globel.epfd < 0)
+		goto EPOLL_ERR;
+
+	ep_event.events = EPOLLIN | EPOLLERR;
+	ep_event.data.fd = cmd_tcp_globel.tcp_sock;
+	ret = epoll_ctl(cmd_tcp_globel.epfd, EPOLL_CTL_ADD, cmd_tcp_globel.tcp_sock, &ep_event);
+	if(ret < 0)
+		goto EPOLL_ERR;
+
+	while(1){
+		event_num = epoll_wait(cmd_tcp_globel.epfd, event_list, 48, 1000);
+		if(event_num < 0){
+			if(errno == EINTR){
+				continue;
+			}
+			goto EPOLL_ERR;
+		}
+
+		for(i=0; i<event_num; i++){
+			if(event_list[i].events && EPOLLIN){
+				if(event_list[i].data.fd == cmd_tcp_globel.tcp_sock){
+					client_sock = wf_accept_ip(event_list[i].data.fd, client_ip, &client_port);
+					if(client_sock < 0){
+						printf("error: %s \n", wf_socket_error(NULL));
+						continue;
+					}
+
+					printf("accept  client %s:%d \n", client_ip, client_port);
+					++cmd_tcp_globel.accept_num;
+					wf_string_put_kv(client_ip, client_ip);
+					client = create_tcp_client(client_sock, client_ip, client_port);
+					if(!client)
+						continue;
+					if(add_tcp_client(client) < 0){
+						printf("add client %s:%d failed \n", client_ip, client_port);
+						continue;
+					}
+				}
+				else{
+					client = (struct tcp_client *)event_list[i].data.ptr;
+					if(!client)
+						continue;
+					ret = wf_recv(client->sock, (unsigned char *)asc_buf, sizeof(asc_buf), cmd_tcp_globel.sock_flag);
+					if(ret > 0){
+						cmd_tcp_globel.bytes_cnt += ret;
+						printf("recv OK: %d bytes from %s:%d \n", ret, client->client_ip, client->client_port);
+						printf("\t%s \n", asc_buf);
+					}
+					else{
+						if(ret == 0)
+							printf("client [%s:%d] disconnect \n", client->client_ip, client->client_port);
+						else
+							printf("error: %s \n", wf_socket_error(NULL));
+						remove_tcp_client(client);
+					}
+				}
+			}
+			else if(event_list[i].events && EPOLLERR){
+				if(event_list[i].data.fd == cmd_tcp_globel.tcp_sock){
+					printf("listen socket happen error \n");
+					goto EPOLL_ERR;
+				}
+				else{
+					client = (struct tcp_client *)event_list[i].data.ptr;
+					if(!client)
+						continue;
+					printf("socket of client [%s:%d] happen error \n", client->client_ip, client->client_port);
+					remove_tcp_client(client);
+				}
+			}
+		}
+	}
+	
+
+EPOLL_ERR:
+	printf("error: %s \n", wf_socket_error(NULL));
+	
+	return -1;
+}
+
+int cmd_tcp(int argc, char **argv)
+{
+	int i=1, ret=0;
+	int hport = 0, dport = 0, sport = 0;
+	int pkt = 1;
+	enum TCP_UDP_ACT action = TCP_UDP_ACT_SEND;
+	char *ip = NULL, *msg = NULL, *dev = NULL;
+	char from_ip[16] = {0};
+	int keepalive = 0, listen_num = 64;
+
+	++i;
+	if( strcmp(argv[i], "send") == 0 )
+		action = TCP_UDP_ACT_SEND;
+	else if( strcmp(argv[i], "listen") == 0 )
+		action = TCP_UDP_ACT_LISTEN;
+	else if( strcmp(argv[i], "connect") == 0 )
+		action = TCP_ACT_CONNECT;
+	else
+		--i;
+	cmd_tcp_globel.action = action;
+
+	while(argv[++i])
+	{
+		if( strcmp(argv[i], "--ip") == 0 && argv[++i])
+			ip = argv[i];
+		else if( strcmp(argv[i], "--dev") == 0 && argv[++i])
+			dev = argv[i];
+		else if( strcmp(argv[i], "--msg") == 0 && argv[++i])
+			msg = argv[i];
+		else if( strcmp(argv[i], "--hport") == 0 && argv[++i])
+			hport = atoi(argv[i]);
+		else if( strcmp(argv[i], "--dport") == 0 && argv[++i])
+			dport = atoi(argv[i]);
+		else if( strcmp(argv[i], "--pkt") == 0 && argv[++i]){
+			pkt = atoi(argv[i]);
+			if(pkt<=0)
+				pkt = 1;
+		}
+		else if( strcmp(argv[i], "--listen_num") == 0 && argv[++i]){
+			listen_num = atoi(argv[i]);
+			if(listen_num<=0)
+				listen_num = 1;
+		}
+		else if( strcmp(argv[i], "--no-wait") == 0 )
+			cmd_tcp_globel.sock_flag = MSG_DONTWAIT;
+		else if( strcmp(argv[i], "--keepalive") == 0 )
+			keepalive = 1;
+		else{
+			printf("invalid param: %s \n", argv[i]);
+			return 0;
+		}
+	}
+
+	if(action == TCP_UDP_ACT_LISTEN){
+		if( !udp_check_recv(hport) )
+			return 0;
+	}
+	else if(action == TCP_UDP_ACT_SEND || action == TCP_ACT_CONNECT){
+		if( !udp_check_send(ip, dport, hport) )
+			return 0;
+		if(action == TCP_UDP_ACT_SEND && !msg){
+			printf("have no send data \n");
+			return 0;
+		}
+	}
+	INIT_LIST_HEAD(&cmd_tcp_globel.client_list);
+
+	if(action == TCP_UDP_ACT_SEND ||action == TCP_ACT_CONNECT){
+		cmd_tcp_globel.tcp_sock = wf_connect_socket(ip, dport, hport, keepalive, dev);
+		if(cmd_tcp_globel.tcp_sock >= 0){
+			printf("connect %s:%d OK! \n", ip, dport);
+			if(action == TCP_ACT_CONNECT){
+				if(keepalive){
+					wf_registe_exit_signal(tcp_exit_call);
+					while(1);
+				}
+				else
+					goto END;
+			}
+		}
+	}
+	else{
+		cmd_tcp_globel.tcp_sock = wf_listen_socket(hport, listen_num, dev);
+	}
+	
+	if(cmd_tcp_globel.tcp_sock < 0){
+		printf("error: %s \n", wf_socket_error(NULL));
+		return 0;
+	}
+
+	wf_registe_exit_signal(tcp_exit_call);
+
+	if(action == TCP_UDP_ACT_SEND){
+		while(pkt)
+		{
+			ret = wf_send(cmd_tcp_globel.tcp_sock, (unsigned char *)msg, strlen(msg), cmd_tcp_globel.sock_flag);
+			if(ret > 0)
+				printf("send OK: %d bytes \n", ret);
+			else
+				printf("error: %s \n", wf_socket_error(NULL));
+			--pkt;
+		}
+	}
+	else if(action == TCP_UDP_ACT_LISTEN)
+		tcp_listen(listen_num);
+	
+END:
+	tcp_exit_call(0);
 	return 0;
 }
 
@@ -879,7 +1214,7 @@ int cmd_time(int argc, char **argv)
 static void json_usage()
 {
 	fprintf(stderr, "wftool json usage: \n"
-		"wftool json [json-file] \n"
+		"wftool json [-f format] [json-file] \n"
 		);
 }
 
@@ -888,6 +1223,15 @@ int cmd_json(int argc, char **argv)
 	int i=1, ret=0;
 	cJSON *obj = NULL;
 	char *str = NULL;
+	int fmt = 0;
+	
+	if(argv[++i]){
+		if(strcmp(argv[i], "-f") == 0)
+			fmt = 1;
+	}
+	
+	if(!fmt)
+		--i;
 
 	if(argv[++i]){
 		obj = json_load_file(argv[i]);
@@ -899,7 +1243,10 @@ int cmd_json(int argc, char **argv)
 
 	if(obj){
 		printf("json parse OK \n\n");
-		str = cJSON_Print(obj);
+		if(fmt)
+			str = cJSON_Print(obj);
+		else
+			str = cJSON_PrintUnformatted(obj);
 		if(str){
 			printf("%s \n", str);
 			free(str);
@@ -916,12 +1263,13 @@ int cmd_json(int argc, char **argv)
 static void exeindir_usage()
 {
 	fprintf(stderr, "wftool exeindir usage: \n"
-		"wftool exeindir [--all] [--depth number] [--cmd \"cmd string\"] \n"
+		"wftool exeindir [--all] [--depth number] [-q quiet] [--cmd \"cmd string\"] \n"
 		);
 }
 
 static char *cmd_exeindir_cmd = NULL;
-static int cmd_exeindir_depth = 0;
+static int cmd_exeindir_depth = 256;
+static int cmd_exeindir_quiet = 0;
 
 static int __exeindir(char *dir, char *parent_dir, int depth)
 {
@@ -936,7 +1284,8 @@ static int __exeindir(char *dir, char *parent_dir, int depth)
 		chdir(dir);
 		--depth;
 		getcwd(cur_dir, sizeof(cur_dir));
-		wfprintf(">>>> in %s \n", cur_dir);
+		if(!cmd_exeindir_quiet)
+			wfprintf(">>>> in %s \n", cur_dir);
 	}	
 	else{
 		getcwd(cur_dir, sizeof(cur_dir));
@@ -959,12 +1308,15 @@ static int __exeindir(char *dir, char *parent_dir, int depth)
 	}
 	closedir(d);
 
-	printf("\n");
+	if(!cmd_exeindir_quiet)
+		printf("\n");
 	system(cmd_exeindir_cmd);
-	printf("\n");
+	if(!cmd_exeindir_quiet)
+		printf("\n");
 	
 	if(parent_dir){
-		wfprintf(">>>> out %s \n", cur_dir);
+		if(!cmd_exeindir_quiet)
+			wfprintf(">>>> out %s \n", cur_dir);
 		chdir(parent_dir);
 	}
 
@@ -994,6 +1346,9 @@ int cmd_exeindir(int argc, char **argv)
 		else if( strcmp(argv[i], "--all") == 0 ){
 			all= 1;
 		}
+		else if( strcmp(argv[i], "-q") == 0 ){
+			cmd_exeindir_quiet = 1;
+		}
 		else{
 			if(!exe_dir){
 				wfprintf("malloc error \n");
@@ -1003,6 +1358,10 @@ int cmd_exeindir(int argc, char **argv)
 				exe_dir[dir_num++] = argv[i];
 			//WFT_DEBUG("%p  %s    %p  %s \n", argv[i], argv[i], exe_dir[dir_num-1], exe_dir[dir_num-1]);
 		}
+	}
+	if(!cmd_exeindir_cmd){
+		wfprintf("no command need to execrate \n");
+		return 0;
 	}
 
 	//WFT_DEBUG("all=%d  dir_num=%d \n", all, dir_num);
@@ -1034,21 +1393,23 @@ int cmd_exeindir(int argc, char **argv)
 struct cmd_t
 {
 	char cmd[16];
+	int (*init_call)(int argc, char **argv);
 	void (*usage_call)(void);
 	int (*cmd_call)(int argc, char **argv);
 };
 
 struct cmd_t cmd_list[] = {
-	{"ntorn", txt_usage, cmd_ntorn},
-	{"rnton", txt_usage, cmd_rnton},
-	{"a1torn", txt_usage, cmd_a1torn},
-	{"udp", udp_usage, cmd_udp},
-	{"gethost", gethost_usage, cmd_gethost},
-	{"asc", asc_usage, cmd_asc},
-	{"wol", wol_usage, cmd_wol},
-	{"time", time_usage, cmd_time},
-	{"json", json_usage, cmd_json},
-	{"exeindir", exeindir_usage, cmd_exeindir},
+	{"ntorn", NULL, txt_usage, cmd_ntorn},
+	{"rnton", NULL, txt_usage, cmd_rnton},
+	{"a1torn", NULL, txt_usage, cmd_a1torn},
+	{"udp", NULL, udp_usage, cmd_udp},
+	{"tcp", NULL, tcp_usage, cmd_tcp},
+	{"gethost", NULL, gethost_usage, cmd_gethost},
+	{"asc", NULL, asc_usage, cmd_asc},
+	{"wol", NULL, wol_usage, cmd_wol},
+	{"time", NULL, time_usage, cmd_time},
+	{"json", NULL, json_usage, cmd_json},
+	{"exeindir", NULL, exeindir_usage, cmd_exeindir},
 };
 
 void wftool_usage()
@@ -1116,6 +1477,13 @@ int main(int argc, char **argv)
 		}
 
 		if(pcmd){
+			if(pcmd->init_call){
+				ret = pcmd->init_call(argc, argv);
+				if(ret < 0){
+					wfprintf("error: command init failed: %s \n", pcmd->cmd);
+					return 1;
+				}
+			}
 			if(pcmd->cmd_call){
 				strcpy(print_name, pcmd->cmd);
 				pcmd->cmd_call(argc, argv);

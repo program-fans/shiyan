@@ -64,19 +64,21 @@ extern int setsock_rcvbuf(int sock, int size);
 
 extern int wf_udp_socket(int port, int is_broad, char *if_name);
 
-extern int wf_tcp_socket(int port, int keepalive);
+extern int wf_tcp_socket(int port, int keepalive, char *if_name);
 
 extern int wf_gethostbyname(char *name, char *ip, unsigned int *addr);
 
 extern int wf_accept(int sock, void *client_addr, int *addr_len);
 
+extern int wf_accept_ip(int sock, char *client_ip, int *client_port);
+
 extern int wf_connect(int clientSock, char *serverName, int serverPort);
 
 extern int wf_connect_addr(int clientSock, unsigned int serverAddr, int serverPort);
 
-extern int wf_connect_socket(char *serverName, int serverPort, int clientPort, int keepalive);
+extern int wf_connect_socket(char *serverName, int serverPort, int clientPort, int keepalive, char *if_name);
 
-extern int wf_listen_socket(int port, int listen_num);
+extern int wf_listen_socket(int port, int listen_num, char *if_name);
 
 extern int wf_send(int sock, unsigned char *buf, int total_len, int flag);
 

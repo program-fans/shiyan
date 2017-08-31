@@ -1,6 +1,21 @@
 #ifndef WF_CHAR_H_
 #define WF_CHAR_H_
 
+struct wf_buffer
+{
+	char *data;
+	int size;
+	int len;
+};
+
+extern void wf_buffer_free(struct wf_buffer *buffer, int free_self);
+extern struct wf_buffer *wf_buffer_malloc(struct wf_buffer *buffer, unsigned int size);
+extern struct wf_buffer *wf_buffer_remalloc(struct wf_buffer *buffer, unsigned int size);
+extern struct wf_buffer *wf_buffer_set(struct wf_buffer *buffer, char *data, int size);
+extern struct wf_buffer *wf_buffer_cpy(struct wf_buffer *dst, struct wf_buffer *src);
+extern struct wf_buffer *wf_buffer_cat(struct wf_buffer *dst, struct wf_buffer *src);
+
+
 extern char *get_row(char *linestr, int index, char *dst, unsigned int size);
 extern char *get_row_int(char *linestr, int index, int *dst, char *fmt);
 

@@ -1,8 +1,122 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
 #include "wf_char.h"
+
+void wf_buffer_free(struct wf_buffer *buffer, int free_self)
+{
+	if(!buffer)
+		return;
+	if(buffer->data)
+		free(buffer->data);
+	
+	if(free_self)
+		free(buffer);
+	else
+		memset(buffer, 0, sizeof(struct wf_buffer));
+}
+
+struct wf_buffer *wf_buffer_malloc(struct wf_buffer *buffer, unsigned int size)
+{
+	struct wf_buffer *p = buffer, *p_malloc = NULL;
+
+	if(!size)
+		return NULL;
+	if(!p){
+		p = (struct wf_buffer *)malloc(sizeof(struct wf_buffer));
+		if(!p)
+			return NULL;
+		p_malloc = p;
+	}
+
+	p->data = (char *)malloc(size);
+	if(!p->data){
+		if(p_malloc)
+			wf_buffer_free(p, 1);
+		return NULL;
+	}
+	memset(p->data, 0, size);
+	p->size = size;
+	p->len = 0;
+	return p;
+}
+
+struct wf_buffer *wf_buffer_remalloc(struct wf_buffer *buffer, unsigned int size)
+{
+	if(!buffer || !size)
+		return NULL;
+	if(buffer->data)
+		free(buffer->data);
+	buffer->data = (char *)malloc(size);
+	if(!buffer->data){
+		return NULL;
+	}
+	memset(buffer->data, 0, size);
+	buffer->size = size;
+	buffer->len = 0;
+	return buffer;
+}
+
+struct wf_buffer *wf_buffer_set(struct wf_buffer *buffer, char *data, int size)
+{
+	if(!buffer || !data || !size)
+		return NULL;
+	if((size+1) > buffer->size)
+		wf_buffer_remalloc(buffer, size+1);
+	else
+		memset(buffer->data, 0, buffer->size);
+	memcpy(buffer->data, data, size);
+	buffer->len = size;
+	buffer->data[buffer->len] = '\0';
+	return buffer;
+}
+
+struct wf_buffer *wf_buffer_cpy(struct wf_buffer *dst, struct wf_buffer *src)
+{
+	struct wf_buffer *p = dst;
+
+	if(!src || !src->data || !src->size)
+		return NULL;
+	if(!p)
+		p = (struct wf_buffer *)malloc(sizeof(struct wf_buffer));
+
+	p = wf_buffer_remalloc(p, src->size);
+	if(!p)
+		return NULL;
+
+	memcpy(p->data, src->data, p->size);
+	p->len = src->len;
+	return p;
+}
+
+struct wf_buffer *wf_buffer_cat(struct wf_buffer *dst, struct wf_buffer *src)
+{
+	struct wf_buffer new_buffer = {0};
+	int new_size = 0;
+	if(!dst)
+		return NULL;
+	if(!src || !src->data || !src->len)
+		return dst;
+	
+	new_size = dst->len + src->len + 1;
+	if(new_size > dst->size && !wf_buffer_malloc(&new_buffer, new_size))
+		return NULL;
+	if(new_buffer.data){
+		memcpy(new_buffer.data, dst->data, dst->len);
+		if(dst->data)
+			free(dst->data);
+		dst->data = new_buffer.data;
+		dst->size = new_buffer.size;
+	}
+	memcpy(dst->data + dst->len, src->data, src->len);
+	dst->len += src->len;
+	dst->data[dst->len] = '\0';
+	
+	return dst;
+}
+
 
 
 char *get_row(char *linestr, int index, char *dst, unsigned int size)

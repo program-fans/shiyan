@@ -2544,6 +2544,31 @@ int cmd_tftpd(int argc, char **argv)
 */
 // ************************************   tftp     *********** end
 
+
+// ************************************   usleep
+void usleep_usage()
+{
+	fprintf(stderr, "wftool usleep usage: \n"
+		"wftool usleep us \n"
+		);
+}
+
+int cmd_usleep(int argc, char **argv)
+{
+	unsigned int us = 0;
+
+	if(!argv[1]){
+		usleep_usage();
+		return 0;
+	}
+	
+	us = atoi(argv[1]);
+	
+	return usleep(us);
+}
+
+// ************************************   usleep     *********** end
+
 struct cmd_t
 {
 	char cmd[16];
@@ -2567,6 +2592,7 @@ struct cmd_t cmd_list[] = {
 	{"text", NULL, text_usage, cmd_text},
 	{"qqrobot", NULL, NULL, cmd_qqrobot},
 	{"tftpc", NULL, tftpc_usage, cmd_tftpc},
+	{"usleep", NULL, usleep_usage, cmd_usleep},
 };
 
 struct cmd_t *find_cmd(char *cmd)
@@ -2673,7 +2699,7 @@ FIND_CMD:
 	}
 	if(pcmd->cmd_call){
 		strcpy(print_name, pcmd->cmd);
-		pcmd->cmd_call(cmd_argc, cmd_argv);
+		ret = pcmd->cmd_call(cmd_argc, cmd_argv);
 	}
 	else
 		wfprintf("error: can't execute %s \n", pcmd->cmd);

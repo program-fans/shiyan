@@ -19,6 +19,9 @@
 #define ERROR(fmt, ...)	do{}while(0)
 #endif
 
+
+#define MULITITHREAD_NUM			15
+
 enum tcpscan_type
 {
 	TSCAN_TYPE_CONNECT,
@@ -79,14 +82,14 @@ int tcpscan_sock()
 		goto ERR;
 	}
 
-	tmp_tv.tv_sec = 1;
+	tmp_tv.tv_sec = 5;
 	tmp_tv.tv_usec = 0;
 	if(setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&tmp_tv, sizeof(tmp_tv)) < 0){
 		DEBUG("setsockopt SOL_SOCKET SO_SNDTIMEO: %s \n", strerror(errno));
 		goto ERR;
 	}
 
-	tmp_tv.tv_sec = 1;
+	tmp_tv.tv_sec = 5;
 	if(setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&tmp_tv, sizeof(tmp_tv)) < 0){
 		DEBUG("setsockopt SOL_SOCKET SO_RCVTIMEO: %s \n", strerror(errno));
 		goto ERR;
@@ -102,13 +105,17 @@ ERR:
 int tscan_syn(unsigned int addr, unsigned short port, struct netscan_result *result)
 {
 	int sock = 0;
+#if !MULITITHREAD_NUM
 	struct iphdr *iph = NULL;
 	struct tcphdr *tcph = NULL;
-	struct sockaddr_in daddr, rcv_addr;
+	struct sockaddr_in rcv_addr;
+	int recv_times = 0, on = 0, rst = 0;
+	socklen_t sockaddr_len = sizeof(struct sockaddr_in);
+#endif
+	struct sockaddr_in daddr;
 	unsigned char buff[2048] = {0};
 	unsigned int buff_len = 0;
-	int recv_len, recv_times = 0, on = 0, rst = 0;
-	socklen_t sockaddr_len = sizeof(struct sockaddr_in);
+	int recv_len;
 
 	//g_localaddr.sin_port = htons((unsigned short)random());
 	daddr.sin_family = AF_INET;
@@ -134,7 +141,7 @@ int tscan_syn(unsigned int addr, unsigned short port, struct netscan_result *res
 		return -1;
 	}
 	//NetMsgLog("msg", buff, recv_len, MSG_SEND);
-	
+#if !MULITITHREAD_NUM
 	recv_times = 0;
 	while(recv_times < 3)
 	{
@@ -166,7 +173,55 @@ int tscan_syn(unsigned int addr, unsigned short port, struct netscan_result *res
 			DEBUG("save_addr_port error \n");
 		}
 	}
-	
+#endif
+	return 0;
+}
+
+int tscan_syn_listen(void *arg)
+{
+	struct iphdr *iph = NULL;
+	struct tcphdr *tcph = NULL;
+	struct sockaddr_in rcv_addr;
+	unsigned char buff[2048] = {0};
+	int sock = -1, recv_len, on = 0, rst = 0, recv_times = 0;
+	socklen_t sockaddr_len = sizeof(struct sockaddr_in);
+	struct tcpscan_t *tscan = (struct tcpscan_t *)arg;
+
+	recv_len = netscan_get_targe_num(&tscan->scan);
+	recv_times = recv_len + 2;
+	do{
+		sock = tcpscan_sock();
+		if(sock > 0)
+			break;
+	}while(--recv_len > 0);
+
+	do{
+		recv_len = recvfrom(sock, buff, sizeof(buff), 0, (struct sockaddr *)&rcv_addr, &sockaddr_len);
+		if(recv_len <= 0){
+			DEBUG("recvfrom: %s \n", strerror(errno));
+		}
+		else{
+			//NetMsgLog("msg", buff, recv_len, MSG_RECV);
+			iph = (struct iphdr *)&buff[0];
+			tcph = (struct tcphdr *)&buff[iph->ihl * 4];
+			if(tcph->syn && tcph->ack){
+				on = 1;
+			}
+			else
+				rst = 1;
+			
+			printf("%s : %d %s %s \n", ip_htoa(ntohl(iph->saddr), NULL), ntohs(tcph->source), on ? "on" : "off", rst ? "RST" : "");
+			if(tscan->result && on == tscan->result->type){
+				if(save_addr_port(tscan->result, ntohl(iph->saddr), ntohs(tcph->source)) < 0){
+					DEBUG("save_addr_port error \n");
+				}
+			}
+			on = 0;
+			rst = 0;
+		}
+	}while(--recv_times > 0);
+
+	close(sock);
 	return 0;
 }
 
@@ -175,7 +230,7 @@ int tscan_connect(unsigned int addr, unsigned short port, struct netscan_result 
 	int sock = -1, on = 0;
 	char ip_str[16] = {'\0'};
 
-	sock = wf_tcp_socket(0, 0);
+	sock = wf_tcp_socket(0, 0, NULL);
 	if(sock < 0){
 		DEBUG("wf_tcp_socket: %s \n", strerror(errno));
 		return -1;
@@ -244,10 +299,7 @@ int tcpscan_done(struct tcpscan_t *tscan)
 	
 	if(!tscan)
 		return -1;
-	if(!netscan_check(&tscan->scan)){
-		ERROR("netscan invalid \n");
-		return -1;
-	}
+	
 	if(tscan->type == TSCAN_TYPE_SYN){
 		if(set_localaddr() < 0)
 			return -1;
@@ -255,40 +307,55 @@ int tcpscan_done(struct tcpscan_t *tscan)
 	
 	scan = &tscan->scan;
 
-	return  netscan_done(scan, tscan, add_tscan_job);
+	return netscan_done(scan, tscan, add_tscan_job);
+}
+
+void tcpscan_usage()
+{
+	fprintf(stderr, "tcpscan usage: \n"
+		"tcpscan <-ip ip> <-port port> [-seq ascend\descend\random] [-syn] \n"
+		);
 }
 
 
-#define MULITITHREAD_NUM			15
+#if 1
+int tcpscan_main(int argc, char **argv)
+#else
 int main(int argc, char **argv)
+#endif
 {
-	int i=-1, syn = 1, wait_task_num = 0, excu_task_num = 0;
+	int wait_task_num = 0, excu_task_num = 0;
+	int syn = 0;
 	unsigned long start_time = 0, end_time = 0;
-	
-	get_system_uptime(&start_time);
+#if MULITITHREAD_NUM
+	struct threadpool *tmp_tdpool = NULL;
+#endif
+	struct arg_parse_t tscan_arg[] = {
+		{"-syn", &syn, 0, 0, NULL, ARG_VALUE_TYPE_INT, 1, NULL},
+		{NULL, NULL, 0, 0, NULL, 0, 0, NULL}
+	};
+	int tmp_argc = 0;
+	char **tmp_argv = (char **)malloc(sizeof(char *) * argc);
+
+	if(!tmp_argv)
+		return 1;
 
 	memset(&g_tscan, 0, sizeof(g_tscan));
-	ip_atoh("192.48.48.11", &g_tscan.scan.saddr);
-	ip_atoh("192.48.48.12", &g_tscan.scan.eaddr);
-	//ip_atoh("192.168.0.3", &g_tscan.scan.eaddr);
-	set_bit(SCAN_FLAG_ADDR_CONTINUE, &g_tscan.scan.flags);
-	g_tscan.scan.port = (unsigned short *)malloc(sizeof(unsigned short) * 6);
-	if(!g_tscan.scan.port){
-		return -1;
-	}
-	g_tscan.scan.port[++i] = 80;
-	g_tscan.scan.port[++i] = 23;
-	g_tscan.scan.port[++i] = 67;
-	g_tscan.scan.port[++i] = 49153;
-	g_tscan.scan.port[++i] = 49154;
-	g_tscan.scan.port[++i] = 49155;
-	g_tscan.scan.port_num = 6;
-	set_bit(SCAN_FLAG_PORT_DISCONTINUE, &g_tscan.scan.flags);
 
-	if(netscan_port_random(&g_tscan.scan) < 0){
-		ERROR("netscan_port_random error \n");
-		return -1;
+	if(netscan_arg_parse(argc, argv, &tmp_argc, tmp_argv, &g_tscan.scan) < 0){
+		tcpscan_usage();
+		free(tmp_argv);
+		return 1;
 	}
+	netscan_t_print(&g_tscan.scan);
+	if(arg_parse(tmp_argc, tmp_argv, tscan_arg, NULL, NULL) < 0){
+		tcpscan_usage();
+		free(tmp_argv);
+		return 1;
+	}
+	free(tmp_argv);
+
+	get_system_uptime(&start_time);
 
 	if(syn){
 		g_tscan.type = TSCAN_TYPE_SYN;
@@ -305,13 +372,25 @@ int main(int argc, char **argv)
 	}
 	g_tscan.result = &g_result;
 
-	if(MULITITHREAD_NUM){
-		g_tscan.tdpool = threadpool_init(MULITITHREAD_NUM, 1000);
-		if(!g_tscan.tdpool){
-			ERROR("threadpool_init failed \n");
-			return -1;
+#if MULITITHREAD_NUM
+	if(g_tscan.type == TSCAN_TYPE_SYN)
+		tmp_tdpool = threadpool_init(1, 2);
+	else{
+		tmp_tdpool = threadpool_init(MULITITHREAD_NUM, 1000);
+		g_tscan.tdpool = tmp_tdpool;
+	}
+	if(!tmp_tdpool){
+		ERROR("threadpool_init failed \n");
+		goto ERR_END;
+	}
+
+	if(g_tscan.type == TSCAN_TYPE_SYN){
+		if(threadpool_add_job(tmp_tdpool, tscan_syn_listen, &g_tscan, NULL) < 0){
+			DEBUG("threadpool_add_job error \n");
+			goto ERR_END;
 		}
 	}
+#endif
 
 	tcpscan_done(&g_tscan);
 
@@ -324,23 +403,28 @@ int main(int argc, char **argv)
 		g_tscan.scan.addr = NULL;
 	}
 
-	if(MULITITHREAD_NUM){
-		while(1){
-			wait_task_num = threadpool_get_waitlist_num(g_tscan.tdpool);
-			excu_task_num = threadpool_get_exculist_num(g_tscan.tdpool);
-			if(!wait_task_num && !excu_task_num)
-				break;
-			else
-				sleep(2);
-		}
-
-		threadpool_destroy(g_tscan.tdpool);
+#if MULITITHREAD_NUM
+	while(1){
+		wait_task_num = threadpool_get_waitlist_num(tmp_tdpool);
+		excu_task_num = threadpool_get_exculist_num(tmp_tdpool);
+		if(!wait_task_num && !excu_task_num)
+			break;
+		else
+			sleep(2);
 	}
+	threadpool_destroy(tmp_tdpool);
+#endif
 	
 	netscan_result_destory(&g_result, 0);
 
 	get_system_uptime(&end_time);
 	printf("[time  %lu s] \n", end_time - start_time);
 	return 0;
+
+ERR_END:
+	if(tmp_tdpool)
+		threadpool_destroy(tmp_tdpool);
+	netscan_result_destory(&g_result, 0);
+	return 1;
 }
 

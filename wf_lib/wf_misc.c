@@ -834,6 +834,223 @@ void print_bytes(unsigned char *byte, unsigned int max_num)
 	printf("\n");
 }
 
+
+static struct child_cmd_t *find_child_cmd(char *cmd, struct child_cmd_t *cmd_list, int cmd_size)
+{
+	int idx = 0;
+
+	for(idx=0; idx<cmd_size; idx++){
+		if(strcmp(cmd, cmd_list[idx].cmd) == 0){
+			return &cmd_list[idx];
+		}
+	}
+	return NULL;
+}
+
+static void default_whole_usage(struct child_cmd_t *cmd_list, int cmd_size, char *main_cmd_name, void (*whole_usage)())
+{
+	int idx = 0;
+
+	if(whole_usage){
+		whole_usage();
+		return;
+	}
+	
+	fprintf(stderr, "%s usage: \n"
+		"\t%s [cmd] [option] [...] \n"
+		"cmd list: \n"
+		"  help \n"
+		, main_cmd_name, main_cmd_name);
+
+	for(idx=0; idx<cmd_size; idx++){
+		fprintf(stderr, "  %s \n", cmd_list[idx].cmd);
+	}
+	
+	fprintf(stderr, "note:\"%s help <cmd>\" for help on a specific cmd \n", main_cmd_name);
+
+	exit(0);
+}
+
+static void child_cmd_print_usage(char *cmd, struct child_cmd_t *cmd_list, int cmd_size, char *main_cmd_name,void (*whole_usage)())
+{
+	struct child_cmd_t *pcmd = NULL;
+	
+	if(cmd == NULL){
+		default_whole_usage(cmd_list, cmd_size, main_cmd_name, whole_usage);
+		return;
+	}
+	else{
+		pcmd = find_child_cmd(cmd, cmd_list, cmd_size);
+	}
+	if(pcmd){
+		if(pcmd->usage_call)
+			pcmd->usage_call();
+		else
+			fprintf(stderr, "no usage for %s \n\n------------------------------\n", cmd);
+	}
+	else
+		default_whole_usage(cmd_list, cmd_size, main_cmd_name, whole_usage);
+}
+
+int wf_child_cmd(int argc, char **argv, struct child_cmd_t *cmd_list, int cmd_size, char *main_cmd_name, void (*whole_usage)())
+{
+	int ret=0;
+	struct child_cmd_t *pcmd = NULL;
+	char *p = NULL, *name = argv[0];
+	int cmd_argc = argc;
+	char **cmd_argv = argv;
+
+	p = name;
+	while(*p != '\0'){
+		if(*p == '/')
+			name = p + 1;
+		++p;
+	}
+
+	if(main_cmd_name && !strcmp(name, main_cmd_name)){
+		if(argc < 2 || !strcmp(argv[1], "-h") || !strcmp(argv[1], "--help") ){
+			default_whole_usage(cmd_list, cmd_size, main_cmd_name, whole_usage);
+			return 0;
+		}
+		else if( strcmp(argv[1], "help") == 0 )
+			child_cmd_print_usage(argv[2], cmd_list, cmd_size, main_cmd_name, whole_usage);
+		else if(argv[2] && (!strcmp(argv[2], "-h") || !strcmp(argv[2], "--help")))
+			child_cmd_print_usage(argv[1], cmd_list, cmd_size, main_cmd_name, whole_usage);
+		else{
+			cmd_argc = argc -1;
+			cmd_argv = argv + 1;
+			goto FIND_CMD;
+		}
+	}
+	else{
+		if( !strcmp(argv[1], "-h") || !strcmp(argv[1], "--help") ){
+			child_cmd_print_usage(name, cmd_list, cmd_size, main_cmd_name, whole_usage);
+		}
+	}
+	return 1;
+
+FIND_CMD:
+	pcmd = find_child_cmd(cmd_argv[0], cmd_list, cmd_size);
+	if(!pcmd){
+		default_whole_usage(cmd_list, cmd_size, main_cmd_name, whole_usage);
+		return 0;
+	}
+
+	if(pcmd->init_call){
+		ret = pcmd->init_call(cmd_argc, cmd_argv, pcmd);
+		if(ret < 0){
+			fprintf(stderr, "error: command init failed: %s \n", pcmd->cmd);
+			return 1;
+		}
+	}
+	if(pcmd->cmd_call){
+		ret = pcmd->cmd_call(cmd_argc, cmd_argv);
+	}
+	else
+		fprintf(stderr, "error: can't execute %s \n", pcmd->cmd);
+
+	return ret;
+}
+
+int arg_parse_set_value(struct arg_parse_t *p_arg, char *data)
+{
+	int ret = 0;
+	switch(p_arg->value_type){
+	case ARG_VALUE_TYPE_CHAR:
+		if(data)
+			ret = sscanf(data, "%c", (char *)(p_arg->value));
+		else
+			*((char *)(p_arg->value)) = (char)(p_arg->set_number);
+		break;
+	case ARG_VALUE_TYPE_INT:
+		if(data)
+			ret = sscanf(data, "%d", (int *)(p_arg->value));
+		else
+			*((int *)(p_arg->value)) = (int)(p_arg->set_number);
+		break;
+	case ARG_VALUE_TYPE_LONG:
+		if(data)
+			ret = sscanf(data, "%ld", (long *)(p_arg->value));
+		else
+			*((long *)(p_arg->value)) = (long)(p_arg->set_number);
+		break;
+	case ARG_VALUE_TYPE_LONGLONG:
+		if(data)
+			ret = sscanf(data, "%lld", (long long int *)(p_arg->value));
+		else
+			*((long long int *)(p_arg->value)) = p_arg->set_number;
+		break;
+	case ARG_VALUE_TYPE_STRING:
+		if(data)
+			ret = sscanf(data, "%s", (char *)(p_arg->value));
+ 		else if(p_arg->set_string)
+			strcpy((char *)(p_arg->value), p_arg->set_string);
+		break;
+	default:
+		break;
+	}
+
+	if(data)
+		return ret == 1 ? 0 : -1;
+	else
+		return 0;
+}
+
+int arg_parse(int argc, char **argv, struct arg_parse_t *arg_plist, int *new_argc, char **new_argv)
+{
+	int i = 0, ret = 0, is_match = 0;
+	struct arg_parse_t *p_arg = NULL;
+
+	if(new_argc && new_argv){
+		new_argv[0] = argv[0];
+		*new_argc = 1;
+	}
+
+	while(argv[++i]){
+		is_match = 0;
+		p_arg = arg_plist;
+		while(p_arg && p_arg->key){
+			if((p_arg->arg_idx > 0) && (i != p_arg->arg_idx)){
+				++p_arg;
+				continue;
+			}
+			if(strcmp(argv[i], p_arg->key) == 0){
+				is_match = 1;
+				if(p_arg->has_arg){
+					if(argv[++i]){
+						if(p_arg->arg_deal)
+							ret = p_arg->arg_deal(argv[i-1], argv[i], p_arg->value_type, p_arg->value);
+						else if(p_arg->value_type > ARG_VALUE_TYPE_NONE && p_arg->value)
+							ret = arg_parse_set_value(p_arg, argv[i]);
+					}
+				}
+				else{
+					if(p_arg->value_type > ARG_VALUE_TYPE_NONE && p_arg->value_type < ARG_VALUE_TYPE_OTHER && p_arg->value){
+						arg_parse_set_value(p_arg, NULL);
+					}
+					else if(p_arg->arg_deal)
+						ret = p_arg->arg_deal(argv[i], NULL, p_arg->value_type, p_arg->value);
+				}
+			}
+			if(ret < 0)
+				return ret;
+			++p_arg;
+		}
+		if(!is_match && new_argc && new_argv){
+			new_argv[*new_argc] = argv[i];
+			*new_argc += 1;
+		}
+	}
+	return 0;
+}
+
+int arg_deal_default(char *arg_key, char *arg_value, int value_type, void *value)
+{
+	*((char **)value) = arg_value;
+	return 0;
+}
+
+
 #if 0
 void schedule()
 {

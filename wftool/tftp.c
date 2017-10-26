@@ -391,7 +391,7 @@ int cmd_tftpc(int argc, char **argv)
 	tftp_arg.set_block_size = TFTP_BLOCKSIZE_DEFAULT;
 	tftp_arg.block_id = 1;
 	
-	ret = arg_parse(argc, argv, cmd_tftp_arg_list);
+	ret = arg_parse(argc, argv, cmd_tftp_arg_list, &wf_argc, wf_argv);
 	if(ret < 0){
 		printf("parse arg failed \n");
 		return ret;

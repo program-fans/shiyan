@@ -166,6 +166,40 @@ extern void print_strn(char *str, unsigned int max_num);
 
 extern void print_bytes(unsigned char *byte, unsigned int max_num);
 
+struct child_cmd_t
+{
+	char cmd[16];
+	int (*init_call)(int argc, char **argv, struct child_cmd_t *pcmd);
+	void (*usage_call)(void);
+	int (*cmd_call)(int argc, char **argv);
+};
+extern int wf_child_cmd(int argc, char **argv, struct child_cmd_t *cmd_list, int cmd_size, char *main_cmd_name, void (*whole_usage)());
+#define wf_child_cmd_simple(argc, argv, cmd_array, main_cmd_name) wf_child_cmd(argc, argv, cmd_array, ARRAY_NUM(cmd_array), main_cmd_name, NULL)
+#define wf_child_cmd_mini(cmd_array, main_cmd_name) wf_child_cmd(argc, argv, cmd_array, ARRAY_NUM(cmd_array), main_cmd_name, NULL)
+
+enum ARG_VALUE_TYPE{
+	ARG_VALUE_TYPE_NONE,
+	ARG_VALUE_TYPE_CHAR,
+	ARG_VALUE_TYPE_INT,
+	ARG_VALUE_TYPE_LONG,
+	ARG_VALUE_TYPE_LONGLONG,
+	ARG_VALUE_TYPE_STRING,
+	ARG_VALUE_TYPE_OTHER
+};
+struct arg_parse_t
+{
+	char *key;
+	void *value;
+	int arg_idx;
+	int has_arg;
+	int (*arg_deal)(char *arg_key, char *arg_value, int value_type, void *value);
+	enum ARG_VALUE_TYPE value_type;
+	long long int set_number;
+	char *set_string;
+};
+extern int arg_parse(int argc, char **argv, struct arg_parse_t *arg_plist, int *new_argc, char **new_argv);
+extern int arg_deal_default(char *arg_key, char *arg_value, int value_type, void *value);
+
 // -------------------------------------------------------------------
 #ifndef WF_CURSOR
 #define WF_CURSOR

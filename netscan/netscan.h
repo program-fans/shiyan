@@ -36,7 +36,9 @@ extern int netscan_port_random(struct netscan_t *scan);
 
 extern int netscan_done(struct netscan_t *scan, void *arg, int (*proc)(unsigned int addr, unsigned short port, void *arg));
 
+extern int netscan_get_targe_num(struct netscan_t *scan);
 
+extern void netscan_t_print(struct netscan_t *scan);
 
 struct addr_port
 {
@@ -61,5 +63,8 @@ extern int save_addr_port(struct netscan_result *result, unsigned int addr, unsi
 
 
 extern char *ttl_2_os_type(unsigned char ttl, char *os_type, unsigned int size);
+
+
+extern int netscan_arg_parse(int argc, char **argv, int *new_argc, char **new_argv, struct netscan_t *scan);
 
 #endif

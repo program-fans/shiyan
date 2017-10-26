@@ -948,7 +948,10 @@ unsigned int ip_atoh(char *ip, unsigned int *addr)
 char *ip_htoa(unsigned int addr, char *buff)
 {
 	unsigned char a[4];
+	static char ip_buf[16] = {0};
 
+	if(!buff)
+		buff = &ip_buf[0];
 	a[0] = (unsigned char)(addr >> 24);
 	a[1] = (unsigned char)(addr >> 16);
 	a[2] = (unsigned char)(addr >> 8);

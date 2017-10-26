@@ -148,29 +148,39 @@ static int icmpscan_recv_proc(struct icmpscan_t *icmpscan)
 	return 0;
 }
 
+void icmpscan_usage()
+{
+	fprintf(stderr, "udpscan usage: \n"
+		"udpscan <-ip ip> \n"
+		);
+}
 
 struct icmpscan_t g_icmpscan;
 struct netscan_result g_result;
+#if 1
+int icmpscan_main(int argc, char **argv)
+#else
 int main(int argc, char **argv)
+#endif
 {
 //	int i=-1;
 	unsigned long start_time = 0, end_time = 0;
 	pid_t child = 0;
-	
-	get_system_uptime(&start_time);
 
 	memset(&g_icmpscan, 0, sizeof(g_icmpscan));
+#if 1
+	if(netscan_arg_parse(argc, argv, NULL, NULL, &g_icmpscan.scan) < 0){
+		icmpscan_usage();
+		return 1;
+	}
+	netscan_t_print(&g_icmpscan.scan);
+#else
 	ip_atoh("192.168.0.1", &g_icmpscan.scan.saddr);
 	ip_atoh("192.168.0.8", &g_icmpscan.scan.eaddr);
 	set_bit(SCAN_FLAG_ADDR_CONTINUE, &g_icmpscan.scan.flags);
-#if 0
-	if(netscan_addr_random(&g_icmpscan.scan) < 0){
-		ERROR("netscan_addr_random error \n");
-		return -1;
-	}
-#else
-	set_bit(SCAN_FLAG_ASCEND, &g_icmpscan.scan.flags);
 #endif
+	get_system_uptime(&start_time);
+	
 	child = fork();
 	if(child == 0){
 		sleep(1);			// let parent run at first

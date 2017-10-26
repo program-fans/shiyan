@@ -11,27 +11,38 @@ LDFLAGS+= -L../wf_lib/include/ -lwf
 #LDFLAGS+= -L../ghttp_lib/include/ -lghttp
 LD_GHTTP= -L../ghttp_lib/include/ -lghttp
 
-TCPSCAN=tcpscan
-UDPSCAN=udpscan
-ICMPSCAN=icmpscan
-SSDPSCAN=ssdpscan
+SOURCES = $(wildcard *.c)
+OBJS = $(patsubst %.c,%.o,$(SOURCES))
 
-all:$(TCPSCAN) $(UDPSCAN) $(ICMPSCAN) $(SSDPSCAN)
+TAG=netscan
 
-$(TCPSCAN):tcpscan.o net_packet.o netscan.o
+.PHONY: $(TAG)
+
+$(TAG):$(OBJS)
 	$(CC) $^ $(LDFLAGS) -o $@
 
-$(UDPSCAN):udpscan.o net_packet.o netscan.o
-	$(CC) $^ $(LDFLAGS) -o $@
+#TCPSCAN=tcpscan
+#UDPSCAN=udpscan
+#ICMPSCAN=icmpscan
+#SSDPSCAN=ssdpscan
 
-$(ICMPSCAN):icmpscan.o net_packet.o netscan.o
-	$(CC) $^ $(LDFLAGS) -o $@
+#all:$(TCPSCAN) $(UDPSCAN) $(ICMPSCAN) $(SSDPSCAN)
 
-$(SSDPSCAN):ssdpscan.o
-	$(CC) $^ $(LDFLAGS) -o $@
+#$(TCPSCAN):tcpscan.o net_packet.o netscan.o
+#	$(CC) $^ $(LDFLAGS) -o $@
+
+#$(UDPSCAN):udpscan.o net_packet.o netscan.o
+#	$(CC) $^ $(LDFLAGS) -o $@
+
+#$(ICMPSCAN):icmpscan.o net_packet.o netscan.o
+#	$(CC) $^ $(LDFLAGS) -o $@
+
+#$(SSDPSCAN):ssdpscan.o
+#	$(CC) $^ $(LDFLAGS) -o $@
 
 %.o:%.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
 clean:
-	$(RM) -f *.o $(TCPSCAN) $(UDPSCAN) $(ICMPSCAN) $(SSDPSCAN)
+	$(RM) -f *.o $(TAG)
+#	$(RM) -f *.o $(TCPSCAN) $(UDPSCAN) $(ICMPSCAN) $(SSDPSCAN)

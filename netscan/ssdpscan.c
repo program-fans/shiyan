@@ -223,9 +223,19 @@ int ssdp_scan_proc(struct ssdpscan_t *ssdp_scan)
 	return 0;
 }
 
+void ssdpscan_usage()
+{
+	fprintf(stderr, "ssdpscan usage: \n"
+		"ssdpscan [-t listen timeout] [-d discover timeout] \n"
+		);
+}
 
 struct ssdpscan_t g_sddp_scan;
+#if 1
+int ssdpscan_main(int argc, char **argv)
+#else
 int main(int argc, char **argv)
+#endif
 {
 	int ch;
 	

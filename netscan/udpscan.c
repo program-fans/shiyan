@@ -146,18 +146,34 @@ static int uscan_icmp_proc(struct udpscan_t *uscan)
 	return 0;
 }
 
+void udpscan_usage()
+{
+	fprintf(stderr, "udpscan usage: \n"
+		"udpscan <-ip ip> <-port port> [-seq ascend\descend\random] \n"
+		);
+}
+
 
 struct udpscan_t g_uscan;
 struct netscan_result g_result;
+#if 1
+int udpscan_main(int argc, char **argv)
+#else
 int main(int argc, char **argv)
+#endif
 {
 	int i=-1;
 	unsigned long start_time = 0, end_time = 0;
 	pid_t child = 0;
-	
-	get_system_uptime(&start_time);
 
 	memset(&g_uscan, 0, sizeof(g_uscan));
+#if 1
+	if(netscan_arg_parse(argc, argv, NULL, NULL, &g_uscan.scan) < 0){
+		udpscan_usage();
+		return 1;
+	}
+	netscan_t_print(&g_uscan.scan);
+#else
 	ip_atoh("192.168.0.1", &g_uscan.scan.saddr);
 	ip_atoh("192.168.0.2", &g_uscan.scan.eaddr);
 	//ip_atoh("192.168.0.3", &g_tscan.scan.eaddr);
@@ -174,11 +190,9 @@ int main(int argc, char **argv)
 	g_uscan.scan.port[++i] = 49155;
 	g_uscan.scan.port_num = 6;
 	set_bit(SCAN_FLAG_PORT_DISCONTINUE, &g_uscan.scan.flags);
-
-	if(netscan_port_random(&g_uscan.scan) < 0){
-		ERROR("netscan_port_random error \n");
-		return -1;
-	}
+	set_bit(SCAN_FLAG_RANDOM, &g_uscan.scan.flags);
+#endif
+	get_system_uptime(&start_time);
 
 	child = fork();
 	if(child == 0){

@@ -74,99 +74,6 @@ char *get_argv_next(int argc, char **argv, int *idx, char *key, int have_value)
 
 char *wf_argv[1024] = {0};
 int wf_argc = 0;
-int arg_parse_set_value(struct arg_parse_t *p_arg, char *data)
-{
-	int ret = 0;
-	switch(p_arg->value_type){
-	case ARG_VALUE_TYPE_CHAR:
-		if(data)
-			ret = sscanf(data, "%c", (char *)(p_arg->value));
-		else
-			*((char *)(p_arg->value)) = (char)(p_arg->set_number);
-		break;
-	case ARG_VALUE_TYPE_INT:
-		if(data)
-			ret = sscanf(data, "%d", (int *)(p_arg->value));
-		else
-			*((int *)(p_arg->value)) = (int)(p_arg->set_number);
-		break;
-	case ARG_VALUE_TYPE_LONG:
-		if(data)
-			ret = sscanf(data, "%ld", (long *)(p_arg->value));
-		else
-			*((long *)(p_arg->value)) = (long)(p_arg->set_number);
-		break;
-	case ARG_VALUE_TYPE_LONGLONG:
-		if(data)
-			ret = sscanf(data, "%lld", (long long int *)(p_arg->value));
-		else
-			*((long long int *)(p_arg->value)) = p_arg->set_number;
-		break;
-	case ARG_VALUE_TYPE_STRING:
-		if(data)
-			ret = sscanf(data, "%s", (char *)(p_arg->value));
- 		else if(p_arg->set_string)
-			strcpy((char *)(p_arg->value), p_arg->set_string);
-		break;
-	default:
-		break;
-	}
-
-	if(data)
-		return ret == 1 ? 0 : -1;
-	else
-		return 0;
-}
-
-int arg_parse(int argc, char **argv, struct arg_parse_t *arg_plist)
-{
-	int i = 0, ret = 0, is_match = 0;
-	struct arg_parse_t *p_arg = NULL;
-
-	wf_argv[0] = argv[0];
-	wf_argc = 1;
-
-	while(argv[++i]){
-		is_match = 0;
-		p_arg = arg_plist;
-		while(p_arg && p_arg->key){
-			if((p_arg->arg_idx > 0) && (i != p_arg->arg_idx)){
-				++p_arg;
-				continue;
-			}
-			if(strcmp(argv[i], p_arg->key) == 0){
-				is_match = 1;
-				if(p_arg->has_arg){
-					if(argv[++i]){
-						if(p_arg->arg_deal)
-							ret = p_arg->arg_deal(argv[i-1], argv[i], p_arg->value);
-						else if(p_arg->value_type > ARG_VALUE_TYPE_NONE && p_arg->value)
-							ret = arg_parse_set_value(p_arg, argv[i]);
-					}
-				}
-				else{
-					if(p_arg->value_type > ARG_VALUE_TYPE_NONE && p_arg->value){
-						arg_parse_set_value(p_arg, NULL);
-					}
-					else if(p_arg->arg_deal)
-						ret = p_arg->arg_deal(argv[i], NULL, NULL);
-				}
-			}
-			if(ret < 0)
-				return ret;
-			++p_arg;
-		}
-		if(!is_match)
-			wf_argv[wf_argc++] = argv[i];
-	}
-	return 0;
-}
-
-int arg_deal_default(char *arg_key, char *arg_value, void *value)
-{
-	*((char **)value) = arg_value;
-	return 0;
-}
 
 static char asc_buf[10240] = {'\0'};
 static struct threadpool* thread_pool = NULL;
@@ -1685,7 +1592,7 @@ int cmd_text(int argc, char **argv)
 	int i = 0, ret = 0;
 	char *file = NULL;
 	
-	ret = arg_parse(argc, argv, cmd_text_arg_list);
+	ret = arg_parse(argc, argv, cmd_text_arg_list, &wf_argc, wf_argv);
 	if(ret < 0){
 		printf("parse arg failed \n");
 		return ret;
@@ -1933,13 +1840,6 @@ static int cmd_qqrobot(int argc, char **argv)
 // ************************************   qqrobot     *********** end
 
 
-// ************************************   tftp
-extern void tftpc_usage();
-extern int cmd_tftpc(int argc, char **argv);
-
-// ************************************   tftp     *********** end
-
-
 // ************************************   usleep
 void usleep_usage()
 {
@@ -1964,6 +1864,45 @@ int cmd_usleep(int argc, char **argv)
 
 // ************************************   usleep     *********** end
 
+
+
+#if 1
+int wftool_cmd_init_call(int argc, char **argv, struct child_cmd_t *pcmd)
+{
+	strcpy(print_name, pcmd->cmd);
+	return 0;
+}
+
+// ************************************   tftp
+extern void tftpc_usage();
+extern int cmd_tftpc(int argc, char **argv);
+
+// ************************************   tftp     *********** end
+
+struct child_cmd_t cmd_list[] = {
+	{"ntorn", wftool_cmd_init_call, txt_usage, cmd_ntorn},
+	{"rnton", wftool_cmd_init_call, txt_usage, cmd_rnton},
+	{"a1torn", wftool_cmd_init_call, txt_usage, cmd_a1torn},
+	{"udp", wftool_cmd_init_call, udp_usage, cmd_udp},
+	{"tcp", wftool_cmd_init_call, tcp_usage, cmd_tcp},
+	{"gethost", wftool_cmd_init_call, gethost_usage, cmd_gethost},
+	{"asc", wftool_cmd_init_call, asc_usage, cmd_asc},
+	{"wol", wftool_cmd_init_call, wol_usage, cmd_wol},
+	{"time", wftool_cmd_init_call, time_usage, cmd_time},
+	{"json", wftool_cmd_init_call, json_usage, cmd_json},
+	{"exeindir", wftool_cmd_init_call, exeindir_usage, cmd_exeindir},
+	{"text", wftool_cmd_init_call, text_usage, cmd_text},
+	{"qqrobot", wftool_cmd_init_call, NULL, cmd_qqrobot},
+	{"tftpc", wftool_cmd_init_call, tftpc_usage, cmd_tftpc},
+	{"usleep", wftool_cmd_init_call, usleep_usage, cmd_usleep},
+};
+
+int main(int argc, char **argv)
+{
+	return wf_child_cmd_mini(cmd_list, "wftool");
+}
+
+#else
 struct cmd_t
 {
 	char cmd[16];
@@ -1972,23 +1911,24 @@ struct cmd_t
 	int (*cmd_call)(int argc, char **argv);
 };
 
-struct cmd_t cmd_list[] = {
-	{"ntorn", NULL, txt_usage, cmd_ntorn},
-	{"rnton", NULL, txt_usage, cmd_rnton},
-	{"a1torn", NULL, txt_usage, cmd_a1torn},
-	{"udp", NULL, udp_usage, cmd_udp},
-	{"tcp", NULL, tcp_usage, cmd_tcp},
-	{"gethost", NULL, gethost_usage, cmd_gethost},
-	{"asc", NULL, asc_usage, cmd_asc},
-	{"wol", NULL, wol_usage, cmd_wol},
-	{"time", NULL, time_usage, cmd_time},
-	{"json", NULL, json_usage, cmd_json},
-	{"exeindir", NULL, exeindir_usage, cmd_exeindir},
-	{"text", NULL, text_usage, cmd_text},
-	{"qqrobot", NULL, NULL, cmd_qqrobot},
-	{"tftpc", NULL, tftpc_usage, cmd_tftpc},
-	{"usleep", NULL, usleep_usage, cmd_usleep},
+struct child_cmd_t cmd_list[] = {
+	{"ntorn", wftool_cmd_init_call, txt_usage, cmd_ntorn},
+	{"rnton", wftool_cmd_init_call, txt_usage, cmd_rnton},
+	{"a1torn", wftool_cmd_init_call, txt_usage, cmd_a1torn},
+	{"udp", wftool_cmd_init_call, udp_usage, cmd_udp},
+	{"tcp", wftool_cmd_init_call, tcp_usage, cmd_tcp},
+	{"gethost", wftool_cmd_init_call, gethost_usage, cmd_gethost},
+	{"asc", wftool_cmd_init_call, asc_usage, cmd_asc},
+	{"wol", wftool_cmd_init_call, wol_usage, cmd_wol},
+	{"time", wftool_cmd_init_call, time_usage, cmd_time},
+	{"json", wftool_cmd_init_call, json_usage, cmd_json},
+	{"exeindir", wftool_cmd_init_call, exeindir_usage, cmd_exeindir},
+	{"text", wftool_cmd_init_call, text_usage, cmd_text},
+	{"qqrobot", wftool_cmd_init_call, NULL, cmd_qqrobot},
+	{"tftpc", wftool_cmd_init_call, tftpc_usage, cmd_tftpc},
+	{"usleep", wftool_cmd_init_call, usleep_usage, cmd_usleep},
 };
+
 
 struct cmd_t *find_cmd(char *cmd)
 {
@@ -2101,4 +2041,4 @@ FIND_CMD:
 
 	return ret;
 }
-
+#endif

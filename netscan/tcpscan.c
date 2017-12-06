@@ -313,7 +313,7 @@ int tcpscan_done(struct tcpscan_t *tscan)
 void tcpscan_usage()
 {
 	fprintf(stderr, "tcpscan usage: \n"
-		"tcpscan <-ip ip> <-port port> [-seq ascend\descend\random] [-syn] \n"
+		"tcpscan <-ip ip> <-port port> [-seq ascend\\descend\\random] [-syn] \n"
 		);
 }
 

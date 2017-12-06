@@ -149,7 +149,7 @@ static int uscan_icmp_proc(struct udpscan_t *uscan)
 void udpscan_usage()
 {
 	fprintf(stderr, "udpscan usage: \n"
-		"udpscan <-ip ip> <-port port> [-seq ascend\descend\random] \n"
+		"udpscan <-ip ip> <-port port> [-seq ascend\\descend\\random] \n"
 		);
 }
 
@@ -162,7 +162,6 @@ int udpscan_main(int argc, char **argv)
 int main(int argc, char **argv)
 #endif
 {
-	int i=-1;
 	unsigned long start_time = 0, end_time = 0;
 	pid_t child = 0;
 
@@ -182,6 +181,7 @@ int main(int argc, char **argv)
 	if(!g_uscan.scan.port){
 		return -1;
 	}
+	int i=-1;
 	g_uscan.scan.port[++i] = 80;
 	g_uscan.scan.port[++i] = 83;
 	g_uscan.scan.port[++i] = 49152;

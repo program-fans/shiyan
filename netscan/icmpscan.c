@@ -150,8 +150,8 @@ static int icmpscan_recv_proc(struct icmpscan_t *icmpscan)
 
 void icmpscan_usage()
 {
-	fprintf(stderr, "udpscan usage: \n"
-		"udpscan <-ip ip> \n"
+	fprintf(stderr, "icmpscan usage: \n"
+		"icmpscan <-ip ip> \n"
 		);
 }
 

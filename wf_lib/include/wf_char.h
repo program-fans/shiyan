@@ -14,6 +14,7 @@ extern struct wf_buffer *wf_buffer_remalloc(struct wf_buffer *buffer, unsigned i
 extern struct wf_buffer *wf_buffer_set(struct wf_buffer *buffer, char *data, int size);
 extern struct wf_buffer *wf_buffer_cpy(struct wf_buffer *dst, struct wf_buffer *src);
 extern struct wf_buffer *wf_buffer_cat(struct wf_buffer *dst, struct wf_buffer *src);
+extern struct wf_buffer *wf_buffer_append(struct wf_buffer *dst, void *src, int size);
 
 
 extern char *get_row(char *linestr, int index, char *dst, unsigned int size);

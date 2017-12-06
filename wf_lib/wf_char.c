@@ -117,6 +117,15 @@ struct wf_buffer *wf_buffer_cat(struct wf_buffer *dst, struct wf_buffer *src)
 	return dst;
 }
 
+struct wf_buffer *wf_buffer_append(struct wf_buffer *dst, void *src, int size)
+{
+	struct wf_buffer tmp;
+
+	tmp->data = src;
+	tmp->len = size;
+	return wf_buffer_cat(dst, &tmp);
+}
+
 
 
 char *get_row(char *linestr, int index, char *dst, unsigned int size)

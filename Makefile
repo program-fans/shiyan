@@ -1,12 +1,17 @@
 #kernel modules
-app_list = modules
+#app_list = modules
 
 #libs
 app_list += wf_lib
 app_list += ghttp_lib
 app_list += mxml_lib
 
+#programs and libs
+app_list += bbwget
+app_list += wfping
+
 #programs
+app_list += wftool
 app_list += sock_raw
 app_list += admin
 app_list += arp

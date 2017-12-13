@@ -1,7 +1,7 @@
 
 CC=gcc
 LIB=../wf_lib/lib/libwf.a -lpthread -lm
-GLIB=../ghttp_lib/include/libghttp.a
+GLIB=../ghttp_lib/lib/libghttp.a
 
 INCLUDE=-I../wf_lib/include/
 GINCLUDE=-I../ghttp_lib/include/

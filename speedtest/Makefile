@@ -21,4 +21,4 @@ $(TAG):$(obj)
 	$(CC) -c $(CFLAGS) $< -o $@
 
 clean:
-	rm -f *.o $(SPD)
+	rm -f *.o $(TAG)

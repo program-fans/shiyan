@@ -7,9 +7,7 @@ CFLAGS+= -I../wf_lib/include/
 CFLAGS+= -I../ghttp_lib/include/
 
 LDFLAGS= -lpthread -lm
-LDFLAGS+= -L../wf_lib/include/ -lwf
-#LDFLAGS+= -L../ghttp_lib/include/ -lghttp
-LD_GHTTP= -L../ghttp_lib/include/ -lghttp
+LDFLAGS+= ../wf_lib/lib/libwf.a
 
 SOURCES = $(wildcard *.c)
 OBJS = $(patsubst %.c,%.o,$(SOURCES))

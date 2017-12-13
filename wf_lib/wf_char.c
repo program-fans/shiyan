@@ -121,8 +121,8 @@ struct wf_buffer *wf_buffer_append(struct wf_buffer *dst, void *src, int size)
 {
 	struct wf_buffer tmp;
 
-	tmp->data = src;
-	tmp->len = size;
+	tmp.data = src;
+	tmp.len = size;
 	return wf_buffer_cat(dst, &tmp);
 }
 

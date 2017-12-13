@@ -3,8 +3,8 @@ RM=rm
 CC=gcc
 
 LDFLAGS= -lpthread
-LDFLAGS+= -L../wf_lib/include/ -lwf -lm
-LDFLAGS+= -L../ghttp_lib/include/ -lghttp
+LDFLAGS+= ../wf_lib/lib/libwf.a -lm
+LDFLAGS+= ../ghttp_lib/lib/libghttp.a
 
 CFLAGS= -I../wf_lib/include/
 CFLAGS+= -I../ghttp_lib/include/

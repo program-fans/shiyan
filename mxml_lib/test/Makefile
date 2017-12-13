@@ -10,7 +10,7 @@ TARGET=testmxml
 all: $(TARGET)
 
 $(TARGET): $(src)
-	$(CC) $^ -o $@ -I../include/ -L../include/ -lmxml -lpthread
+	$(CC) $^ -o $@ -I../include/ -L../lib/ -lmxml -lpthread
 
 test:
 	./$(TARGET) test.xml out.xml

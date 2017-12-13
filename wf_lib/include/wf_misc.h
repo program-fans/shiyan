@@ -197,6 +197,7 @@ struct arg_parse_t
 	long long int set_number;
 	char *set_string;
 };
+#define arg_parse_t_init_null {NULL, NULL, 0, 0, NULL, 0, 0, NULL},
 extern int arg_parse(int argc, char **argv, struct arg_parse_t *arg_plist, int *new_argc, char **new_argv);
 extern int arg_deal_default(char *arg_key, char *arg_value, int value_type, void *value);
 

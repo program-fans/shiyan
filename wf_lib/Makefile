@@ -2,6 +2,7 @@
 MAKELIB=ar
 CC=cc
 RM=rm
+MV=mv
 
 CFLAGS= -Wall -Iinclude/
 TARGET=libwf
@@ -16,12 +17,14 @@ all: $(TARGET).a $(TARGET).so
 
 $(TARGET).a: $(OBJ)
 	$(MAKELIB) -rv $@ $^
-	cp -f $(TARGET).a include/
+	$(MV) -f $@ lib/
+
 $(TARGET).so: $(OBJ)
 	$(CC) -o $@ -fPIC -shared $^
-#	cp -f $(TARGET).so include/
+	$(MV) -f $@ lib/
+
 %.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
 clean:
-	$(RM) -f *.o $(TARGET).a $(TARGET).so
+	$(RM) -f *.o lib/* $(TARGET).a $(TARGET).so

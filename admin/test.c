@@ -7,6 +7,7 @@
 
 #include "libwf.h"
 #include "ghttp.h"
+#include "bb_wget_thread.h"
 
 static unsigned char globel_buf[4096] = {0};
 
@@ -524,7 +525,8 @@ int net_test(int argc, char **argv)
 	char def_if[] = "eth0", *ifname = def_if;
 	char ip[16] = {'\0'};
 	unsigned char mac[6] = {0};
-	int ret = 0;
+	char dnsserver[5][16] = {{'\0'}};
+	int ret = 0, i = 0;
 
 	if(argv[2])
 		ifname = argv[2];
@@ -556,9 +558,67 @@ int net_test(int argc, char **argv)
 	ret = arp_mac2ip(mac, ip, 0x6);
 	printf("arp_mac2ip[%d]: %s \n", ret, ip);
 
+	ret = get_dnsserver_by_resolv_conf(NULL, dnsserver, 5);
+	printf("get_dnsserver_by_resolv_conf: %d \n", ret);
+	for(i=0; i<ret; i++)
+		printf("nameserver  %s\n", dnsserver[i]);
+
+	ret = wf_lookup_dns("masdk.3g.qq.com", ip, NULL, 5);
+	printf("wf_lookup_dns: masdk.3g.qq.com --> %s \n", ret == 0 ? "failed" : ip);
+
 	return 0;
 }
 
+int bbwget_test(int argc, char **argv)
+{
+	bb_wget_thread_t **p_bbwget = NULL;
+//	bb_wget_lib_t *p_setlib = NULL;
+	int url_num = argc - 2, i = 0;
+	char **url_arg = argv + 2;
+	char *bbwget_argv[10];
+	int bbwget_argc = 0;
+	
+	if(url_num <= 0){
+		printf("no url \n");
+		return 0;
+	}
+
+	p_bbwget = (bb_wget_thread_t **)malloc(sizeof(bb_wget_thread_t *) * url_num);
+	if(!p_bbwget){
+		printf("malloc error \n");
+		return -1;
+	}
+/*
+	p_setlib = (bb_wget_lib_t *)malloc(sizeof(bb_wget_lib_t) * url_num);
+	if(!p_setlib){
+		printf("malloc error \n");
+		free(p_bbwget);
+		return -1;
+	}
+	memset(p_setlib, 0, sizeof(bb_wget_lib_t));
+
+	for(i=1; i<url_num; i++)
+		memcpy(&p_setlib[i], &p_setlib[0], sizeof(bb_wget_lib_t));
+*/
+
+	bbwget_argv[bbwget_argc++] = "bbwget";
+	bbwget_argv[bbwget_argc++] = "-O";
+	bbwget_argv[bbwget_argc++] = "/dev/null";
+	for(i=0; i<url_num; i++){
+		if(*url_arg == NULL)
+			break;
+		bbwget_argv[bbwget_argc] = *url_arg;
+//		p_bbwget[i] = lib_bbwget_thread(&p_setlib[i], bbwget_argc, bbwget_argv, NULL);
+		p_bbwget[i] = lib_bbwget_thread(NULL, bbwget_argc+1, bbwget_argv, NULL);
+		printf("start lib_bbwget_thread for [%s] %s \n", *url_arg, p_bbwget[i] ? "ok" : "failed");
+	}
+	
+	for(i=0; i<url_num; i++)
+		lib_bbwget_thread_join_destroy(p_bbwget[i]);
+	free(p_bbwget);
+
+	return 0;
+}
 
 void testtest()
 {
@@ -609,6 +669,8 @@ int main(int argc, char **argv)
 			ret = time_test(argc, argv);
 		else if( strcmp(argv[1], "net") == 0 )
 			ret = net_test(argc, argv);
+		else if( strcmp(argv[1], "bbwget") == 0 )
+			ret = bbwget_test(argc, argv);
 		else
 			test();
 	}

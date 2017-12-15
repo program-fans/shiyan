@@ -128,185 +128,6 @@ struct wf_buffer *wf_buffer_append(struct wf_buffer *dst, void *src, int size)
 
 
 
-char *get_row(char *linestr, int index, char *dst, unsigned int size)
-{
-	int idx = -1;
-	char *str = linestr, *node = NULL, *tmp = NULL;
-	unsigned int copy_len = 0;
-
-	if(!linestr || index < 0 || !dst || !size)
-		return NULL;
-//	printf("get_row linestr: %s \n", linestr);
-	while(str)
-	{
-		node = str_skip_blank(str);
-		++idx;
-		if(node){
-			tmp = str_find_blank(node);
-			str = tmp;
-		}
-		else
-			break;
-		if(idx == index){
-			if(node){
-				if(tmp){
-					copy_len = tmp - node;
-					if(copy_len > size)
-						copy_len = size;
-				}
-				else
-					copy_len = size;
-				strncpy(dst, node, copy_len);
-				dst[copy_len] = '\0';
-//				printf("get_row [idx: %d][len: %d]: %s \n", index, copy_len, dst);
-			}
-			return node;
-		}
-	}
-	return NULL;
-}
-
-char *get_row_int(char *linestr, int index, int *dst, char *fmt)
-{
-	char buf[16] = {0}, *str = NULL;
-
-	str = get_row(linestr, index, buf, sizeof(buf)-1);
-	if(str){
-		sscanf(buf, fmt, dst);
-	}
-	return str;
-}
-
-static unsigned char url_to_hex(unsigned char code)
-{
-	static char hex[] = "0123456789abcdef";
-
-	return hex[code & 0x0F];
-}
-
-int urlencode( unsigned char *src, unsigned char *dest )
-{
-#define char_to_hex(x)	(x > 9 ? x + 55: x + 48)
-	char ch;
-	int  len = 0;
-
-	while (*src)
-	{
-		ch = (char)*src;
-		if (*src == ' ')
-		{
-			*dest++ = '+';
-		}
-		else if( (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || 
-			(ch >= '0' && ch <= '9') || strchr("-_.!~*'()", ch) )
-		{
-			*dest++ = *src;
-		}
-		else
-		{
-			*dest++ = '%';
-		#if 0
-			*dest++ = char_to_hex( (unsigned char)(ch >> 4) );
-			*dest++ = char_to_hex( (unsigned char)(ch & 0x0F) );
-		#else
-			*dest++ = url_to_hex( (unsigned char)(ch >> 4) );
-			*dest++ = url_to_hex( (unsigned char)(ch & 0x0F) );
-		#endif
-		} 
-		++src;
-		++len;
-	}
-	*dest = 0;
-	return len;
-}
-
-char *str_skip_blank(char *str)
-{
-	char *s = str;
-	if(s == NULL)
-		return NULL;
-	while(*s != '\0')
-	{
-		if( *s == ' ' || *s == '\t' )
-			++s;
-		else
-			return s;
-	}
-	return NULL;
-}
-
-char *str_find_blank(char *str)
-{
-	char *s = str;
-	if(s == NULL)
-		return NULL;
-	while(*s != '\0')
-	{
-		if( *s == ' ' || *s == '\t' )
-			return s;
-		else
-			++s;
-	}
-	return NULL;
-}
-
-int str_replace(char *str, char *substr, char *repace, char *out)
-{
-	char *cur = str, *find = NULL, *pout = out;
-	int num = 0, sublen, replen;
-	unsigned int len;
-	
-	if(!substr || !repace)
-		goto CPY;
-	
-	sublen = strlen(substr);
-	replen = strlen(repace);
-	if(sublen <= 0 || replen <= 0)
-		goto CPY;
-	
-	while(*cur != '\0')
-	{
-		find = strstr(cur, substr);
-		if(find){
-			++num;
-			len = (unsigned int)(find-cur);
-			memcpy(pout, cur, len);
-			pout += len;
-			memcpy(pout, repace, replen);
-			pout += replen;
-			*pout = '\0';
-			cur = find + sublen;
-		}
-		else{
-			strcpy(pout, cur);
-			break;
-		}
-	}
-
-	return num;
-
-CPY:
-	if(str && out){
-		strcpy(out, str);
-		return 0;
-	}
-	else
-		return -1;
-}
-
-int str_asc_num(char *str, int size)
-{
-	int i=0, n=0;
-
-	for(i=0; i<size; i++)
-	{
-		if( str[i] >= 1 && str[i] <= 127 )
-			++n;
-	}
-
-	return n;
-}
-
 char *time2str(long tv, char *out)
 {
 	time_t t = tv;
@@ -408,6 +229,77 @@ char *time2str_pformat(long tv, char *out, char *fmt, int max)
 	return time2str_f(tv, out, fmt, max, NULL);
 }
 
+
+static unsigned char url_to_hex(unsigned char code)
+{
+	static char hex[] = "0123456789abcdef";
+
+	return hex[code & 0x0F];
+}
+
+int urlencode( unsigned char *src, unsigned char *dest )
+{
+#define char_to_hex(x)	(x > 9 ? x + 55: x + 48)
+	char ch;
+	int  len = 0;
+
+	while (*src)
+	{
+		ch = (char)*src;
+		if (*src == ' ')
+		{
+			*dest++ = '+';
+		}
+		else if( (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || 
+			(ch >= '0' && ch <= '9') || strchr("-_.!~*'()", ch) )
+		{
+			*dest++ = *src;
+		}
+		else
+		{
+			*dest++ = '%';
+		#if 0
+			*dest++ = char_to_hex( (unsigned char)(ch >> 4) );
+			*dest++ = char_to_hex( (unsigned char)(ch & 0x0F) );
+		#else
+			*dest++ = url_to_hex( (unsigned char)(ch >> 4) );
+			*dest++ = url_to_hex( (unsigned char)(ch & 0x0F) );
+		#endif
+		} 
+		++src;
+		++len;
+	}
+	*dest = 0;
+	return len;
+}
+
+
+int str2mac(char *str, unsigned char *mac)
+{
+	unsigned int m[6];
+	int i;
+	if(strstr((char*)str, ":"))
+	{
+		sscanf((char*)str, "%02x:%02x:%02x:%02x:%02x:%02x", &m[0], &m[1], &m[2], &m[3], &m[4], &m[5]);
+	}
+	else if(strstr((char*)str, "-"))
+	{
+		sscanf((char*)str, "%02x-%02x-%02x-%02x-%02x-%02x", &m[0], &m[1], &m[2], &m[3], &m[4], &m[5]);
+	}
+	else if(strlen(str) == 12)
+	{
+		sscanf((char*)str, "%02x%02x%02x%02x%02x%02x", &m[0], &m[1], &m[2], &m[3], &m[4], &m[5]);
+	}
+	else
+		return -1;
+
+	for(i = 0; i < 6; i++)
+		mac[i] = (char)m[i];
+
+	return 0;
+}
+
+
 void wipe_off_CRLF_inEnd(char *str)
 {
 #define CRLF_char(c)	( c == '\r' || c == '\n' )
@@ -442,31 +334,93 @@ void wipe_off_blank(char *str_in, char *str_out, int out_size)
 	str_out[j] = '\0';
 }
 
-int str2mac(char *str, unsigned char *mac)
+
+char *str_skip_blank(char *str)
 {
-	unsigned int m[6];
-	int i;
-	if(strstr((char*)str, ":"))
+	char *s = str;
+	if(s == NULL)
+		return NULL;
+	while(*s != '\0')
 	{
-		sscanf((char*)str, "%02x:%02x:%02x:%02x:%02x:%02x", &m[0], &m[1], &m[2], &m[3], &m[4], &m[5]);
+		if( *s == ' ' || *s == '\t' )
+			++s;
+		else
+			return s;
 	}
-	else if(strstr((char*)str, "-"))
+	return NULL;
+}
+
+char *str_find_blank(char *str)
+{
+	char *s = str;
+	if(s == NULL)
+		return NULL;
+	while(*s != '\0')
 	{
-		sscanf((char*)str, "%02x-%02x-%02x-%02x-%02x-%02x", &m[0], &m[1], &m[2], &m[3], &m[4], &m[5]);
+		if( *s == ' ' || *s == '\t' )
+			return s;
+		else
+			++s;
 	}
-	else if(strlen(str) == 12)
+	return NULL;
+}
+
+int str_replace(char *str, char *substr, char *repace, char *out)
+{
+	char *cur = str, *find = NULL, *pout = out;
+	int num = 0, sublen, replen;
+	unsigned int len;
+	
+	if(!substr || !repace)
+		goto CPY;
+	
+	sublen = strlen(substr);
+	replen = strlen(repace);
+	if(sublen <= 0 || replen <= 0)
+		goto CPY;
+	
+	while(*cur != '\0')
 	{
-		sscanf((char*)str, "%02x%02x%02x%02x%02x%02x", &m[0], &m[1], &m[2], &m[3], &m[4], &m[5]);
+		find = strstr(cur, substr);
+		if(find){
+			++num;
+			len = (unsigned int)(find-cur);
+			memcpy(pout, cur, len);
+			pout += len;
+			memcpy(pout, repace, replen);
+			pout += replen;
+			*pout = '\0';
+			cur = find + sublen;
+		}
+		else{
+			strcpy(pout, cur);
+			break;
+		}
+	}
+
+	return num;
+
+CPY:
+	if(str && out){
+		strcpy(out, str);
+		return 0;
 	}
 	else
 		return -1;
-
-	for(i = 0; i < 6; i++)
-		mac[i] = (char)m[i];
-
-	return 0;
 }
 
+int str_asc_num(char *str, int size)
+{
+	int i=0, n=0;
+
+	for(i=0; i<size; i++)
+	{
+		if( str[i] >= 1 && str[i] <= 127 )
+			++n;
+	}
+
+	return n;
+}
 
 
 char *strupr_2(char *str)

@@ -67,17 +67,15 @@ int turn_init()
 	if( inet_aton(broadip, (struct in_addr *)&broad_ip) == 0 )
 		return -1;
 	printf("host ip: %s     broad ip: %s \n", ip, broadip);
-	
-	if( getMAC_byCmd(mac) == 0 )
+
+	if(get_netdev_mac("eth0", host_mac) < 0)
 		return -1;
-	str2mac(mac, host_mac);
-	printf("host mac: %s \n", mac);
-		
-	if( getGWMAC_byCmd(gwip, gwmac) <= 0 )
+	printf("host mac: "MAC_FORMAT_STRING" \n", MAC_FORMAT_SPLIT(host_mac));
+
+	if(get_host_gateway(gwip, &gwIp, "eth0") < 0)
 		return -1;
-	if( inet_aton(gwip, (struct in_addr *)&gwIp) == 0 )
+	if(arp_ip2mac(gwip, gwMac, 0x6) < 0)
 		return -1;
-	str2mac(gwmac, gwMac);
 	printf("gw ip: %s  gw mac: %s  \n", gwip, gwmac);
 
 	if( init_turn_sock() < 0 )

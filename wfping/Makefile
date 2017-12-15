@@ -21,10 +21,12 @@ all: $(TAG) $(LIB).a $(LIB).so
 
 $(LIB).a: $(LIB_OBJS)
 	$(MAKELIB) -rv $@ $^
+	test -d lib/ || mkdir -p lib
 	$(MV) -f $@ lib/
 
 $(LIB).so: $(LIB_OBJS)
 	$(CC) -o $@ -fPIC -shared $^
+	test -d lib/ || mkdir -p lib
 	$(MV) -f $@ lib/
 
 $(LIB_OBJS):%.lib.o:%.c

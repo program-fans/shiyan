@@ -15,10 +15,12 @@ all: $(TARGET).a $(TARGET).so
 
 $(TARGET).a: $(obj)
 	$(MAKELIB) -rv $@ $^
+	test -d lib/ || mkdir -p lib
 	$(MV) -f $@ lib/
 
 $(TARGET).so: $(obj)
 	$(CC) -o $@ -fPIC -shared $^
+	test -d lib/ || mkdir -p lib
 	$(MV) -f $@ lib/
 
 %.o: %.c

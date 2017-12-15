@@ -17,17 +17,6 @@ extern struct wf_buffer *wf_buffer_cat(struct wf_buffer *dst, struct wf_buffer *
 extern struct wf_buffer *wf_buffer_append(struct wf_buffer *dst, void *src, int size);
 
 
-extern char *get_row(char *linestr, int index, char *dst, unsigned int size);
-extern char *get_row_int(char *linestr, int index, int *dst, char *fmt);
-
-extern int urlencode( unsigned char *src, unsigned char *dest );
-
-extern char *str_skip_blank(char *str);
-extern char *str_find_blank(char *str);
-extern int str_replace(char *str, char *substr, char *repace, char *out);
-
-extern int str_asc_num(char *str, int size);
-
 
 // 0 <= max <= 128
 extern int time2str_format(long tv, char *out, char *fmt, int max);
@@ -36,10 +25,21 @@ extern char *time2str_pformat(long tv, char *out, char *fmt, int max);
 extern char *time2str(long tv, char *out);
 extern char *timenow2str(char *out);
 
+
+
+extern int urlencode(unsigned char *src, unsigned char *dest);
+
+extern int str2mac(char *str, unsigned char *mac);
+
+
 extern void wipe_off_CRLF_inEnd(char *str);
 extern void wipe_off_blank(char *str_in, char *str_out, int out_size);
 
-extern int str2mac(char *str, unsigned char *mac);
+
+extern char *str_skip_blank(char *str);
+extern char *str_find_blank(char *str);
+extern int str_replace(char *str, char *substr, char *repace, char *out);
+extern int str_asc_num(char *str, int size);
 
 
 // only can be used array copy, dst must be array ptr

@@ -163,7 +163,15 @@ static int ftpcmd(char *s1, char *s2, FILE *fp, char *buf);
 
 #ifdef LIB_BBWGET
 #undef CONFIG_FEATURE_WGET_STATUSBAR
+
+#ifdef LIB_BBWGET_FOR_THREAD
+#undef PTHREAD_CANCEL_ENABLE
+#define NOT_USE_PTHREAD_CREATE_DETACHED
+#include "bb_wget_thread.h"
+#else
 #include "bb_wget_lib.h"
+#endif
+
 typedef struct bbwget_s{
 	long long int filesize;
 	int chunked;
@@ -353,19 +361,13 @@ static int set_sk_drop_data(FILE *fp)
 #endif
 
 #ifdef LIB_BBWGET_FOR_THREAD
-
+#include "wf_net.h"
 static void bb_lookup_host_for_thread(struct sockaddr_in *s_in, const char *host)
 {
-	static pthread_mutex_t	lookup_host_mutex;
-	static int lookup_host_init = 0;
-	
-	if(!lookup_host_init){
-		pthread_mutex_init(&lookup_host_mutex, NULL);
-		lookup_host_init = 1;
-	}
-	pthread_mutex_lock(&lookup_host_mutex);
-	bb_lookup_host(s_in, host);
-	pthread_mutex_unlock(&lookup_host_mutex);
+	printf("[%s] \n", host);
+	memset(s_in, 0, sizeof(struct sockaddr_in));
+	s_in->sin_family = AF_INET;
+	s_in->sin_addr.s_addr = wf_lookup_dns((char *)host, NULL, NULL, 10);
 }
 #else
 static sigjmp_buf wget_jmpbuf;
@@ -461,7 +463,6 @@ int wget_main(
 	}
     if (opt & WGET_OPT_GET_SIZE) {
         just_get_file_size = TRUE;
-		printf("get_size\n");
     }
 #ifdef SIOCSDROPDATA
     if (opt & WGET_OPT_DROP_DATA) {
@@ -566,17 +567,21 @@ int wget_main(
 	 */
 	if (do_continue) {
 	#ifdef LIB_BBWGET
-		if(p_lib_set && p_lib_set->set_beg_range_bytes > 0)
-			beg_range = p_lib_set->set_beg_range_bytes;
-		else if(!p_lib_set->no_output_file){
+		if(p_lib_set){ 
+			if(p_lib_set->set_beg_range_bytes > 0)
+				beg_range = p_lib_set->set_beg_range_bytes;
+			else if(!p_lib_set->no_output_file){
 	#endif
-			if (fstat(fileno(output), &sbuf) < 0)
-				bb_perror_msg_and_die("fstat()");
-			if (sbuf.st_size > 0)
-				beg_range = sbuf.st_size;
+				if (fstat(fileno(output), &sbuf) < 0)
+					bb_perror_msg_and_die("fstat()");
+				if (sbuf.st_size > 0)
+					beg_range = sbuf.st_size;
+				else
+					do_continue = 0;
+	#ifdef LIB_BBWGET
+			}
 			else
 				do_continue = 0;
-	#ifdef LIB_BBWGET
 		}
 		else
 			do_continue = 0;
@@ -1464,6 +1469,14 @@ void lib_bbwget_thread_destroy(bb_wget_thread_t *bbwget_thd, int wait)
 			
 	}
 
+	bb_wget_thread_t_free(bbwget_thd, 1);
+}
+
+void lib_bbwget_thread_join_destroy(bb_wget_thread_t *bbwget_thd)
+{
+	if(!bbwget_thd)
+		return;
+	pthread_join(bbwget_thd->tid, NULL);
 	bb_wget_thread_t_free(bbwget_thd, 1);
 }
 

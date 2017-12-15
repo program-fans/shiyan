@@ -13,6 +13,7 @@
 #include <errno.h>
 
 #include "wf_char.h"
+#include "wf_misc.h"
 #include "wf_net.h"
 
 int get_netdev_mac(const char *ifname, unsigned char *mac)
@@ -297,7 +298,7 @@ int arp_ip2mac(char *ip, unsigned char *mac, unsigned int flag_mask)
 	}
 
 	while(fgets(linebuf, sizeof(linebuf)-1, fp) != NULL){
-		num = sscanf(linebuf, "%s 0x%x 0x%x %100s %100s %100s\n",
+		num = sscanf(linebuf, "%15s 0x%x 0x%x %23s %15s %23s\n",
 			 ip_str, &hw_type, &flags, mac_str, mask_str, dev_str);
 		if(num < 4)
 			continue;
@@ -331,7 +332,7 @@ int arp_mac2ip(unsigned char *mac, char *ip, unsigned int flag_mask)
 	}
 
 	while(fgets(linebuf, sizeof(linebuf)-1, fp) != NULL){
-		num = sscanf(linebuf, "%s 0x%x 0x%x %100s %100s %100s\n",
+		num = sscanf(linebuf, "%15s 0x%x 0x%x %23s %15s %23s\n",
 			 ip_str, &hw_type, &flags, mac_str, mask_str, dev_str);
 		if(num < 4)
 			continue;
@@ -379,90 +380,11 @@ struct route_t
 	unsigned int window;
 	unsigned int irtt;
 };
-/*
-int read_route(struct route_t *rt, int count)
-{
-	FILE *fp = NULL;
-	char linebuf[1024] = {0}, char row[32] = {0};
-	char *str = NULL;
-	int num = -1;
 
-	fp = fopen("/proc/net/route", "r");
-	if(!fp)
-		return -1;
-
-	while(fgets(linebuf, sizeof(linebuf)-1, fp) != NULL)
-	{
-		++num;
-		if(num <= 0)
-			continue;
-		
-		if(num >= count)
-			break;
-		str = get_row(linebuf, 0, rt[num].iface, sizeof(15));
-		if(!str)
-			continue;
-
-		str = get_row(str, 1, row, sizeof(row)-1);
-		if(!str)
-			continue;
-		sscanf(row, "%X", &rt[num].destination);
-		
-		str = get_row(str, 1, row, sizeof(row)-1);
-		if(!str)
-			continue;
-		sscanf(row, "%X", &rt[num].gateway);
-
-		str = get_row(str, 1, row, sizeof(row)-1);
-		if(!str)
-			continue;
-		sscanf(row, "%d", &rt[num].flags);
-
-		str = get_row(str, 1, row, sizeof(row)-1);
-		if(!str)
-			continue;
-		sscanf(row, "%d", &rt[num].refcnt);
-
-		str = get_row(str, 1, row, sizeof(row)-1);
-		if(!str)
-			continue;
-		sscanf(row, "%d", &rt[num].use);
-
-		str = get_row(str, 1, row, sizeof(row)-1);
-		if(!str)
-			continue;
-		sscanf(row, "%d", &rt[num].metric);
-
-		str = get_row(str, 1, row, sizeof(row)-1);
-		if(!str)
-			continue;
-		sscanf(row, "%X", &rt[num].mask);
-
-		str = get_row(str, 1, row, sizeof(row)-1);
-		if(!str)
-			continue;
-		sscanf(row, "%d", &rt[num].mtu);
-
-		str = get_row(str, 1, row, sizeof(row)-1);
-		if(!str)
-			continue;
-		sscanf(row, "%d", &rt[num].window);
-
-		str = get_row(str, 1, row, sizeof(row)-1);
-		if(!str)
-			continue;
-		sscanf(row, "%d", &rt[num].irtt);
-	}
-
-	fclose(fp);
-	return num;
-}
-*/
 int get_host_gateway(char *gateway, unsigned int *gwaddr, char *ifname)
 {
 	FILE *fp = NULL;
-	char linebuf[1024] = {0}, row[32] = {0};
-	char *str = NULL;
+	char linebuf[1024] = {0};
 	int num = -1;
 	struct route_t rt, *selct = NULL;
 	struct in_addr gw;
@@ -748,115 +670,6 @@ int getHostIP(char *prior_if, char *ip, char *broadip, char *ifname)
 	return getHostIP_2(prior_if, ip, broadip, ifname, NULL);
 }
 
-int getIP_byCmd(char *ip)
-{
-	FILE *fp = popen("ifconfig | grep inet | sed -n '1p' | awk '{print $2}' | awk -F ':' '{print $2}'", "r");//打开管道，执行shell 命令
-	char buffer[1024] = {0};
-	int num=0;
-	while (NULL != fgets(buffer, 1024, fp)) //逐行读取执行结果并打印
-	{
-		wipe_off_CRLF_inEnd(buffer);
-		if(ip)
-			strcpy(ip,buffer);
-		num += 1;
-	}
-	pclose(fp); //关闭返回的文件指针，注意不是用fclose噢
-	
-	return num;
-}
-int getMAC_byCmd(char *mac)
-{
-	FILE *fp = popen("ifconfig | grep eth0 | awk '{print $5}'", "r");//打开管道，执行shell 命令
-	char buffer[1024] = {0};
-	int num=0;
-	while (NULL != fgets(buffer, 1024, fp)) //逐行读取执行结果并打印
-	{
-		wipe_off_CRLF_inEnd(buffer);
-		if(mac)
-			strcpy(mac,buffer);
-		num += 1;
-	}
-	pclose(fp); //关闭返回的文件指针，注意不是用fclose噢
-	
-	return num;
-}
-int getMASK_byCmd(char *mask)
-{
-	FILE *fp = popen("ifconfig | grep inet | sed -n '1p' | awk '{print $4}' | awk -F ':' '{print $2}'", "r");//打开管道，执行shell 命令
-	char buffer[1024] = {0};
-	int num=0;
-	while (NULL != fgets(buffer, 1024, fp)) //逐行读取执行结果并打印
-	{
-		wipe_off_CRLF_inEnd(buffer);
-		if(mask)
-			strcpy(mask,buffer);
-		num += 1;
-	}
-	pclose(fp); //关闭返回的文件指针，注意不是用fclose噢
-	
-	return num;
-}
-int getGW_byCmd(char *gw)
-{
-	FILE *fp = popen("route -n | grep eth0 | grep UG | awk '{print $2}'", "r");//打开管道，执行shell 命令
-	char buffer[1024] = {0};
-	int num=0;
-	while (NULL != fgets(buffer, 1024, fp)) //逐行读取执行结果并打印
-	{
-		wipe_off_CRLF_inEnd(buffer);
-		if(gw)
-			strcpy(gw,buffer);
-		num += 1;
-	}
-	pclose(fp); //关闭返回的文件指针，注意不是用fclose噢
-	
-	return num;
-}
-int getGWMAC_byCmd(char *gwip, char *gwmac)
-{
-	char cmd[128], gw[16], buffer[1024] = {0};
-	int num=0;
-	FILE *fp;
-
-	if( getGW_byCmd(gw) <= 0 )
-		return -1;
-	sprintf(cmd, "arp -a | grep %s | awk '{print $4}'", gw);
-	fp = popen(cmd, "r");
-	while (NULL != fgets(buffer, 1024, fp)) //逐行读取执行结果并打印
-	{
-		wipe_off_CRLF_inEnd(buffer);
-		if(gwmac)
-			strcpy(gwmac, buffer);
-		num += 1;
-	}
-	pclose(fp);
-
-	if(gwip)
-		strcpy(gwip, gw);
-
-	return num;
-}
-int getDNS_byCmd(char *dns_1,char *dns_2)
-{
-	FILE *fp = popen("cat /etc/resolv.conf | grep nameserver | awk '{print $2}'", "r");//打开管道，执行shell 命令
-	char buffer[1024] = {0};
-	char dns[2][16] = {{'\0'}};
-	int num=0;
-	while (NULL != fgets(buffer, 1024, fp)) //逐行读取执行结果并打印
-	{
-		wipe_off_CRLF_inEnd(buffer);
-		strcpy(dns[num],buffer);
-		num += 1;
-		if(num>2)	break;
-	}
-	pclose(fp); //关闭返回的文件指针，注意不是用fclose噢
-	if(dns_1)
-		strcpy(dns_1,dns[0]);
-	if(dns_2)
-		strcpy(dns_2,dns[1]);
-	
-	return num;
-}
 
 int ip_check(char *ip)
 {
@@ -959,6 +772,301 @@ char *ip_htoa(unsigned int addr, char *buff)
 	sprintf(buff, "%d.%d.%d.%d", a[0], a[1], a[2], a[3]);
 	return buff;
 }
+
+int get_dnsserver_by_resolv_conf(char *conf_file, char (*dnsserver)[16], int dnsserver_maxnum)
+{
+	FILE *fp = NULL;
+	char linebuf[512] = {'\0'};
+	char *p = NULL, tmp_ip[16] = {'\0'};
+	int num = 0, count = 0;
+
+	if(conf_file)
+		fp = fopen(conf_file, "r");
+	else
+		fp = fopen("/etc/resolv.conf", "r");
+	if(!fp)
+		return -1;
+
+	while(fgets(linebuf, sizeof(linebuf)-1, fp) != NULL)
+	{
+		if(linebuf[0] == '#')
+			continue;
+		p = strstr(linebuf, "nameserver");
+		if(!p)
+			continue;
+		p += 10;
+		memset(tmp_ip, 0, sizeof(tmp_ip));
+		num = sscanf(p, "%15s\n", tmp_ip);
+		if(num < 1)
+			continue;
+		if(!ip_check(tmp_ip))
+			continue;
+
+		strcpy(dnsserver[count], tmp_ip);
+		++count;
+		if(count >= dnsserver_maxnum)
+			break;
+	}
+	fclose(fp);
+
+	return count;
+}
+
+int lookup_etc_hosts(char *hostname, char *ip)
+{
+	FILE *fp = NULL;
+	char linebuf[1024] = {'\0'};
+	char tmp_name[256] = {'\0'}, tmp_ip[16] = {'\0'};
+	int num = 0;
+
+	if(!hostname)
+		return -1;
+	fp = fopen("/etc/hosts", "r");
+	if(!fp)
+		return -1;
+
+	while(fgets(linebuf, sizeof(linebuf)-1, fp) != NULL)
+	{
+		memset(tmp_name, 0, sizeof(tmp_name));
+		memset(tmp_ip, 0, sizeof(tmp_ip));
+		num = sscanf(linebuf, "%15s %255s\n",tmp_ip, tmp_name);
+		if(num < 2)
+			continue;
+
+		if(!strcmp(hostname, tmp_name)){
+			if(ip)
+				strcpy(ip, tmp_ip);
+			fclose(fp);
+			return 0;
+		}
+	}
+	fclose(fp);
+	return -2;
+}
+
+int dns_valid_check(char *dns)
+{
+	char *pch = dns, ch = '\0';
+	int label_len = 0;
+//	int label_count = 0;
+	
+	if(!dns || *dns == '\0' || *dns == '.')
+		return 0;
+
+	while(pch && *pch != '\0'){
+		ch = *pch;
+		if( (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || 
+			(ch >= '0' && ch <= '9') || ch == '-' )
+		{
+			++label_len;
+		}
+		else if(ch == '.'){
+			if(label_len <= 0 || label_len > 255)
+				return 0;
+//			else
+//				++label_count;
+//			if(label_count >= 255)
+//				return 0;
+			label_len = 0;
+		}
+		else
+			return 0;
+		++pch;
+	}
+	if(label_len <= 0 || label_len > 255)
+		return 0;
+//	if(label_num)
+//		*label_num = label_count + 1;
+	return 1;
+}
+
+
+
+struct dnsh{
+	unsigned short id; // identification number
+
+	unsigned char rd :1; // recursion desired
+	unsigned char tc :1; // truncated message
+	unsigned char aa :1; // authoritive answer
+	unsigned char opcode :4; // purpose of message
+	unsigned char qr :1; // query/response flag
+
+	unsigned char rcode :4; // response code
+	unsigned char cd :1; // checking disabled
+	unsigned char ad :1; // authenticated data
+	unsigned char z :1; // its z! reserved
+	unsigned char ra :1; // recursion available
+
+	unsigned short q_count; // number of question entries
+	unsigned short ans_count; // number of answer entries
+	unsigned short auth_count; // number of authority entries
+	unsigned short add_count; // number of resource entries
+};
+
+struct dns_qtion{
+	unsigned short qtype;
+	unsigned short qclass;
+};
+
+struct dns_ation{
+	unsigned short atype;
+	unsigned short aclass;
+	unsigned int ttl;
+	unsigned short data_len;
+};
+
+int wf_pack_domain_to_buf(char *domain, int need_check, unsigned char *buf)
+{
+	char *find_dot = NULL, *p = (char *)(buf + 1);
+	unsigned char *last_pad = buf;
+	int label_len = 0, domain_len = 0;
+
+	if(!domain || !buf)
+		return -1;
+	if(need_check && !dns_valid_check(domain))
+		return -2;
+	domain_len = strlen(domain);
+	strcpy((char *)p, domain);
+	buf[domain_len+2] = 0;
+	while(1){
+		find_dot = strchr(p, '.');
+		if(!find_dot)
+			break;
+		label_len = find_dot - p;
+		*last_pad = (unsigned char)label_len;
+		last_pad = (unsigned char *)find_dot;
+		p = (char *)last_pad + 1;
+	}
+	*last_pad = (unsigned char)strlen(p);
+
+	return (domain_len + 2);
+}
+
+static unsigned int __wf_lookup_dns(char *domain, char *res_ip, char *set_dns_server, int timeout)
+{
+	char dnsserver[2][16] = {{'\0'}}, *use_dns_server = set_dns_server;
+	struct sockaddr_in dns_server_addr;
+	unsigned char buf[2048] = {0}, *p = &buf[0], *end_p = NULL;
+	struct dnsh *p_dnsh = (struct dnsh *)&buf[0], *res_dnsh = (struct dnsh *)&buf[0];
+	struct dns_qtion *p_qtion = NULL;
+	struct dns_ation *p_ation = NULL;
+	int len = 0, recv_len = 0, i = 0;
+	struct timeval tv_out;
+	int sock = -1;
+	socklen_t sockaddr_len = sizeof(struct sockaddr_in);
+	unsigned int *select_addr = NULL;
+	unsigned int min_ttl = 0xFFFFFFFF, tmp_ttl = 0;
+	struct in_addr target_ip;
+	
+	if(!dns_valid_check(domain))
+		return 0;
+	if(set_dns_server && !ip_check(set_dns_server))
+		return 0;
+	else{
+		if(get_dnsserver_by_resolv_conf(NULL, dnsserver, 2) <= 0){
+			if(get_host_gateway(NULL, &(dns_server_addr.sin_addr.s_addr), NULL) < 0)
+				return 0;
+		}
+		else
+			use_dns_server = &dnsserver[0][0];
+	}
+
+	sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if(sock < 0)
+		return 0;
+	
+	if(use_dns_server)
+		inet_aton(use_dns_server, (struct in_addr *)&(dns_server_addr.sin_addr));
+	dns_server_addr.sin_family =AF_INET;
+	dns_server_addr.sin_port = htons(53);
+
+	p_dnsh->id = htons((unsigned short)wf_getsys_uptime(NULL));
+//	p_dnsh->id = 0;
+	*(unsigned short *)((char *)&p_dnsh->id + sizeof(p_dnsh->id)) = htons(0x0100);
+	p_dnsh->q_count = htons(1);
+	p_dnsh->ans_count = 0;
+	p_dnsh->auth_count = 0;
+	p_dnsh->add_count = 0;
+//	printf("p_dnsh->id = %4x \n", ntohs(p_dnsh->id));
+
+	p += sizeof(struct dnsh);
+	len = wf_pack_domain_to_buf(domain, 0, p);
+	p_qtion = (struct dns_qtion *)(p + len);
+	p_qtion->qtype = htons(1);
+	p_qtion->qclass = htons(1);
+
+	len += sizeof(struct dnsh) + sizeof(struct dns_qtion);
+
+	if(timeout > 0)
+        tv_out.tv_sec = timeout;
+	else
+		tv_out.tv_sec = 10;
+	tv_out.tv_usec = 0;
+
+	setsockopt(sock,SOL_SOCKET,SO_SNDTIMEO,&tv_out, sizeof(tv_out));
+	setsockopt(sock,SOL_SOCKET,SO_RCVTIMEO,&tv_out, sizeof(tv_out));
+
+	if(sendto(sock, buf, len, 0, (struct sockaddr *)&dns_server_addr,sizeof(struct sockaddr)) < 0){
+		close(sock);
+		return -3;
+	}
+
+	recv_len = recvfrom(sock, buf, sizeof(buf), 0, (struct sockaddr *)&dns_server_addr, &sockaddr_len);
+	if(recv_len < len){
+		close(sock);
+		return 0;
+	}
+	close(sock);
+
+	p = &buf[0] + len;
+	end_p = &buf[0] + recv_len;
+//	print_bytes(buf, recv_len);
+//	printf("recv_len = %d \n", recv_len);
+//	print_bytes(p, recv_len - len);
+	for(i=0; i<(int)ntohs(res_dnsh->ans_count); i++){
+		while(*p < 0xc0 && p < end_p)
+			++p;
+		if(p >= end_p)
+			break;
+		p += 2;
+		p_ation = (struct dns_ation *)p;
+//		printf("ntohs(p_ation->data_len) = %d \n", (int)ntohs(p_ation->data_len));
+//		print_bytes(p, 10 + (int)ntohs(p_ation->data_len));
+		if(p_ation->atype == htons(1)){
+			tmp_ttl = (unsigned int)ntohl(p_ation->ttl);
+			if(tmp_ttl < min_ttl){
+				min_ttl = tmp_ttl;
+				select_addr = (unsigned int *)(p + 10);
+			}
+		}
+		
+		p += 10 + (int)ntohs(p_ation->data_len);
+		continue;
+	}
+
+	if(select_addr){
+		if(res_ip){
+			target_ip.s_addr = *select_addr;
+			sprintf(res_ip, "%s",(char *)inet_ntoa(target_ip));
+		}
+		return *select_addr;
+	}
+	else
+		return 0;
+}
+unsigned int wf_lookup_dns(char *domain, char *res_ip, char *set_dns_server, int timeout)
+{
+	struct in_addr target_ip;
+	
+	if(ip_check(domain)){
+		inet_aton(domain, (struct in_addr *)&target_ip);
+		strcpy(res_ip, domain);
+		return target_ip.s_addr;
+	}
+
+	return __wf_lookup_dns(domain, res_ip, set_dns_server, timeout);
+}
+
 
 
 int setsock_broad(int sock, int on)

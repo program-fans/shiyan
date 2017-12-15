@@ -34,20 +34,15 @@ out: ip  broadip  ifname  */
 extern int getHostIP(char *prior_if, char *ip, char *broadip, char *ifname);
 extern int getHostIP_2(char *prior_if, char *ip, char *broadip, char *ifname, int *ifindex);
 
-// cmd: ifconfig  grep  sed  awk
-extern int getIP_byCmd(char *ip);
-// cmd: ifconfig  grep  awk
-extern int getMAC_byCmd(char *mac);
-// cmd: ifconfig  grep  sed  awk
-extern int getMASK_byCmd(char *mask);
-// cmd: route grep awk
-extern int getGW_byCmd(char *gw);
-// cmd: cat grep awk
-extern int getDNS_byCmd(char *dns_1,char *dns_2);
-
 extern int ip_check(char *ip);
 extern unsigned int ip_atoh(char *ip, unsigned int *addr);
 extern char *ip_htoa(unsigned int addr, char *buff);
+
+extern int get_dnsserver_by_resolv_conf(char *conf_file, char (*dnsserver)[16], int dnsserver_maxnum);
+extern int lookup_etc_hosts(char *hostname, char *ip);
+extern int dns_valid_check(char *dns);
+
+extern unsigned int wf_lookup_dns(char *domain, char *res_ip, char *set_dns_server, int timeout);
 
 // ------------------------  wf socket --------------------------------------
 #define wf_socket_error(errcode)	wf_std_error(errcode)

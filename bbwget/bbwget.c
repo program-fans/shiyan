@@ -364,7 +364,6 @@ static int set_sk_drop_data(FILE *fp)
 #include "wf_net.h"
 static void bb_lookup_host_for_thread(struct sockaddr_in *s_in, const char *host)
 {
-	printf("[%s] \n", host);
 	memset(s_in, 0, sizeof(struct sockaddr_in));
 	s_in->sin_family = AF_INET;
 	s_in->sin_addr.s_addr = wf_lookup_dns((char *)host, NULL, NULL, 10);

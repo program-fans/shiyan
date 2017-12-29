@@ -1101,6 +1101,30 @@ int setsock_rcvbuf(int sock, int size)
 	return setsockopt(sock, SOL_SOCKET, SO_RCVBUF, &optval, sizeof(optval));
 }
 
+int wf_udp_getsockname(int sock, unsigned int *addr, int *port)
+{
+	struct sockaddr_in to_addr;
+	struct sockaddr_in tmp_addr;
+	int alen = sizeof(struct sockaddr_in), ret = 0;
+	char buf[32];
+	
+	memset(&tmp_addr, 0, sizeof(tmp_addr));
+	memset(&to_addr, 0, sizeof(to_addr));
+	to_addr.sin_family =AF_INET;
+	to_addr.sin_port=htons(1026);
+	to_addr.sin_addr.s_addr=htonl(INADDR_ANY);
+	sendto(sock, buf, sizeof(buf), 0, (struct sockaddr *)&to_addr,sizeof(struct sockaddr));
+	ret = getsockname(sock, (struct sockaddr *)&tmp_addr, &alen);
+	if(ret < 0)
+		return ret;
+
+	if(addr)
+		*addr = tmp_addr.sin_addr.s_addr;
+	if(port)
+		*port = (int)ntohs(tmp_addr.sin_port);
+	return ret;
+}
+
 int wf_udp_socket(int port, int is_broad, char *if_name)
 {
 	int optval = 1;
@@ -1328,8 +1352,8 @@ int wf_send(int sock, unsigned char *buf, int total_len, int flag)
 		else
 			return -1;
 	}
-	if(!i)
-		return len;
+	if(len == next)
+		i += len;
 
 	return i;
 }
@@ -1352,7 +1376,9 @@ int wf_recv(int sock, unsigned char *buf, int total_len, int flag)
 		else
 			return -1;
 	}
-
+	if(len == next)
+		i += len;
+	
 	return i;
 }
 

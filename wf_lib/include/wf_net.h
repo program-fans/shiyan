@@ -57,6 +57,8 @@ extern int setsock_reuse(int sock, int on);
 
 extern int setsock_rcvbuf(int sock, int size);
 
+extern int wf_udp_getsockname(int sock, unsigned int *addr, int *port);
+
 extern int wf_udp_socket(int port, int is_broad, char *if_name);
 
 extern int wf_tcp_socket(int port, int keepalive, char *if_name);

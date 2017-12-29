@@ -622,6 +622,7 @@ int bbwget_test(int argc, char **argv)
 
 void testtest()
 {
+	wf_udp_socket(0, 0, NULL);
 	return;
 }
 void test()
@@ -629,10 +630,10 @@ void test()
 	int argc = -1;
 	char *argv[15] = {NULL};
 	argv[++argc] = "test";
-#if 0
+#if 1
 	testtest();
 #endif
-#if 1
+#if 0
 	argv[++argc] = "net";
 	++argc;
 	net_test(argc, argv);

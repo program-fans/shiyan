@@ -1101,11 +1101,17 @@ int setsock_rcvbuf(int sock, int size)
 	return setsockopt(sock, SOL_SOCKET, SO_RCVBUF, &optval, sizeof(optval));
 }
 
+int setsock_sndbuf(int sock, int size)
+{
+	int optval = size;
+	return setsockopt(sock, SOL_SOCKET, SO_SNDBUF, &optval, sizeof(optval));
+}
+
 int wf_udp_getsockname(int sock, unsigned int *addr, int *port)
 {
 	struct sockaddr_in to_addr;
 	struct sockaddr_in tmp_addr;
-	int alen = sizeof(struct sockaddr_in), ret = 0;
+	socklen_t alen = sizeof(struct sockaddr_in), ret = 0;
 	char buf[32];
 	
 	memset(&tmp_addr, 0, sizeof(tmp_addr));
@@ -1525,6 +1531,222 @@ int udp_recv_ip(int hport, unsigned char *buf, int size, char *ip, int *sport)
 	close(sock);
 	return ret;
 }
+
+
+// ------------ netlink
+static nlHandler *__nl_socket(nlHandler *hdl, int protocol, pid_t pid, unsigned int groups)
+{
+	struct sockaddr_nl src_addr;
+	int sockfd = -1, is_malloc = 0;
+	nlHandler *h = hdl;
+
+	if(!nl_protocol_valid(protocol))
+		return NULL;
+	if(!h){
+		h = (nlHandler *)malloc(sizeof(nlHandler));
+		if(!h)
+			return NULL;
+		is_malloc = 1;
+	}
+	sockfd = socket(PF_NETLINK, SOCK_RAW, protocol);
+	if(sockfd < 0)
+		goto ERR;
+
+	src_addr.nl_family = AF_NETLINK;
+	src_addr.nl_pid = (unsigned int)pid;
+	src_addr.nl_groups = groups;
+
+	if(bind(sockfd, (struct sockaddr *)&src_addr, sizeof(src_addr)) < 0){
+		goto ERR;
+	}
+
+	h->sockfd = sockfd;
+	h->seq = 0;
+
+	return h;
+ERR:
+	if(sockfd > 0)
+		close(sockfd);
+	if(is_malloc)
+		free(h);
+	return NULL;
+}
+
+nlHandler *nl_socket(nlHandler *hdl, int protocol, unsigned int groups)
+{
+	return __nl_socket(hdl, protocol, getpid(), groups);
+}
+
+nlHandler *nl_socket_bind_zero_pid(nlHandler *hdl, int protocol, unsigned int groups)
+{
+	return __nl_socket(hdl, protocol, 0, groups);
+}
+
+int nlmsg_init(nlHandler *hdl, unsigned short type, unsigned short flags, void *buffer, int size)
+{
+	struct nlmsghdr *nlh = (struct nlmsghdr *)buffer;
+	if(!hdl || size < NLMSG_HDRLEN)
+		return -1;
+	if(!nlh){
+		nlh = (struct nlmsghdr *)malloc(size);
+		if(!nlh)
+			return -2;
+	}
+	memset(nlh, 0, NLMSG_HDRLEN);
+
+	nlh->nlmsg_len = size;
+	nlh->nlmsg_pid = getpid();
+	nlh->nlmsg_flags = flags;
+	nlh->nlmsg_type = type;
+	nlh->nlmsg_seq = ++hdl->seq;
+	return 0;
+}
+
+int nlmsg_push_data(void *buffer, int *offset, void *data, int len)
+{
+	struct nlmsghdr *msg = (struct nlmsghdr *)buffer;
+
+	if(!buffer || !offset || !data)
+		return -1;
+	if(len <= 0)
+		return 0;
+	if(*offset >= msg->nlmsg_len || len > msg->nlmsg_len - *offset){
+		return -1;
+	}
+
+	memcpy(NLMSG_DATA(msg)+ *offset, data, len);
+	(*offset) += len;
+	return 0;
+}
+
+int nlmsg_pop_data(void *buffer, int *offset, void *data, int len)
+{
+	struct nlmsghdr *msg = (struct nlmsghdr *)buffer;
+
+	if(!buffer || !offset || !data)
+		return -1;
+	if(len <= 0)
+		return 0;
+	if(*offset >= msg->nlmsg_len || len > msg->nlmsg_len - *offset){
+		return -1;
+	}
+
+	memcpy(data, NLMSG_DATA(msg) + *offset, len);
+	(*offset) += len;
+	return 0;
+}
+
+// payload_size must <= (buffer size - NLMSG_HDRLEN)
+unsigned int nlmsg_reset_len(void *buffer, unsigned int buffer_size, unsigned int payload_size)
+{
+	unsigned int set_size = NLMSG_SPACE(payload_size);
+	struct nlmsghdr *nlh = (struct nlmsghdr *)buffer;
+	if(!nlh)
+		return -1;
+	if(buffer_size){ 
+		if(set_size > (buffer_size - NLMSG_HDRLEN))
+			set_size = buffer_size;
+	}
+	else{
+		if(set_size > nlh->nlmsg_len)
+			return nlh->nlmsg_len;
+	}
+
+	nlh->nlmsg_len = set_size;
+	return nlh->nlmsg_len;
+}
+
+int nlmsg_send(nlHandler *hdl, void *buffer, unsigned int dst_pid, unsigned int dst_groups)
+{
+	struct nlmsghdr *msg = (struct nlmsghdr *)buffer;
+	struct sockaddr_nl dst_addr;
+
+	dst_addr.nl_family = AF_NETLINK;
+	dst_addr.nl_pid = dst_pid;
+	dst_addr.nl_groups = dst_groups;
+	return sendto(hdl->sockfd, buffer, msg->nlmsg_len,0, (struct sockaddr *)&dst_addr, sizeof(struct sockaddr_nl));
+}
+
+int nlmsg_send_data(nlHandler *hdl, void *buffer, unsigned int dst_pid, unsigned int dst_groups, void *data, int len)
+{
+	int ret = 0, offset = 0;
+	ret = nlmsg_push_data(buffer, &offset, data, len);
+	if(ret < 0)
+		return ret;
+	nlmsg_reset_len(buffer, 0, (unsigned int)len);
+	return nlmsg_send(hdl, buffer, dst_pid, dst_groups);
+}
+
+static int __nlmsg_recv(nlHandler *hdl, void *buffer, unsigned int buf_size, struct sockaddr_nl *from_addr, int check_seq)
+{
+	struct sockaddr_nl tmp_addr, *paddr = from_addr;
+	socklen_t addr_len = sizeof(struct sockaddr_nl);
+	int recv_len = 0;
+	struct nlmsghdr *nlh = NULL;
+
+	if(!paddr) paddr = &tmp_addr;
+	recv_len = recvfrom(hdl->sockfd, buffer, buf_size, 0, (struct sockaddr *)paddr, &addr_len);
+	if(recv_len < 0)
+		return recv_len;
+	if(addr_len != sizeof(struct sockaddr_nl))
+		return -1;
+	nlh = (struct nlmsghdr *)buffer;
+	if(check_seq && nlh->nlmsg_seq != hdl->seq)
+		return -2;
+	return recv_len;
+}
+
+int nlmsg_recv(nlHandler *hdl, void *buffer, unsigned int buf_size, struct sockaddr_nl *from_addr)
+{
+	return __nlmsg_recv(hdl, buffer, buf_size, from_addr, 1);
+}
+
+int nlmsg_recv_no_seq(nlHandler *hdl, void *buffer, unsigned int buf_size, struct sockaddr_nl *from_addr)
+{
+	return __nlmsg_recv(hdl, buffer, buf_size, from_addr, 0);
+}
+
+/*
+int nlmsg_recv_total(nlHandler *hdl, unsigned char **buffer, unsigned int *buf_size, struct sockaddr_nl *from_addr)
+{
+	struct sockaddr_nl tmp_addr, *paddr = from_addr;
+	socklen_t addr_len = sizeof(struct sockaddr_nl);
+	int recv_len = 0, recv_size = 0;
+	unsigned char hdr_buff[NLMSG_HDRLEN] = {0}, *p_buf = NULL;
+	struct nlmsghdr *nlh = (struct nlmsghdr *)&hdr_buff[0];
+
+	if(!buffer)
+		return -1;
+	if(!paddr) paddr = &tmp_addr;
+	recv_len = recvfrom(hdl->sockfd, hdr_buff, NLMSG_HDRLEN, 0, (struct sockaddr *)paddr, &addr_len);
+	printf("recv nlmsg_header len: %d \n", recv_len);
+	if(recv_len < 0)
+		return recv_len;
+	if(addr_len != sizeof(struct sockaddr_nl))
+		return -1;
+	if(nlh->nlmsg_seq != hdl->seq)
+		return -2;
+	
+	p_buf = *buffer;
+	p_buf = (unsigned char *)malloc(nlh->nlmsg_len);
+	if(!p_buf)
+		return -3;
+	memcpy(p_buf, nlh, NLMSG_HDRLEN);
+	nlh = (struct nlmsghdr *)p_buf;
+	recv_size = nlh->nlmsg_len - NLMSG_HDRLEN;
+	printf("need recv payload size: %d \n", recv_size);
+	recv_len = recvfrom(hdl->sockfd, NLMSG_DATA(nlh), recv_size, 0, (struct sockaddr *)paddr, &addr_len);
+	printf("recv payload len: %d \n", recv_len);
+	if(recv_len < recv_size)
+		return (recv_len + NLMSG_HDRLEN);
+	if(addr_len != sizeof(struct sockaddr_nl))
+		return -1;
+
+	*buf_size = nlh->nlmsg_len;
+	return nlh->nlmsg_len;
+}
+*/
+
 
 #if 0
 void test()

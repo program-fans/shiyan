@@ -1,19 +1,30 @@
-TAR=wf
+mlist = wf
 
-obj-m=$(TAR).o
-wf-objs=wf_ko.o
-
-KERNELBUILD=/lib/modules/$(shell uname -r)/build/
-
-default:
-	make -C $(KERNELBUILD) M=$(CURDIR) modules
-
-install:
-	insmod $(TAR).ko
-
-unstall:
-	rmmod $(TAR)
+all:
+	@for d in $(mlist); do \
+		make -C $$d; \
+		[ "$$?" != "0" ] && exit "$$?"; \
+	done; \
+	echo OK: modules
 
 clean:
-	rm -f *.o *.ko *.mod.c *.order .*.cmd *.symvers
-	rm -rf .tmp_versions
+	@for d in $(mlist); do \
+		make -C $$d clean; \
+		[ "$$?" != "0" ] && exit "$$?"; \
+	done; \
+	echo OK: modules
+
+install:
+	@for d in $(mlist); do \
+		make -C $$d install; \
+		[ "$$?" != "0" ] && exit "$$?"; \
+	done; \
+	echo OK: modules
+
+uninstall:
+	@for d in $(mlist); do \
+		make -C $$d uninstall; \
+		[ "$$?" != "0" ] && exit "$$?"; \
+	done; \
+	echo OK: modules
+

@@ -821,15 +821,36 @@ void print_strn(char *str, unsigned int max_num)
 
 void print_bytes(unsigned char *byte, unsigned int max_num)
 {
-	int j = 0;
+	int j = 0, show_len = 0, i = 0;
+	char show[16];
 	printf("[print_bytes]:");
 	while(max_num && byte)
 	{
-		if(j%16==0)	printf("\n");
+		if(j%16==0){
+			for(i=0; i<show_len; i++){
+				if(show[i] >= ' ' && show[i] <= '~')
+					printf("%c", show[i]);
+				else
+					printf(".");
+			}
+			show_len = 0;
+			printf("\n");
+		}
 		printf("%02X ", *byte);
+		show[show_len] = (char)*byte;
+		++show_len;
 		++j;
 		++byte;
 		--max_num;
+	}
+	j = 16 - show_len;
+	for(i=0; i<j; i++)
+		printf("   ");
+	for(i=0; i<show_len; i++){
+		if(show[i] >= ' ' && show[i] <= '~')
+			printf("%c", show[i]);
+		else
+			printf(".");
 	}
 	printf("\n");
 }
@@ -980,6 +1001,24 @@ int arg_parse_set_value(struct arg_parse_t *p_arg, char *data)
 		else
 			*((long long int *)(p_arg->value)) = p_arg->set_number;
 		break;
+	case ARG_VALUE_TYPE_UINT:
+		if(data)
+			ret = sscanf(data, "%u", (unsigned int *)(p_arg->value));
+		else
+			*((unsigned int *)(p_arg->value)) = (unsigned int)(p_arg->set_number);
+		break;
+	case ARG_VALUE_TYPE_ULONG:
+		if(data)
+			ret = sscanf(data, "%lu", (unsigned long *)(p_arg->value));
+		else
+			*((unsigned long *)(p_arg->value)) = (unsigned long)(p_arg->set_number);
+		break;
+	case ARG_VALUE_TYPE_ULONGLONG:
+		if(data)
+			ret = sscanf(data, "%llu", (unsigned long long int *)(p_arg->value));
+		else
+			*((unsigned long long int *)(p_arg->value)) = (unsigned long long int)p_arg->set_number;
+		break;
 	case ARG_VALUE_TYPE_STRING:
 		if(data)
 			ret = sscanf(data, "%s", (char *)(p_arg->value));
@@ -1020,7 +1059,7 @@ int arg_parse(int argc, char **argv, struct arg_parse_t *arg_plist, int *new_arg
 					if(argv[++i]){
 						if(p_arg->arg_deal)
 							ret = p_arg->arg_deal(argv[i-1], argv[i], p_arg->value_type, p_arg->value);
-						else if(p_arg->value_type > ARG_VALUE_TYPE_NONE && p_arg->value)
+						else if(p_arg->value_type > ARG_VALUE_TYPE_NONE && p_arg->value_type < ARG_VALUE_TYPE_OTHER && p_arg->value)
 							ret = arg_parse_set_value(p_arg, argv[i]);
 					}
 				}

@@ -1865,6 +1865,166 @@ int cmd_usleep(int argc, char **argv)
 // ************************************   usleep     *********** end
 
 
+// ************************************   nl
+void nl_usage()
+{
+	fprintf(stderr, "wftool nl usage: \n"
+		"wftool nl [cmd] [option] \n"
+		"    cmd: send listen send-listen \n"
+		"    --set-protocol \n"
+		"    --set-groups \n"
+		"    --set-type \n"
+		"    --set-flags \n"
+		"    --dpid \n"
+		"    --dgroups \n"
+		"    --msg: send data \n"
+		"    --pkt: send packets. when cmd is listen: listen packets \n"
+		"    --resp-pkt: listen packets \n"
+		"    --asc \n"
+		);
+}
+
+enum CMD_NL_ACTION{
+	NL_ACT_SEND,
+	NL_ACT_LISTEN,
+	NL_ACT_SEND_LISTEN,
+};
+
+struct cmd_nl_info{
+	enum CMD_NL_ACTION action;
+	int protocol;
+	unsigned int groups;
+	unsigned int type;
+	unsigned int flags;
+	unsigned int dpid;
+	unsigned int dgroups;
+	char *msg;
+	int pkt;
+	int resp_pkt;
+	int print_asc;
+
+	int msg_len;
+	nlHandler hdl;
+	unsigned char *buffer;
+	unsigned int buffer_size;
+	unsigned int pkt_cnt;
+	unsigned long bytes_cnt;
+};
+static struct cmd_nl_info nl_info;
+static struct arg_parse_t cmd_nl_arg_list[]={
+		{"--set-protocol", &nl_info.protocol, 0, 1, NULL, ARG_VALUE_TYPE_INT, NL_ACT_SEND, NULL},
+		{"--set-groups", &nl_info.groups, 0, 1, NULL, ARG_VALUE_TYPE_UINT, 0, NULL},
+		{"--set-type", &nl_info.type, 0, 1, NULL, ARG_VALUE_TYPE_UINT, 0, NULL},
+		{"--set-flags", &nl_info.flags, 0, 1, NULL, ARG_VALUE_TYPE_UINT, 0, NULL},
+		{"--dpid", &nl_info.dpid, 0, 1, NULL, ARG_VALUE_TYPE_UINT, 0, NULL},
+		{"--dgroups", &nl_info.dgroups, 0, 1, NULL, ARG_VALUE_TYPE_UINT, 0, NULL},
+		{"--msg", &nl_info.msg, 0, 1, arg_deal_default, 0, 0, NULL},
+		{"--pkt", &nl_info.pkt, 0, 1, NULL, ARG_VALUE_TYPE_INT, 1, NULL},
+		{"--resp-pkt", &nl_info.resp_pkt, 0, 1, NULL, ARG_VALUE_TYPE_INT, 1, NULL},
+		{"--asc", &nl_info.print_asc, 0, 0, NULL, ARG_VALUE_TYPE_INT, 1, NULL},
+		arg_parse_t_init_null
+};
+
+static void nl_exit_call(int sig)
+{
+	if(nl_info.hdl.sockfd > 0)
+		close(nl_info.hdl.sockfd);
+	if(nl_info.action == NL_ACT_LISTEN || nl_info.action == NL_ACT_SEND_LISTEN){
+		printf("\nrecv finish: %lu bytes  %d packets  from %u addrs \n", 
+			nl_info.bytes_cnt, nl_info.pkt_cnt, wf_get_kv_count());
+		wf_kv_table_destory();
+	}
+	printf("exit...\n");
+	exit(0);
+}
+
+static int cmd_nl(int argc, char **argv)
+{
+	int i = 1, ret = 0;
+	struct sockaddr_nl from_addr;
+	
+	if( strcmp(argv[1], "send") == 0 )
+		nl_info.action = NL_ACT_SEND;
+	else if( strcmp(argv[1], "listen") == 0 )
+		nl_info.action = NL_ACT_LISTEN;
+	else if( strcmp(argv[1], "send-listen") == 0 )
+		nl_info.action = NL_ACT_SEND_LISTEN;
+	else{
+		i = 0;
+		nl_info.action = NL_ACT_SEND;
+	}
+	nl_info.pkt = 1;
+	nl_info.resp_pkt = 1;
+
+	if(arg_parse(argc-i, argv+i, cmd_nl_arg_list, NULL, NULL) < 0){
+		nl_usage();
+		return 0;
+	}
+
+	if(nl_info.action == NL_ACT_LISTEN && nl_info.pkt > nl_info.resp_pkt)
+		nl_info.resp_pkt = nl_info.pkt;
+	if(nl_info.msg)
+		nl_info.msg_len = strlen(nl_info.msg) + 1;
+
+	if(nl_socket(&nl_info.hdl, nl_info.protocol, nl_info.groups) == NULL){
+		printf("error: %s \n", wf_socket_error(NULL));
+		return 0;
+	}
+
+	nl_info.buffer = (unsigned char *)&asc_buf[0];
+	nl_info.buffer_size = 8192;
+	if(nlmsg_init(&nl_info.hdl, (unsigned short)nl_info.type, (unsigned short)nl_info.flags, nl_info.buffer, nl_info.buffer_size) < 0){
+		printf("error: %s \n", wf_socket_error(NULL));
+		return 0;
+	}
+	
+	wf_registe_exit_signal(nl_exit_call);
+
+	if(nl_info.action == NL_ACT_SEND || nl_info.action == NL_ACT_SEND_LISTEN){
+		while(nl_info.pkt--){
+			ret = nlmsg_send_data(&nl_info.hdl, nl_info.buffer, nl_info.dpid, nl_info.dgroups, nl_info.msg, nl_info.msg_len);
+			if(ret > 0)
+				printf("send OK: %d bytes \n", ret);
+			else
+				printf("error: %s \n", wf_socket_error(NULL));
+		}
+
+		if(nl_info.action == NL_ACT_SEND){
+			close(nl_info.hdl.sockfd);
+			return 0;
+		}
+	}
+
+	while(nl_info.resp_pkt){
+		memset(&from_addr, 0, sizeof(from_addr));
+		memset(nl_info.buffer, 0, nl_info.buffer_size);
+		if(nl_info.action == NL_ACT_SEND_LISTEN)
+			ret = nlmsg_recv(&nl_info.hdl, nl_info.buffer, nl_info.buffer_size, &from_addr);
+		else
+			ret = nlmsg_recv_no_seq(&nl_info.hdl, nl_info.buffer, nl_info.buffer_size, &from_addr);
+		if(ret > 0){
+			--nl_info.resp_pkt;
+			++nl_info.pkt_cnt;
+			nl_info.bytes_cnt += ret;
+			wf_put_kv(&from_addr, sizeof(from_addr), &from_addr, sizeof(from_addr));
+			printf("recv OK: %d bytes from pid=%d groups=%d  [pkt id: %d]\n", ret, from_addr.nl_pid, from_addr.nl_groups, nl_info.pkt_cnt);
+			if(nl_info.print_asc)
+				print_strn((char *)nl_info.buffer, (unsigned int)ret);
+			else
+				print_bytes(nl_info.buffer, (unsigned int)ret);
+		}
+		else{
+			printf("ret=%d error: %s \n", ret, wf_socket_error(NULL));
+		}
+	}
+
+	nl_exit_call(0);
+	return 0;
+}
+// ************************************   nl     *********** end
+
+
+
 
 #if 1
 int wftool_cmd_init_call(int argc, char **argv, struct child_cmd_t *pcmd)
@@ -1895,6 +2055,7 @@ struct child_cmd_t cmd_list[] = {
 	{"qqrobot", wftool_cmd_init_call, NULL, cmd_qqrobot},
 	{"tftpc", wftool_cmd_init_call, tftpc_usage, cmd_tftpc},
 	{"usleep", wftool_cmd_init_call, usleep_usage, cmd_usleep},
+	{"nl", wftool_cmd_init_call, nl_usage, cmd_nl},
 };
 
 int main(int argc, char **argv)

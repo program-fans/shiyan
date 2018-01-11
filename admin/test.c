@@ -620,6 +620,53 @@ int bbwget_test(int argc, char **argv)
 	return 0;
 }
 
+int nl_test(int argc, char **argv)
+{
+	nlHandler hdl;
+	int protocol = atoi(argv[1]), len = strlen(argv[2]), ret = 0;
+	unsigned char buffer[NLMSG_BUFFER_SIZE(1024)] = {0}, recv_buffer[NLMSG_BUFFER_SIZE(1024)] = {0}, *recv_total = NULL;
+	char *data = NLMSG_BUFFER_DATA(&buffer[0]), *recv_data = NLMSG_BUFFER_DATA(&recv_buffer[0]);
+	unsigned int recv_total_size = 0;
+
+	printf("NLMSG_HDRLEN=%d\n", NLMSG_HDRLEN);
+	if(!nl_socket(&hdl, protocol, 0)){
+		printf("nl_socket failed \n");
+		return -1;
+	}
+
+	if(nlmsg_init(&hdl, 0, NLM_F_ECHO, buffer, sizeof(buffer)) < 0){
+		printf("nlmsg_init failed \n");
+		close(hdl.sockfd);
+		return -1;
+	}
+
+	strcpy(data, argv[2]);
+	ret = nlmsg_send_data_to_kernel(&hdl, buffer, data, len);
+	printf("ret of nlmsg_send_data_to_kernel: %d \n", ret);
+#if 0
+	ret = nlmsg_recv_total(&hdl, &recv_total, &recv_total_size, NULL);
+	printf("ret of nlmsg_recv_total: %d \n", ret);
+	if(ret > 0 && recv_total){
+		print_bytes(recv_total, recv_total_size);
+		recv_data = NLMSG_BUFFER_DATA(recv_total);
+		printf("[%s]\n", recv_data);
+	}
+	if(recv_total)
+		free(recv_total);
+#else
+	ret = nlmsg_recv(&hdl, recv_buffer, sizeof(recv_buffer), NULL);
+	printf("ret of nlmsg_recv: %d \n", ret);
+	if(ret > 0){
+		//print_bytes(recv_buffer, (unsigned int)ret);
+		print_bytes(recv_data, (unsigned int)(len+1));
+		printf("[%s]\n", recv_data);
+	}
+#endif
+	
+	close(hdl.sockfd);
+	return 0;
+}
+
 void testtest()
 {
 	wf_udp_socket(0, 0, NULL);
@@ -672,6 +719,8 @@ int main(int argc, char **argv)
 			ret = net_test(argc, argv);
 		else if( strcmp(argv[1], "bbwget") == 0 )
 			ret = bbwget_test(argc, argv);
+		else if( strcmp(argv[1], "nl") == 0 )
+			ret = nl_test(argc-1, argv+1);
 		else
 			test();
 	}

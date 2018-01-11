@@ -48,56 +48,66 @@ extern unsigned int wf_lookup_dns(char *domain, char *res_ip, char *set_dns_serv
 #define wf_socket_error(errcode)	wf_std_error(errcode)
 
 extern int setsock_broad(int sock, int on);
-
 extern int setsock_device(int sock, char *dev);
-
 extern int setsock_multi(int sock, char *ip);
-
 extern int setsock_reuse(int sock, int on);
-
 extern int setsock_rcvbuf(int sock, int size);
+extern int setsock_sndbuf(int sock, int size);
 
 extern int wf_udp_getsockname(int sock, unsigned int *addr, int *port);
-
 extern int wf_udp_socket(int port, int is_broad, char *if_name);
-
 extern int wf_tcp_socket(int port, int keepalive, char *if_name);
-
 extern int wf_gethostbyname(char *name, char *ip, unsigned int *addr);
 
 extern int wf_accept(int sock, void *client_addr, int *addr_len);
-
 extern int wf_accept_ip(int sock, char *client_ip, int *client_port);
 
 extern int wf_connect(int clientSock, char *serverName, int serverPort);
-
 extern int wf_connect_addr(int clientSock, unsigned int serverAddr, int serverPort);
-
 extern int wf_connect_socket(char *serverName, int serverPort, int clientPort, int keepalive, char *if_name);
 
 extern int wf_listen_socket(int port, int listen_num, char *if_name);
 
 extern int wf_send(int sock, unsigned char *buf, int total_len, int flag);
-
 extern int wf_recv(int sock, unsigned char *buf, int total_len, int flag);
 
 // struct sockaddr_in *addr_to
 extern int wf_sendto(int sock, unsigned char *buf, int total_len, int flag, void *addr_to);
-
 extern int wf_sendto_ip(int sock, unsigned char *buf, int total_len, int flag, char *to_ip, int to_port);
 
 // struct sockaddr_in *addr_from
 extern int wf_recvfrom(int sock, unsigned char *buf, int total_len, int flag, void *addr_from);
-
 extern int wf_recvfrom_ip(int sock, unsigned char *buf, int total_len, int flag, char *from_ip, int *from_port);
 
 extern int udp_send(void *to_addr, int hport, unsigned char *buf, int len);
-
 extern int udp_send_ip(char *ip, int hport, int dport, unsigned char *buf, int len);
 
 extern int udp_recv(int hport, unsigned char *buf, int size, void *addr_from);
-
 extern int udp_recv_ip(int hport, unsigned char *buf, int size, char *ip, int *sport);
+
+
+#include <linux/netlink.h>
+typedef struct nl_handler{
+	int sockfd;
+	unsigned int seq;
+}nlHandler;
+#define nl_protocol_valid(protocol) (protocol < MAX_LINKS && protocol > 0)
+extern nlHandler *nl_socket(nlHandler *hdl, int protocol, unsigned int groups);
+extern nlHandler *nl_socket_bind_zero_pid(nlHandler *hdl, int protocol, unsigned int groups);
+#define NLMSG_BUFFER_SIZE(size) (size + NLMSG_HDRLEN)
+#define NLMSG_BUFFER_DATA(buffer) NLMSG_DATA((struct nlmsghdr *)(buffer))
+extern int nlmsg_init(nlHandler *hdl, unsigned short type, unsigned short flags, void *buffer, int size);
+extern int nlmsg_push_data(void *buffer, int *offset, void *data, int len);
+extern int nlmsg_pop_data(void *buffer, int *offset, void *data, int len);
+// payload_size must <= (buffer size - NLMSG_HDRLEN)
+extern unsigned int nlmsg_reset_len(void *buffer, unsigned int buffer_size, unsigned int payload_size);
+extern int nlmsg_send(nlHandler *hdl, void *buffer, unsigned int dst_pid, unsigned int dst_groups);
+extern int nlmsg_send_data(nlHandler *hdl, void *buffer, unsigned int dst_pid, unsigned int dst_groups, void *data, int len);
+#define nlmsg_send_to_kernel(nlhdl, buffer) nlmsg_send(nlhdl, buffer, 0, 0)
+#define nlmsg_send_data_to_kernel(nlhdl, buffer, data, len) nlmsg_send_data(nlhdl, buffer, 0, 0, data, len)
+extern int nlmsg_recv(nlHandler *hdl, void *buffer, unsigned int buf_size, struct sockaddr_nl *from_addr);
+extern int nlmsg_recv_no_seq(nlHandler *hdl, void *buffer, unsigned int buf_size, struct sockaddr_nl *from_addr);
+
 
 #endif
 

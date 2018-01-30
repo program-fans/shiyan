@@ -2023,10 +2023,115 @@ static int cmd_nl(int argc, char **argv)
 }
 // ************************************   nl     *********** end
 
+// ************************************   base64
+static void base64_usage()
+{
+	fprintf(stderr, "wftool base64 usage: \n"
+		"wftool base64 [-e/--encode] [-d/--decode] <string/-f file> \n"
+		);
+}
+
+struct cmd_base64_info{
+	int decode;
+	char *str;
+	char *file;
+};
+
+static struct cmd_base64_info base64_info;
+static struct arg_parse_t cmd_base64_arg_list[]={
+		{"-e", &base64_info.decode, 0, 0, NULL, ARG_VALUE_TYPE_INT, 0, NULL},
+		{"--encode", &base64_info.decode, 0, 0, NULL, ARG_VALUE_TYPE_INT, 0, NULL},
+		{"-d", &base64_info.decode, 0, 0, NULL, ARG_VALUE_TYPE_INT, 1, NULL},
+		{"--decode", &base64_info.decode, 0, 0, NULL, ARG_VALUE_TYPE_INT, 1, NULL},
+		{"-f", &base64_info.file, 0, 1, arg_deal_default, 0, 0, NULL},
+		arg_parse_t_init_null
+};
+
+static int cmd_base64(int argc, char **argv)
+{
+	int new_argc = 0, ret = 0;
+	char **new_argv = (char **)malloc(sizeof(char *) * argc);
+	char *target = NULL;
+	unsigned int str_len = 0, target_size = 0;
+	struct base64_context bs_cxt;
+	FILE *fp = NULL;
+	char in[1024], out[1409];
+	size_t read_len;
+
+	if(!new_argv){
+		wfprintf("malloc error \n");
+		return 0;
+	}
+	if(arg_parse(argc, argv, cmd_base64_arg_list, &new_argc, new_argv) < 0){
+		base64_usage();
+		return 0;
+	}
+	if(new_argc > 1)
+		base64_info.str = new_argv[new_argc-1];
+	else if(!base64_info.file){
+		base64_usage();
+		return 0;
+	}
+	free(new_argv);
+
+	if(base64_info.str){
+		str_len = (unsigned int)strlen(base64_info.str);
+		if(base64_info.decode)
+			target = (char *)base64_malloc_decode_target(str_len, &target_size);
+		else
+			target = (char *)base64_malloc_encode_target(str_len, &target_size);
+		if(!target){
+			wfprintf("malloc error \n");
+			return 0;
+		}
+
+		if(base64_info.decode)
+			ret = base64_decode(base64_info.str, str_len, (unsigned char *)target, target_size);
+		else
+			ret = base64_encode(base64_info.str, str_len, target, target_size);
+		target[ret] = '\0';
+		printf("%s\n", target);
+		free(target);
+	}
+	else{
+		if(base64_info.decode)
+			base64_decode_start(&bs_cxt);
+		else
+			base64_encode_start(&bs_cxt);
+		fp = fopen(base64_info.file, "r");
+		if(!fp){
+			wfprintf("fopen %s failed: %s \n", base64_info.file, strerror(errno));
+			return 0;
+		}
+		while(!feof(fp)){
+			memset(in, 0, sizeof(in));
+			memset(out, 0, sizeof(out));
+			read_len = fread(in, 1, sizeof(in), fp);
+			if(read_len > 0){
+				if(base64_info.decode)
+					ret = base64_decode_process(&bs_cxt, (char *)in, (unsigned int)read_len, (unsigned char *)&out[0], sizeof(out)-1);
+				else
+					ret = base64_encode_process(&bs_cxt, (unsigned char *)&in[0], (unsigned int)read_len, out, sizeof(out)-1);
+				out[ret] = '\0';
+				printf("%s", out);
+			}
+		}
+		memset(out, 0, sizeof(out));
+		if(base64_info.decode)
+			base64_decode_finish(&bs_cxt, (unsigned char *)&out[0], sizeof(out)-1);
+		else
+			base64_encode_finish(&bs_cxt, out, sizeof(out)-1);
+		printf("%s\n", out);
+		fclose(fp);
+	}
+
+	return 0;
+}
+
+// ************************************   base64     *********** end
 
 
 
-#if 1
 int wftool_cmd_init_call(int argc, char **argv, struct child_cmd_t *pcmd)
 {
 	strcpy(print_name, pcmd->cmd);
@@ -2056,6 +2161,7 @@ struct child_cmd_t cmd_list[] = {
 	{"tftpc", wftool_cmd_init_call, tftpc_usage, cmd_tftpc},
 	{"usleep", wftool_cmd_init_call, usleep_usage, cmd_usleep},
 	{"nl", wftool_cmd_init_call, nl_usage, cmd_nl},
+	{"base64", wftool_cmd_init_call, base64_usage, cmd_base64},
 };
 
 int main(int argc, char **argv)
@@ -2063,143 +2169,3 @@ int main(int argc, char **argv)
 	return wf_child_cmd_mini(cmd_list, "wftool");
 }
 
-#else
-struct cmd_t
-{
-	char cmd[16];
-	int (*init_call)(int argc, char **argv);
-	void (*usage_call)(void);
-	int (*cmd_call)(int argc, char **argv);
-};
-
-struct child_cmd_t cmd_list[] = {
-	{"ntorn", wftool_cmd_init_call, txt_usage, cmd_ntorn},
-	{"rnton", wftool_cmd_init_call, txt_usage, cmd_rnton},
-	{"a1torn", wftool_cmd_init_call, txt_usage, cmd_a1torn},
-	{"udp", wftool_cmd_init_call, udp_usage, cmd_udp},
-	{"tcp", wftool_cmd_init_call, tcp_usage, cmd_tcp},
-	{"gethost", wftool_cmd_init_call, gethost_usage, cmd_gethost},
-	{"asc", wftool_cmd_init_call, asc_usage, cmd_asc},
-	{"wol", wftool_cmd_init_call, wol_usage, cmd_wol},
-	{"time", wftool_cmd_init_call, time_usage, cmd_time},
-	{"json", wftool_cmd_init_call, json_usage, cmd_json},
-	{"exeindir", wftool_cmd_init_call, exeindir_usage, cmd_exeindir},
-	{"text", wftool_cmd_init_call, text_usage, cmd_text},
-	{"qqrobot", wftool_cmd_init_call, NULL, cmd_qqrobot},
-	{"tftpc", wftool_cmd_init_call, tftpc_usage, cmd_tftpc},
-	{"usleep", wftool_cmd_init_call, usleep_usage, cmd_usleep},
-};
-
-
-struct cmd_t *find_cmd(char *cmd)
-{
-	int idx = 0;
-
-	for(idx=0; idx<ARRAY_NUM(cmd_list); idx++){
-		if(strcmp(cmd, cmd_list[idx].cmd) == 0){
-			return &cmd_list[idx];
-		}
-	}
-	return NULL;
-}
-
-void wftool_usage()
-{
-	int idx = 0;
-	
-	fprintf(stderr, "wftool usage: \n"
-		"\twftool [cmd] [option] [...] \n"
-		"cmd list: \n"
-		"  help \n"
-		);
-
-	for(idx=0; idx<ARRAY_NUM(cmd_list); idx++){
-		fprintf(stderr, "  %s \n", cmd_list[idx].cmd);
-	}
-	
-	fprintf(stderr, "note:\"wftool help <cmd>\" for help on a specific cmd \n");
-
-	exit(0);
-}
-
-void print_usage(char *cmd)
-{
-	struct cmd_t *pcmd = NULL;
-	
-	if(cmd == NULL)
-		wftool_usage();
-	else{
-		pcmd = find_cmd(cmd);
-	}
-	if(pcmd){
-		if(pcmd->usage_call)
-			pcmd->usage_call();
-		else
-			wfprintf("no usage for %s \n\n------------------------------\n", cmd);
-	}
-	else
-		wftool_usage();
-}
-
-int main(int argc, char **argv)
-{
-	int ret=0;
-	struct cmd_t *pcmd = NULL;
-	char *p = NULL, *name = argv[0];
-	int cmd_argc = argc;
-	char **cmd_argv = argv;
-
-	//printf("sid: %d  pgid: %d  pid: %d  ppid: %d \n", getsid(0), getpgid(0), getpid(), getppid());	
-	p = name;
-	while(*p != '\0'){
-		if(*p == '/')
-			name = p + 1;
-		++p;
-	}
-	//WFT_DEBUG("name=[%s]\n", name);
-
-	if(!strcmp(name, "wftool")){
-		if(argc < 2 || !strcmp(argv[1], "-h") || !strcmp(argv[1], "--help") ){
-			wftool_usage();
-			return 0;
-		}
-		else if( strcmp(argv[1], "help") == 0 )
-			print_usage(argv[2]);
-		else if(argv[2] && (!strcmp(argv[2], "-h") || !strcmp(argv[2], "--help")))
-			print_usage(argv[1]);
-		else{
-			cmd_argc = argc -1;
-			cmd_argv = argv + 1;
-			goto FIND_CMD;
-		}
-	}
-	else{
-		if( !strcmp(argv[1], "-h") || !strcmp(argv[1], "--help") ){
-			print_usage(name);
-		}
-	}
-
-FIND_CMD:
-	pcmd = find_cmd(cmd_argv[0]);
-	if(!pcmd){
-		wftool_usage();
-		return 0;
-	}
-
-	if(pcmd->init_call){
-		ret = pcmd->init_call(cmd_argc, cmd_argv);
-		if(ret < 0){
-			wfprintf("error: command init failed: %s \n", pcmd->cmd);
-			return 1;
-		}
-	}
-	if(pcmd->cmd_call){
-		strcpy(print_name, pcmd->cmd);
-		ret = pcmd->cmd_call(cmd_argc, cmd_argv);
-	}
-	else
-		wfprintf("error: can't execute %s \n", pcmd->cmd);
-
-	return ret;
-}
-#endif

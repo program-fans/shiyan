@@ -1,6 +1,10 @@
 #ifndef WF_BASE64_H_
 #define WF_BASE64_H_
 
+extern void *base64_malloc_decode_target(unsigned int src_len, unsigned int *malloc_size);
+
+extern void *base64_malloc_encode_target(unsigned int src_len, unsigned int *malloc_size);
+
 extern unsigned int base64_encode(unsigned char *in, unsigned int in_len, char *out, unsigned int out_size);
 
 extern unsigned int base64_decode(char *in, unsigned int in_len, unsigned char *out, unsigned int out_size);

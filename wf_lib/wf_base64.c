@@ -69,7 +69,11 @@ static inline char base64_look_table(unsigned char in)
 static inline unsigned char base64_look_decode_table(char in)
 {
 #if 1
-	return base64_decode_table[(int)in];
+	int index = (int)in;
+	if(index < 0 || index >= sizeof(base64_decode_table))
+		return (unsigned char)0;
+	else
+		return base64_decode_table[(int)in];
 #else
 	if(in >= 'A' && in <= 'Z')
 		return (unsigned char)(in - 65);
@@ -81,6 +85,8 @@ static inline unsigned char base64_look_decode_table(char in)
 		return (unsigned char)62;
 	else if(in == '/')
 		return (unsigned char)63;
+	else
+		return (unsigned char)0;
 #endif
 }
 
@@ -117,6 +123,24 @@ END:
 		printf("in: %c%c%c%c; out: %02x %02x %02x [%u %u %u %u]\n", in[0], in[1], in[2], in[3], out[0], out[1], out[2], a, b, c, d);
 #endif
 	return i;
+}
+
+void *base64_malloc_decode_target(unsigned int src_len, unsigned int *malloc_size)
+{
+	unsigned int size = src_len / 4 + 1;
+	size *= 3;
+	++size;
+	*malloc_size = size;
+	return malloc(size);
+}
+
+void *base64_malloc_encode_target(unsigned int src_len, unsigned int *malloc_size)
+{
+	unsigned int size = src_len / 3 + 1;
+	size *= 4;
+	++size;
+	*malloc_size = size;
+	return malloc(size);
 }
 
 unsigned int base64_decode(char *in, unsigned int in_len, unsigned char *out, unsigned int out_size)

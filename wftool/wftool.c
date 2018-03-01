@@ -18,6 +18,9 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+#include <net/if.h> // struct ifreq
+#include <linux/if_tun.h> // TUNSETIFF
+
 #include "libwf.h"
 
 #include "wftool.h"
@@ -2027,7 +2030,9 @@ static int cmd_nl(int argc, char **argv)
 static void base64_usage()
 {
 	fprintf(stderr, "wftool base64 usage: \n"
-		"wftool base64 [-e/--encode] [-d/--decode] <string/-f file> \n"
+		"wftool base64 [-e/--encode] [-d/--decode] <string/-f file> [-x/--hex] [-o/--out]\n"
+		"    -x  --hex: output hexadecimal \n"
+		"    -o  --out: output file \n"
 		);
 }
 
@@ -2035,6 +2040,8 @@ struct cmd_base64_info{
 	int decode;
 	char *str;
 	char *file;
+	int out_hex;
+	char *out_file;
 };
 
 static struct cmd_base64_info base64_info;
@@ -2044,17 +2051,21 @@ static struct arg_parse_t cmd_base64_arg_list[]={
 		{"-d", &base64_info.decode, 0, 0, NULL, ARG_VALUE_TYPE_INT, 1, NULL},
 		{"--decode", &base64_info.decode, 0, 0, NULL, ARG_VALUE_TYPE_INT, 1, NULL},
 		{"-f", &base64_info.file, 0, 1, arg_deal_default, 0, 0, NULL},
+		{"-x", &base64_info.out_hex, 0, 0, NULL, ARG_VALUE_TYPE_INT, 1, NULL},
+		{"--hex", &base64_info.out_hex, 0, 0, NULL, ARG_VALUE_TYPE_INT, 1, NULL},
+		{"-o", &base64_info.out_file, 0, 1, arg_deal_default, 0, 0, NULL},
+		{"--out", &base64_info.out_file, 0, 1, arg_deal_default, 0, 0, NULL},
 		arg_parse_t_init_null
 };
 
 static int cmd_base64(int argc, char **argv)
 {
-	int new_argc = 0, ret = 0;
+	int new_argc = 0, ret = 0, i = 0;
 	char **new_argv = (char **)malloc(sizeof(char *) * argc);
 	char *target = NULL;
 	unsigned int str_len = 0, target_size = 0;
 	struct base64_context bs_cxt;
-	FILE *fp = NULL;
+	FILE *fp = NULL, *out_fp = NULL;
 	char in[1024], out[1409];
 	size_t read_len;
 
@@ -2074,6 +2085,14 @@ static int cmd_base64(int argc, char **argv)
 	}
 	free(new_argv);
 
+	if(base64_info.out_file){
+		out_fp = fopen(base64_info.out_file, "w");
+		if(!out_fp){
+			wfprintf("fopen %s failed: %s \n", base64_info.out_file, strerror(errno));
+			return 0;
+		}
+	}
+	
 	if(base64_info.str){
 		str_len = (unsigned int)strlen(base64_info.str);
 		if(base64_info.decode)
@@ -2089,8 +2108,15 @@ static int cmd_base64(int argc, char **argv)
 			ret = base64_decode(base64_info.str, str_len, (unsigned char *)target, target_size);
 		else
 			ret = base64_encode(base64_info.str, str_len, target, target_size);
-		target[ret] = '\0';
-		printf("%s\n", target);
+
+		if(out_fp)
+			fwrite(target, 1, ret, out_fp);
+		printf("\n");
+		if(base64_info.out_hex)
+			print_bytes(target, ret);
+		else
+			print_strn(target, ret);
+		
 		free(target);
 	}
 	else{
@@ -2112,8 +2138,14 @@ static int cmd_base64(int argc, char **argv)
 					ret = base64_decode_process(&bs_cxt, (char *)in, (unsigned int)read_len, (unsigned char *)&out[0], sizeof(out)-1);
 				else
 					ret = base64_encode_process(&bs_cxt, (unsigned char *)&in[0], (unsigned int)read_len, out, sizeof(out)-1);
-				out[ret] = '\0';
-				printf("%s", out);
+
+				if(out_fp)
+					fwrite(out, 1, ret, out_fp);
+				printf("\n");
+				if(base64_info.out_hex)
+					print_bytes(out, ret);
+				else
+					print_strn(out, ret);
 			}
 		}
 		memset(out, 0, sizeof(out));
@@ -2125,10 +2157,89 @@ static int cmd_base64(int argc, char **argv)
 		fclose(fp);
 	}
 
+	if(out_fp)
+		fclose(out_fp);
 	return 0;
 }
 
 // ************************************   base64     *********** end
+
+
+// ************************************   tun / tap
+static void tun_usage()
+{
+	fprintf(stderr, "wftool tun usage: \n"
+		"wftool tun \n"
+		);
+}
+static void tap_usage()
+{
+	fprintf(stderr, "wftool tun usage: \n"
+		"wftool tap \n"
+		);
+}
+
+/* Flags: IFF_TUN   - TUN device (no Ethernet headers)
+ *        IFF_TAP   - TAP device
+ *        IFF_NO_PI - Do not provide packet information
+ */
+int tun_tap_create(int flags, char *ifname)
+{
+	struct ifreq ifr;
+    int fd, err;
+    char *clonedev = "/dev/net/tun";
+
+    if ((fd = open(clonedev, O_RDWR)) < 0) {
+        return fd;
+    }
+
+    memset(&ifr, 0, sizeof(ifr));
+    ifr.ifr_flags = flags;
+
+    if ((err = ioctl(fd, TUNSETIFF, (void *) &ifr)) < 0) {
+        close(fd);
+        return err;
+    }
+	strcpy(ifname, ifr.ifr_name);
+    printf("Open tun/tap device: %s for reading...\n", ifr.ifr_name);
+
+    return fd;
+}
+
+static int cmd_tun(int argc, char **argv)
+{
+	int fd = -1, nread = 0;
+	char ifname[18] = {'\0'};
+	char cmdline[256] = {'\0'};
+	char buffer[2048] = {'\0'};
+
+	if(!strcmp("tun", argv[0]))
+		fd = tun_tap_create(IFF_TUN | IFF_NO_PI, ifname);
+	else
+		fd = tun_tap_create(IFF_TAP | IFF_NO_PI, ifname);
+	wfprintf("fd=%d  ifname=%s \n", fd, ifname);
+	sprintf(cmdline, "ip addr add 192.8.8.2/24 dev %s", ifname);
+	system(cmdline);
+	sprintf(cmdline, "ip link set %s up", ifname);
+	system(cmdline);
+
+	while(1){
+		nread = read(fd, buffer, sizeof(buffer));
+		wfprintf("nread=%d \n", nread);
+		print_bytes((unsigned char *)&buffer[0], (unsigned int)nread);
+	}
+	close(fd);
+
+	return 0;
+}
+
+static int cmd_tap(int argc, char **argv)
+{
+	return cmd_tun(argc, argv);
+}
+
+
+// ************************************   tun / tap     *********** end
 
 
 
@@ -2162,6 +2273,8 @@ struct child_cmd_t cmd_list[] = {
 	{"usleep", wftool_cmd_init_call, usleep_usage, cmd_usleep},
 	{"nl", wftool_cmd_init_call, nl_usage, cmd_nl},
 	{"base64", wftool_cmd_init_call, base64_usage, cmd_base64},
+	{"tun", wftool_cmd_init_call, tun_usage, cmd_tun},
+	{"tap", wftool_cmd_init_call, tap_usage, cmd_tap},
 };
 
 int main(int argc, char **argv)

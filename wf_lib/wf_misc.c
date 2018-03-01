@@ -807,36 +807,36 @@ char *wf_std_error(int *errcode)
 	return strerror(errno);
 }
 
-void print_strn(char *str, unsigned int max_num)
+void fprint_strn(FILE *fp, char *str, unsigned int max_num)
 {
-	printf("[print_strn]:");
-	while(max_num && str && (*str != '\0'))
+	//fprintf(fp, "[print_strn]:");
+	while(max_num)
 	{
-		printf("%c", *str);
+		fprintf(fp, "%c", *str);
 		++str;
 		--max_num;
 	}
-	printf("\n");
+	fprintf(fp, "\n");
 }
 
-void print_bytes(unsigned char *byte, unsigned int max_num)
+void fprint_bytes(FILE *fp, unsigned char *byte, unsigned int max_num)
 {
 	int j = 0, show_len = 0, i = 0;
 	char show[16];
-	printf("[print_bytes]:");
+	//fprintf(fp, "[print_bytes]:");
 	while(max_num && byte)
 	{
 		if(j%16==0){
 			for(i=0; i<show_len; i++){
 				if(show[i] >= ' ' && show[i] <= '~')
-					printf("%c", show[i]);
+					fprintf(fp, "%c", show[i]);
 				else
-					printf(".");
+					fprintf(fp, ".");
 			}
 			show_len = 0;
-			printf("\n");
+			fprintf(fp, "\n");
 		}
-		printf("%02X ", *byte);
+		fprintf(fp, "%02X ", *byte);
 		show[show_len] = (char)*byte;
 		++show_len;
 		++j;
@@ -845,14 +845,14 @@ void print_bytes(unsigned char *byte, unsigned int max_num)
 	}
 	j = 16 - show_len;
 	for(i=0; i<j; i++)
-		printf("   ");
+		fprintf(fp, "   ");
 	for(i=0; i<show_len; i++){
 		if(show[i] >= ' ' && show[i] <= '~')
-			printf("%c", show[i]);
+			fprintf(fp, "%c", show[i]);
 		else
-			printf(".");
+			fprintf(fp, ".");
 	}
-	printf("\n");
+	fprintf(fp, "\n");
 }
 
 

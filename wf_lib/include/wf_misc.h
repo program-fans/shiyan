@@ -162,9 +162,12 @@ extern int already_running(const char *filename);
 
 extern char *wf_std_error(int *errcode);
 
-extern void print_strn(char *str, unsigned int max_num);
+extern void fprint_strn(FILE *fp, char *str, unsigned int max_num);
+#define print_strn(str, max_num) fprint_strn(stdout, str, max_num)
 
-extern void print_bytes(unsigned char *byte, unsigned int max_num);
+extern void fprint_bytes(FILE *fp, unsigned char *byte, unsigned int max_num);
+#define print_bytes(byte, max_num) fprint_bytes(stdout, byte, max_num)
+
 
 struct child_cmd_t
 {

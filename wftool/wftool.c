@@ -2348,6 +2348,13 @@ extern int cmd_tftpc(int argc, char **argv);
 
 // ************************************   tftp     *********** end
 
+// ************************************   webbench
+extern void webbench_usage(void);
+extern int webbench_main(int argc, char **argv);
+
+// ************************************   webbench     *********** end
+
+
 struct child_cmd_t cmd_list[] = {
 	{"ntorn", wftool_cmd_init_call, txt_usage, cmd_ntorn},
 	{"rnton", wftool_cmd_init_call, txt_usage, cmd_rnton},
@@ -2369,6 +2376,7 @@ struct child_cmd_t cmd_list[] = {
 	{"tun", wftool_cmd_init_call, tun_usage, cmd_tun},
 	{"tap", wftool_cmd_init_call, tap_usage, cmd_tap},
 	{"byte", wftool_cmd_init_call, NULL, cmd_byte},
+	{"webbench", wftool_cmd_init_call, webbench_usage, webbench_main},
 };
 
 int main(int argc, char **argv)

@@ -1035,10 +1035,16 @@ int arg_parse_set_value(struct arg_parse_t *p_arg, char *data)
 		return 0;
 }
 
-int arg_parse(int argc, char **argv, struct arg_parse_t *arg_plist, int *new_argc, char **new_argv)
+int arg_parse_go(int argc, char **argv, struct arg_parse_t *arg_plist, int *new_argc, char **new_argv, struct arg_parse_hook *hook)
 {
 	int i = 0, ret = 0, is_match = 0;
 	struct arg_parse_t *p_arg = NULL;
+	struct arg_parse_hook_data hook_data;
+
+	hook_data.argc = argc;
+	hook_data.argv = argv;
+	hook_data.arg_plist = arg_plist;
+	hook_data.last_match = NULL;
 
 	if(new_argc && new_argv){
 		new_argv[0] = argv[0];
@@ -1055,6 +1061,9 @@ int arg_parse(int argc, char **argv, struct arg_parse_t *arg_plist, int *new_arg
 			}
 			if(strcmp(argv[i], p_arg->key) == 0){
 				is_match = 1;
+				if(hook && hook->not_match_key)
+					hook_data.last_match = p_arg;
+				
 				if(p_arg->has_arg){
 					if(argv[++i]){
 						if(p_arg->arg_deal)
@@ -1070,11 +1079,18 @@ int arg_parse(int argc, char **argv, struct arg_parse_t *arg_plist, int *new_arg
 					else if(p_arg->arg_deal)
 						ret = p_arg->arg_deal(argv[i], NULL, p_arg->value_type, p_arg->value);
 				}
+				
+				if(ret < 0)
+					return ret;
+				break;
 			}
-			if(ret < 0)
-				return ret;
+			
 			++p_arg;
 		}
+
+		if(!is_match && hook && hook->not_match_key)
+			is_match = hook->not_match_key(argv[i], &hook_data, hook->not_match_key_hook_extend);
+		
 		if(!is_match && new_argc && new_argv){
 			new_argv[*new_argc] = argv[i];
 			*new_argc += 1;

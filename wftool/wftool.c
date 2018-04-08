@@ -980,9 +980,79 @@ int cmd_gethost(int argc, char **argv)
 void asc_usage()
 {
 	fprintf(stderr, "wftool asc usage: \n"
-		"wftool asc [-d] [-x] [-X] [-c] [-s] [--all] [--stage] \n"
+		"wftool asc [-d] [-x] [-c] [-s] [--all] [--stage] \n"
 		);
 }
+
+struct cmd_asc_info{
+	char *asc_s;
+	int asc_index;
+	int stage;
+	int start;
+	int end;
+};
+
+int cmd_asc_arg_deal(char *arg_key, char *arg_value, int value_type, void *value)
+{
+	struct cmd_asc_info *p_info = (struct cmd_asc_info *)value;
+	int tmp;
+
+	if(!strcmp(arg_key, "-s")){
+		strcpy(&(p_info->asc_s[++p_info->asc_index]), arg_value);
+		tmp = strlen(&(p_info->asc_s[p_info->asc_index]))-1;
+		p_info->asc_index = tmp>0 ? p_info->asc_index + tmp : p_info->asc_index;
+	}
+	else{
+		if( strstr(arg_value, "-") )
+			sscanf(arg_value, "%d-%d", &p_info->start, &p_info->end);
+		else if( strstr(arg_value, ":") )
+			sscanf(arg_value, "%d:%d", &p_info->start, &p_info->end);
+		if(p_info->start < 0)	p_info->start = 0;
+		if(p_info->end > 127)	p_info->end = 127;
+		if(p_info->start > p_info->end){
+			tmp = p_info->start;
+			p_info->start = p_info->end;
+			p_info->end = tmp;
+		}
+		p_info->stage = 1;
+	}
+
+	return 0;
+}
+
+int cmd_asc_arg_hook(char *arg, struct arg_parse_hook_data *hook_data, void *extend)
+{
+	struct cmd_asc_info *p_info = (struct cmd_asc_info *)extend;
+	int asc_d = 0;
+	char asc_c = '\0';
+	
+	if(!hook_data->last_match)
+		return 0;
+	if(!strcmp(hook_data->last_match->key, "-d")){
+		if(sscanf(arg, "%d", &asc_d) == 1)
+				p_info->asc_s[++p_info->asc_index] = (char)asc_d;
+		else
+			return 0;
+	}
+	else if(!strcmp(hook_data->last_match->key, "-x")){
+		if(sscanf(arg, "%x", &asc_d) == 1)
+				p_info->asc_s[++p_info->asc_index] = (char)asc_d;
+		else
+			return 0;
+	}
+	else if(!strcmp(hook_data->last_match->key, "-c")){
+		if(sscanf(arg, "%c", &asc_c) == 1)
+				p_info->asc_s[++p_info->asc_index] = asc_c;
+		else
+			return 0;
+	}
+	else
+		return 0;
+
+	return 1;
+}
+
+struct cmd_asc_info asc_info;
 
 int cmd_asc(int argc, char **argv)
 {
@@ -1023,76 +1093,51 @@ int cmd_asc(int argc, char **argv)
 	};
 	char asc127_note[128]="DEL(delete)";
 	int i=0, j=0;
-	int asc_d=0;
-	char *asc_s = asc_buf;
-	int s_index = -1;
-	int stage = 0, start = 0, end = 127;
 
-	while(argv[++i])
-	{
-		if( strcmp(argv[i], "-d") == 0 && argv[++i]){
-			sscanf(argv[i], "%d", &asc_d);
-			asc_s[++s_index] = (char)asc_d;
-		}
-		else if( strcmp(argv[i], "-X") == 0 && argv[++i]){
-			sscanf(argv[i], "%X", &asc_d);
-			asc_s[++s_index] = (char)asc_d;
-		}
-		else if( strcmp(argv[i], "-x") == 0 && argv[++i]){
-			sscanf(argv[i], "%x", &asc_d);
-			asc_s[++s_index] = (char)asc_d;
-		}
-		else if( strcmp(argv[i], "-c") == 0 && argv[++i])
-			sscanf(argv[i], "%c", &asc_s[++s_index]);
-		else if( strcmp(argv[i], "-s") == 0 && argv[++i]){
-			strcpy(&asc_s[++s_index], argv[i]);
-			j = strlen(&asc_s[s_index])-1;
-			s_index = j>0 ? s_index + j : s_index;
-		}
-		else if( strcmp(argv[i], "--all") == 0 )
-			stage = 1;
-		else if( strcmp(argv[i], "--stage") == 0 && argv[++i]){
-			if( strstr(argv[i], "-") )
-				sscanf(argv[i], "%d-%d", &start, &end);
-			else if( strstr(argv[i], ":") )
-				sscanf(argv[i], "%d:%d", &start, &end);
-			if(start < 0)	start = 0;
-			if(end > 127)	end = 127;
-			if(start > end){
-				stage = start;
-				start = end;
-				end = stage;
-			}
-			stage = 1;
-		}
-		else{
-			printf("invalid param: %s \n", argv[i]);
-			return -1;
-		}
+	struct arg_parse_t asc_arg_list[] = {
+		{"--all", &asc_info.stage, 0, 0, NULL, ARG_VALUE_TYPE_INT, 1, NULL},
+		{"--stage", &asc_info, 0, 1, cmd_asc_arg_deal, 0, 0, NULL},
+		{"-s", &asc_info, 0, 1, cmd_asc_arg_deal, 0, 0, NULL},
+		{"-d", &asc_info, 0, 0, NULL, 0, 0, NULL},
+		{"-x", &asc_info, 0, 0, NULL, 0, 0, NULL},
+		{"-c", &asc_info, 0, 0, NULL, 0, 0, NULL},
+		arg_parse_t_init_null};
+	struct arg_parse_hook asc_arg_hook = {cmd_asc_arg_hook, &asc_info};
+
+	asc_info.asc_index = -1;
+	asc_info.asc_s = asc_buf;
+	asc_info.start = 0;
+	asc_info.end = 127;
+	if(arg_parse_go(argc, argv, asc_arg_list, NULL, NULL, &asc_arg_hook) < 0){
+		asc_usage();
+		exit(0);
 	}
 
-	printf("dec\thex\tchar\tnote \n");
-
-	if(s_index >= 0)
+	if(asc_info.asc_index >= 0)
 	{
-		for(j=0; j<=s_index; j++){
-			if(asc_s[j] < 0 || asc_s[j] > 127){
-				printf("invaild asc \n");
+		printf("\ndec\thex\tchar\tnote \n");
+		printf("----------------------------------------\n");
+		for(j=0; j<=asc_info.asc_index; j++){
+			if(asc_info.asc_s[j] < 0 || asc_info.asc_s[j] > 127){
+				printf("invaild asc (dec: %d  hex: 0x%x) \n", (int)asc_info.asc_s[j], asc_info.asc_s[j]);
 				continue;
 			}
-			if(asc_s[j] >=0 && asc_s[j] <= 32)
-				printf("%d\t0x%02X\t\t%s \n", (int)asc_s[j], asc_s[j], asc_note[(int)asc_s[j]]);
-			else if( asc_s[j] == 127 )
-				printf("%d\t0x%02X\t\t%s \n", (int)asc_s[j], asc_s[j], asc127_note);
+			if(asc_info.asc_s[j] >=0 && asc_info.asc_s[j] <= 32)
+				printf("%d\t0x%02X\t\t%s \n", (int)asc_info.asc_s[j], asc_info.asc_s[j], asc_note[(int)asc_info.asc_s[j]]);
+			else if( asc_info.asc_s[j] == 127 )
+				printf("%d\t0x%02X\t\t%s \n", (int)asc_info.asc_s[j], asc_info.asc_s[j], asc127_note);
 			else
-				printf("%d\t0x%02X\t%c \n", (int)asc_s[j], asc_s[j], asc_s[j]);
+				printf("%d\t0x%02X\t%c \n", (int)asc_info.asc_s[j], asc_info.asc_s[j], asc_info.asc_s[j]);
 		}
+		printf("----------------------------------------\n");
 	}
 
-	if(stage)
+	if(asc_info.stage)
 	{
+		printf("\ndec\thex\tchar\tnote \n");
 		printf("----------------------------------------\n");
-		for(j=start; j<=end; j++){
+		
+		for(j=asc_info.start; j<=asc_info.end; j++){
 			if(j >=0 && j <= 32)
 				printf("%d\t0x%02X\t\t%s \n", j, j, asc_note[j]);
 			else if( j == 127 )
@@ -2242,6 +2287,54 @@ static int cmd_tap(int argc, char **argv)
 // ************************************   tun / tap     *********** end
 
 
+// ************************************   byte
+
+static int cmd_byte(int argc, char **argv)
+{
+	int i = 1, ret = 0;
+	unsigned long long byte = 0;
+	float G = 0.0, M = 0.0, K = 0.0, B = 0.0;
+	char unit = 'B';
+
+	for(i=1; i<argc; i++){
+		ret = sscanf(argv[i], "%llu%c", &byte, &unit);
+		if(ret <= 0)
+			unit = '\0';
+		else if(ret == 1)
+			unit = 'B';
+
+		if(unit == 'b' || unit == 'B'){
+			G = (float)byte / 0x40000000;
+			M = (float)byte / 0x100000;
+			K = (float)byte / 1024;
+
+			printf("%llu B  --> %f KB  %f MB  %f GB \n", byte, K, M, G);
+		}
+		else if(unit == 'k' || unit == 'K'){
+			G = (float)byte / 0x100000;
+			M = (float)byte / 1024;
+
+			printf("%llu KB  --> %llu B  %f MB  %f GB \n", byte, byte * 1024, M, G);
+		}
+		else if(unit == 'm' || unit == 'M'){
+			G = (float)byte / 1024;
+
+			printf("%llu MB  --> %llu B  %llu KB  %f GB \n", byte, byte * 0x100000, byte * 1024, G);
+		}
+		else if(unit == 'g' || unit == 'G'){
+			printf("%llu GB  --> %llu B  %llu KB  %llu MB \n", byte, byte * 0x40000000, byte * 0x100000, byte * 1024);
+		}
+		else
+			printf("%s ---> ? \n", argv[i]);
+	}
+
+	return 0;
+}
+
+// ************************************   byte     *********** end
+
+
+
 
 int wftool_cmd_init_call(int argc, char **argv, struct child_cmd_t *pcmd)
 {
@@ -2275,6 +2368,7 @@ struct child_cmd_t cmd_list[] = {
 	{"base64", wftool_cmd_init_call, base64_usage, cmd_base64},
 	{"tun", wftool_cmd_init_call, tun_usage, cmd_tun},
 	{"tap", wftool_cmd_init_call, tap_usage, cmd_tap},
+	{"byte", wftool_cmd_init_call, NULL, cmd_byte},
 };
 
 int main(int argc, char **argv)

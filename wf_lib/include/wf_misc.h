@@ -180,6 +180,7 @@ extern int wf_child_cmd(int argc, char **argv, struct child_cmd_t *cmd_list, int
 #define wf_child_cmd_simple(argc, argv, cmd_array, main_cmd_name) wf_child_cmd(argc, argv, cmd_array, ARRAY_NUM(cmd_array), main_cmd_name, NULL)
 #define wf_child_cmd_mini(cmd_array, main_cmd_name) wf_child_cmd(argc, argv, cmd_array, ARRAY_NUM(cmd_array), main_cmd_name, NULL)
 
+
 enum ARG_VALUE_TYPE{
 	ARG_VALUE_TYPE_NONE,
 	ARG_VALUE_TYPE_CHAR,
@@ -204,8 +205,26 @@ struct arg_parse_t
 	char *set_string;
 };
 #define arg_parse_t_init_null {NULL, NULL, 0, 0, NULL, 0, 0, NULL},
-extern int arg_parse(int argc, char **argv, struct arg_parse_t *arg_plist, int *new_argc, char **new_argv);
+
+struct arg_parse_hook_data{
+	int argc;
+	char **argv;
+//	int *new_argc;
+//	char **new_argv;
+	struct arg_parse_t *arg_plist;
+	struct arg_parse_t *last_match;
+};
+
+struct arg_parse_hook{
+	int (*not_match_key)(char *arg, struct arg_parse_hook_data *hook_data, void *extend); // retrun ture: skip this arg; return false: store to new_argv
+	void *not_match_key_hook_extend;
+};
+
 extern int arg_deal_default(char *arg_key, char *arg_value, int value_type, void *value);
+extern int arg_parse_go(int argc, char **argv, struct arg_parse_t *arg_plist, int *new_argc, char **new_argv, struct arg_parse_hook *hook);
+#define arg_parse(argc, argv, arg_plist, new_argc, new_argv) arg_parse_go(argc, argv, arg_plist, new_argc, new_argv, NULL)
+
+
 
 // -------------------------------------------------------------------
 #ifndef WF_CURSOR

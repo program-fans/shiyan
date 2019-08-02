@@ -162,8 +162,9 @@ extern int already_running(const char *filename);
 
 extern char *wf_std_error(int *errcode);
 
+extern void __fprint_strn(FILE *fp, char *str, unsigned int max_num, char *startl, char *endl);
 extern void fprint_strn(FILE *fp, char *str, unsigned int max_num);
-#define print_strn(str, max_num) fprint_strn(stdout, str, max_num)
+#define print_strn(str, max_num) __fprint_strn(stdout, str, max_num, NULL, "\n")
 
 extern void fprint_bytes(FILE *fp, unsigned char *byte, unsigned int max_num);
 #define print_bytes(byte, max_num) fprint_bytes(stdout, byte, max_num)

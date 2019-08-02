@@ -18,6 +18,14 @@ void wf_buffer_free(struct wf_buffer *buffer, int free_self)
 		memset(buffer, 0, sizeof(struct wf_buffer));
 }
 
+void wf_buffer_clean(struct wf_buffer *buffer)
+{
+	if(buffer->data)
+		memset(buffer->data, 0, buffer->size);
+	buffer->len = 0;
+	buffer->offset = 0;
+}
+
 struct wf_buffer *wf_buffer_malloc(struct wf_buffer *buffer, unsigned int size)
 {
 	struct wf_buffer *p = buffer, *p_malloc = NULL;
@@ -31,7 +39,7 @@ struct wf_buffer *wf_buffer_malloc(struct wf_buffer *buffer, unsigned int size)
 		p_malloc = p;
 	}
 
-	p->data = (char *)malloc(size);
+	p->data = (char *)malloc(size+1);
 	if(!p->data){
 		if(p_malloc)
 			wf_buffer_free(p, 1);
@@ -49,7 +57,7 @@ struct wf_buffer *wf_buffer_remalloc(struct wf_buffer *buffer, unsigned int size
 		return NULL;
 	if(buffer->data)
 		free(buffer->data);
-	buffer->data = (char *)malloc(size);
+	buffer->data = (char *)malloc(size+1);
 	if(!buffer->data){
 		return NULL;
 	}
@@ -63,8 +71,8 @@ struct wf_buffer *wf_buffer_set(struct wf_buffer *buffer, char *data, int size)
 {
 	if(!buffer || !data || !size)
 		return NULL;
-	if((size+1) > buffer->size)
-		wf_buffer_remalloc(buffer, size+1);
+	if(size > buffer->size)
+		wf_buffer_remalloc(buffer, size);
 	else
 		memset(buffer->data, 0, buffer->size);
 	memcpy(buffer->data, data, size);
@@ -100,7 +108,7 @@ struct wf_buffer *wf_buffer_cat(struct wf_buffer *dst, struct wf_buffer *src)
 	if(!src || !src->data || !src->len)
 		return dst;
 	
-	new_size = dst->len + src->len + 1;
+	new_size = dst->len + src->len;
 	if(new_size > dst->size && !wf_buffer_malloc(&new_buffer, new_size))
 		return NULL;
 	if(new_buffer.data){
@@ -125,6 +133,19 @@ struct wf_buffer *wf_buffer_append(struct wf_buffer *dst, void *src, int size)
 	tmp.len = size;
 	return wf_buffer_cat(dst, &tmp);
 }
+
+int wf_buffer_dump(struct wf_buffer *src, void *dst, int size)
+{
+	int dump = src->len - src->offset;
+
+	if(dump <= 0)
+		return 0;
+	if(dump > size) dump = size;
+	memcpy(dst, src->data + src->offset, dump);
+	src->offset += dump;
+	return dump;
+}
+
 
 
 
@@ -466,18 +487,18 @@ int strnicmp_2(char *str1, char *str2, int len)
 {
 	int i=0, len1=strlen(str1), len2=strlen(str2);
 
-	if(len1 < len2 || len1 < len || len2 < len)
+	if(len1 < len || len2 < len)
 		return 1;
 
 	for(i=0; i<len; i++)
 	{
-		if( isAlphabet(str2[i]) )
-		{
+		if(str1[i] == str2[i])
+			continue;
+		if( isAlphabet(str2[i]) ){
 			if( (str1[i] + 32) != str2[i] && (str2[i] + 32) != str1[i] )
 				return 1;
 		}
-		else
-		{
+		else{
 			if( str1[i] != str2[i] )
 				return 1;
 		}
@@ -485,6 +506,7 @@ int strnicmp_2(char *str1, char *str2, int len)
 
 	return 0;
 }
+
 
 int stricmp_2(char *str1, char *str2)
 {
@@ -496,13 +518,13 @@ int stricmp_2(char *str1, char *str2)
 	
 	for(i=0; i<len; i++)
 	{
-		if( isAlphabet(str2[i]) )
-		{
+		if(str1[i] == str2[i])
+			continue;
+		if( isAlphabet(str2[i]) ){
 			if( (str1[i] + 32) != str2[i] && (str2[i] + 32) != str1[i] )
 				return 1;
 		}
-		else
-		{
+		else{
 			if( str1[i] != str2[i] )
 				return 1;
 		}

@@ -1,4 +1,5 @@
 mlist = wf
+mlist = scull
 
 all:
 	@for d in $(mlist); do \

@@ -436,7 +436,7 @@ int cmd_udp(int argc, char **argv)
 		}
 	}
 	
-	cmd_udp_globel.udp_sock= wf_udp_socket(hport, 0, dev);
+	cmd_udp_globel.udp_sock= wf_udp_socket(hport, 1, dev);
 	if(cmd_udp_globel.udp_sock < 0){
 		printf("error: %s \n", wf_socket_error(NULL));
 		return 0;
@@ -2174,6 +2174,7 @@ static int cmd_base64(int argc, char **argv)
 			wfprintf("fopen %s failed: %s \n", base64_info.file, strerror(errno));
 			return 0;
 		}
+		printf("\n");
 		while(!feof(fp)){
 			memset(in, 0, sizeof(in));
 			memset(out, 0, sizeof(out));
@@ -2186,20 +2187,25 @@ static int cmd_base64(int argc, char **argv)
 
 				if(out_fp)
 					fwrite(out, 1, ret, out_fp);
-				printf("\n");
 				if(base64_info.out_hex)
 					print_bytes(out, ret);
 				else
-					print_strn(out, ret);
+					__fprint_strn(stdout, out, ret, NULL, NULL);
 			}
 		}
+		fclose(fp);
+		
 		memset(out, 0, sizeof(out));
 		if(base64_info.decode)
-			base64_decode_finish(&bs_cxt, (unsigned char *)&out[0], sizeof(out)-1);
+			ret = base64_decode_finish(&bs_cxt, (unsigned char *)&out[0], sizeof(out)-1);
 		else
-			base64_encode_finish(&bs_cxt, out, sizeof(out)-1);
-		printf("%s\n", out);
-		fclose(fp);
+			ret = base64_encode_finish(&bs_cxt, out, sizeof(out)-1);
+		if(out_fp)
+			fwrite(out, 1, ret, out_fp);
+		if(base64_info.out_hex)
+			print_bytes(out, ret);
+		else
+			__fprint_strn(stdout, out, ret, NULL, "\n");
 	}
 
 	if(out_fp)
@@ -2333,6 +2339,22 @@ static int cmd_byte(int argc, char **argv)
 
 // ************************************   byte     *********** end
 
+int tohex_main(int argc, char **argv)
+{
+	unsigned char *dst = NULL;
+	char *asc = argv[1];
+	int asc_n = 0;
+	if(!asc)
+		return 0;
+	asc_n = strlen(asc);
+	dst = (unsigned char *)malloc((asc_n + 1) * 2);
+	if(!dst)
+		return 0;
+	asc2bcd(dst, asc, asc_n);
+	printf("%s", dst);
+	return 0;
+}
+
 
 
 
@@ -2353,6 +2375,10 @@ extern void webbench_usage(void);
 extern int webbench_main(int argc, char **argv);
 
 // ************************************   webbench     *********** end
+
+// ************************************   kobj_uevent
+extern int kobj_uevent_main(int argc, char **argv);
+// ************************************   kobj_uevent     *********** end
 
 
 struct child_cmd_t cmd_list[] = {
@@ -2377,6 +2403,8 @@ struct child_cmd_t cmd_list[] = {
 	{"tap", wftool_cmd_init_call, tap_usage, cmd_tap},
 	{"byte", wftool_cmd_init_call, NULL, cmd_byte},
 	{"webbench", wftool_cmd_init_call, webbench_usage, webbench_main},
+	{"kobj_uevent", wftool_cmd_init_call, NULL, kobj_uevent_main},
+	{"tohex", wftool_cmd_init_call, NULL, tohex_main},
 };
 
 int main(int argc, char **argv)

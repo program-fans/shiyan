@@ -6,44 +6,169 @@
 #include <linux/types.h>
 #include <linux/timer.h>
 
-#include <linux/skbuff.h>
 #include <linux/netfilter.h>
 #include <linux/if_ether.h>
 
-#include <linux/netlink.h>
 #include <net/net_namespace.h> // for init_net
 #include <linux/seq_file.h>
 #include <linux/proc_fs.h>
 
-#if 0
-#define WF_ASSERT_POINTER(p) do{ \
-		if(!(p)){ \
-			printk("[%s:%d] "#p" is NULL\n", __FUNCTION__, __LINE__); \
-			BUG(); \
-		} \
-	}while(0)
+#include "wf.h"
+
+#include <net/netfilter/nf_conntrack_extend.h>
+
+
+// -------------- api
+//smp_processor_id
+void ct_status_2_str(struct nf_conn *ct, char *str, int size)
+{
+	char ct_status[256] = {'\0'};
+
+	if (test_bit(IPS_SEEN_REPLY_BIT, &ct->status))
+		strcat(ct_status, " SEEN_REPLY");
+	if (test_bit(IPS_ASSURED_BIT, &ct->status))
+		strcat(ct_status, " ASSURED");
+	if (test_bit(IPS_CONFIRMED_BIT, &ct->status))
+		strcat(ct_status, " CONFIRMED");
+	if (test_bit(IPS_DYING_BIT, &ct->status))
+		strcat(ct_status, " DYING");
+	if (test_bit(IPS_FIXED_TIMEOUT_BIT, &ct->status))
+		strcat(ct_status, " FIXED_TIMEOUT");
+	if (test_bit(IPS_TEMPLATE_BIT, &ct->status))
+		strcat(ct_status, " TEMPLATE");
+	if (test_bit(IPS_UNTRACKED_BIT, &ct->status))
+		strcat(ct_status, " UNTRACKED");
+	if(ct_status[0] == ' ')
+		strncpy(str, &ct_status[1], size-1);
+	else
+		str[0] = '\0';
+}
+
+struct nf_conn *skb2ct(const struct sk_buff *skb, enum ip_conntrack_dir *ct_dir,enum ip_conntrack_info *pctinfo)
+{
+	struct nf_conn * ct = NULL;
+
+	ct = nf_ct_get(skb, pctinfo);
+	if(!ct){
+		return NULL;
+	}
+	*ct_dir = *pctinfo >= IP_CT_IS_REPLY ? IP_CT_DIR_REPLY : IP_CT_DIR_ORIGINAL;
+
+	return ct;
+}
+
+
+void netlink_skb_init(struct sk_buff *skb, u32 type, u32 seq, pid_t dst_pid, unsigned int payload_len)
+{
+	struct nlmsghdr * _nlh = NULL;
+
+	WF_ASSERT_POINTER(skb);
+
+	_nlh = (struct nlmsghdr *)skb->data;
+	_nlh->nlmsg_type = type;
+	_nlh->nlmsg_seq = seq;
+	_nlh->nlmsg_len = NLMSG_SPACE(payload_len);
+
+#if LINUX_VERSION_CODE == KERNEL_VERSION(2,6,12)
+	NETLINK_CB(skb).groups = 0;
+#endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
+	NETLINK_CB(skb).portid = 0;
 #else
-#define WF_ASSERT_POINTER(p) do{}while(0)
+	NETLINK_CB(skb).pid = 0;
+#endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,21)
+#else
+	NETLINK_CB(skb).dst_pid = dst_pid;
 #endif
 
-
-#define wfptk_err(fmt, args...)		printk(KERN_ERR"WFKO[%s:%d] "fmt, __FUNCTION__, __LINE__, ##args)
-#if 1
-#define wfptk_debug(fmt, args...)		printk(KERN_DEBUG"WFKO[%s:%d] "fmt, __FUNCTION__, __LINE__, ##args)
+#ifdef NET_SKBUFF_DATA_USES_OFFSET
+	skb->tail = NLMSG_SPACE(payload_len);
 #else
-#define wfptk_debug(fmt, args...)
+	skb->tail = skb->head + NLMSG_SPACE(payload_len);
 #endif
-#define wfptk(fmt, args...)		printk(KERN_INFO"WFKO[%s:%d] "fmt, __FUNCTION__, __LINE__, ##args)
-#define wfptkversion()		printk(KERN_INFO"WFKO[%s:%d] kernel version: %d.%d.%d \n", __FUNCTION__, __LINE__, ((LINUX_VERSION_CODE >> 16) & 0xFFFF), ((LINUX_VERSION_CODE >> 8) & 0xFF), (LINUX_VERSION_CODE & 0xFF))
 
-#define WFKO_VERSION "1.1.1"
+	skb->len = NLMSG_SPACE(payload_len);
+}
 
+struct sk_buff *netlink_alloc_skb_and_init(u32 type, u32 seq, pid_t dst_pid, unsigned int payload_len, gfp_t *priority)
+{
+	struct sk_buff *skb;
+	gfp_t set_priority = in_atomic() ? GFP_ATOMIC :GFP_KERNEL;
+	
+	if(priority)
+		set_priority = *priority;
+	skb = alloc_skb(NLMSG_SPACE(payload_len), set_priority);
+	if (!skb ){
+		return NULL;
+	}
+	netlink_skb_init(skb, type, seq, dst_pid, payload_len);
+	return skb;
+}
 
+int netlink_skb_push_data(struct nlmsghdr *nlh, int *offset, void *data, int len)
+{
+	WF_ASSERT_POINTER(nlh);
+	WF_ASSERT_POINTER(data);
+
+//	wfptk_debug("pdata=%p len=%d nlh->nlmsg_len=%d\n", data, len, nlh->nlmsg_len);
+	if(len > (nlh->nlmsg_len - (*offset))){
+	//	wfptk_debug("pdata=%p len=%d nlh->nlmsg_len=%d\n", data, len, nlh->nlmsg_len);
+		return -1;
+	}
+
+	memcpy(NLMSG_DATA(nlh) + (*offset), data, len);
+	(*offset) += len;
+
+	return 0;
+}
+
+int netlink_skb_pop_data(struct nlmsghdr *nlh, int *offset, void *data, int len)
+{
+	WF_ASSERT_POINTER(nlh);
+	WF_ASSERT_POINTER(data);
+
+//	wfptk_debug("pdata=%p len=%d nlh->nlmsg_len=%d\n", data, len, nlh->nlmsg_len);
+	if(len > (nlh->nlmsg_len - (*offset))){
+//		wfptk_debug("pdata=%p len=%d nlh->nlmsg_len=%d\n", data, len, nlh->nlmsg_len);
+		return -1;
+	}
+	memcpy(data, NLMSG_DATA(nlh) + (*offset),len);
+	(*offset) += len;
+
+	return 0;
+}
+
+int netlink_send_data(struct sock *nlsk, struct sk_buff *skb, void *data, int len)
+{
+	struct nlmsghdr *_nlh = NULL;
+	int offset = 0;
+
+	_nlh = (struct nlmsghdr *)skb ->data;
+	if(netlink_skb_push_data(_nlh, &offset, data, len)){
+		return -1;
+	}
+	return netlink_unicast(nlsk, skb, _nlh->nlmsg_pid, MSG_DONTWAIT);
+}
+
+int netlink_broadcast_data(struct sock *nlsk, struct sk_buff *skb, u32 dst_groups, void *data, int len)
+{
+	struct nlmsghdr *_nlh = NULL;
+	int offset = 0;
+
+	_nlh = (struct nlmsghdr *)skb ->data;
+	if(netlink_skb_push_data(_nlh, &offset, data, len)){
+		return -1;
+	}
+	return netlink_broadcast(nlsk, skb, 0, dst_groups, GFP_ATOMIC);
+}
+
+// -------------- api --- end
 
 static struct timer_list broadcast_hello_timer;
 
 
-unsigned int wfko_prerouting(unsigned int hooknum,
+unsigned int wf_after_conntrack_in(unsigned int hooknum,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,27)
 	struct sk_buff *skb,
 #else
@@ -56,22 +181,50 @@ unsigned int wfko_prerouting(unsigned int hooknum,
 #else
 	struct sk_buff * skb = *pskb;
 #endif
+	struct nf_conn *ct;
+	enum ip_conntrack_dir ct_dir = IP_CT_DIR_MAX;
+	enum ip_conntrack_info pctinfo;
 
-//	if(skb)
-//		wfptk("skb \n");
+	char strbuf[256] = {'\0'};
+
+	if(!skb)
+		return NF_ACCEPT;
+
+	ct = skb2ct(skb, &ct_dir, &pctinfo);
+	wfptk("indev=[%s] outdev=[%s] skb->nfctinfo=%d  ct_dir=%d  ct=%p \n", in ? in->name : "null", out ? out->name : "null", skb->nfctinfo, ct_dir, ct);
+	if(ct){
+		ct_status_2_str(ct, strbuf, sizeof(strbuf));
+		wfptk("conn status=[%s] ext-len=%d\n", strbuf, ct->ext ? ct->ext->len : 0);
+	}
 	
 	return NF_ACCEPT;
 }
 
-static struct nf_hook_ops wfko_prerouting_hook = {
-	.hook = wfko_prerouting,
+static struct nf_hook_ops wf_after_conntrack_in_hookops[] = 
+{
+	{
+		.hook = wf_after_conntrack_in,
 #if LINUX_VERSION_CODE == KERNEL_VERSION(2,6,12)
-	.fnname = "wfko_prerouting",
+		.fnname = "wf_after_conntrack_in",
 #endif
-	.owner = THIS_MODULE,
-	.pf = PF_INET,
-	.hooknum = NF_INET_PRE_ROUTING,
-	.priority = INT_MIN,
+		.owner = THIS_MODULE,
+		.pf = PF_INET,
+		.hooknum = NF_INET_PRE_ROUTING,
+		.priority = NF_IP_PRI_CONNTRACK + 1,
+	//	.priority = INT_MIN,
+	},
+	{
+		.hook = wf_after_conntrack_in,
+#if LINUX_VERSION_CODE == KERNEL_VERSION(2,6,12)
+		.fnname = "wf_after_conntrack_in",
+#endif
+		.owner = THIS_MODULE,
+		.pf = PF_INET,
+		.hooknum = NF_INET_LOCAL_OUT,
+		.priority = NF_IP_PRI_CONNTRACK + 1,
+	//	.priority = INT_MIN,
+	},
+
 };
 
 
@@ -166,7 +319,7 @@ static int wf_misc_proc_read( char *page, char **start, off_t off,int count,int 
 static int wf_netlink_id_proc_show(struct seq_file *s, void *p)
 {
 	void *arg = s->private;
-	s->private = NULL; // must set NULL. kfree(seq->private) at seq_release_private
+	s->private = NULL; // must set NULL.  do not wish kfree(seq->private) in seq_release_private
 	if(arg == proc_wf_netlink_grp_id)
 		return seq_printf(s, "%d\n", wf_netlink_grp_id);
 	else
@@ -280,111 +433,6 @@ static int wf_proc_init(void)
 }
 
 
-void netlink_skb_init(struct sk_buff *skb, u32 type, u32 seq, pid_t dst_pid, unsigned int payload_len)
-{
-	struct nlmsghdr * _nlh = NULL;
-
-	WF_ASSERT_POINTER(skb);
-
-	_nlh = (struct nlmsghdr *)skb->data;
-	_nlh->nlmsg_type = type;
-	_nlh->nlmsg_seq = seq;
-	_nlh->nlmsg_len = NLMSG_SPACE(payload_len);
-
-#if LINUX_VERSION_CODE == KERNEL_VERSION(2,6,12)
-	NETLINK_CB(skb).groups = 0;
-#endif
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
-	NETLINK_CB(skb).portid = 0;
-#else
-	NETLINK_CB(skb).pid = 0;
-#endif
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,21)
-#else
-	NETLINK_CB(skb).dst_pid = dst_pid;
-#endif
-
-#ifdef NET_SKBUFF_DATA_USES_OFFSET
-	skb->tail = NLMSG_SPACE(payload_len);
-#else
-	skb->tail = skb->head + NLMSG_SPACE(payload_len);
-#endif
-
-	skb->len = NLMSG_SPACE(payload_len);
-}
-
-struct sk_buff *netlink_alloc_skb_and_init(u32 type, u32 seq, pid_t dst_pid, unsigned int payload_len, gfp_t *priority)
-{
-	struct sk_buff *skb;
-	gfp_t set_priority = in_atomic() ? GFP_ATOMIC :GFP_KERNEL;
-	
-	if(priority)
-		set_priority = *priority;
-	skb = alloc_skb(NLMSG_SPACE(payload_len), set_priority);
-	if (!skb ){
-		return NULL;
-	}
-	netlink_skb_init(skb, type, seq, dst_pid, payload_len);
-	return skb;
-}
-
-int netlink_skb_push_data(struct nlmsghdr *nlh, int *offset, void *data, int len)
-{
-	WF_ASSERT_POINTER(nlh);
-	WF_ASSERT_POINTER(data);
-
-//	wfptk_debug("pdata=%p len=%d nlh->nlmsg_len=%d\n", data, len, nlh->nlmsg_len);
-	if(len > (nlh->nlmsg_len - (*offset))){
-	//	wfptk_debug("pdata=%p len=%d nlh->nlmsg_len=%d\n", data, len, nlh->nlmsg_len);
-		return -1;
-	}
-
-	memcpy(NLMSG_DATA(nlh) + (*offset), data, len);
-	(*offset) += len;
-
-	return 0;
-}
-
-int netlink_skb_pop_data(struct nlmsghdr *nlh, int *offset, void *data, int len)
-{
-	WF_ASSERT_POINTER(nlh);
-	WF_ASSERT_POINTER(data);
-
-//	wfptk_debug("pdata=%p len=%d nlh->nlmsg_len=%d\n", data, len, nlh->nlmsg_len);
-	if(len > (nlh->nlmsg_len - (*offset))){
-//		wfptk_debug("pdata=%p len=%d nlh->nlmsg_len=%d\n", data, len, nlh->nlmsg_len);
-		return -1;
-	}
-	memcpy(data, NLMSG_DATA(nlh) + (*offset),len);
-	(*offset) += len;
-
-	return 0;
-}
-
-int netlink_send_data(struct sock *nlsk, struct sk_buff *skb, void *data, int len)
-{
-	struct nlmsghdr *_nlh = NULL;
-	int offset = 0;
-
-	_nlh = (struct nlmsghdr *)skb ->data;
-	if(netlink_skb_push_data(_nlh, &offset, data, len)){
-		return -1;
-	}
-	return netlink_unicast(nlsk, skb, _nlh->nlmsg_pid, MSG_DONTWAIT);
-}
-
-int netlink_broadcast_data(struct sock *nlsk, struct sk_buff *skb, u32 dst_groups, void *data, int len)
-{
-	struct nlmsghdr *_nlh = NULL;
-	int offset = 0;
-
-	_nlh = (struct nlmsghdr *)skb ->data;
-	if(netlink_skb_push_data(_nlh, &offset, data, len)){
-		return -1;
-	}
-	return netlink_broadcast(nlsk, skb, 0, dst_groups, GFP_ATOMIC);
-}
-
 static int __wf_netlink_send(struct nlmsghdr *nlh, u16 *type, u16 *flags, int *index, void *data, int len)
 {
 	struct sk_buff *skb = NULL;
@@ -428,7 +476,7 @@ static int wf_netlink_send_ack(struct nlmsghdr * nlh, int ret_code)
 	return __wf_netlink_send(nlh, NULL, &flags, NULL, &ret_code, sizeof(ret_code));
 }
 
-static int wf_netlink_send_msg_2_user(pid_t pid, u32 type, void *data, int len)
+int wf_netlink_send_msg_2_user(pid_t pid, u32 type, void *data, int len)
 {
 	struct sk_buff *skb;
 	struct nlmsghdr *nlh;
@@ -444,7 +492,7 @@ static int wf_netlink_send_msg_2_user(pid_t pid, u32 type, void *data, int len)
 	return netlink_send_data(wf_netlink_grp_sock, skb, data, len);
 }
 
-static int wf_netlink_broadcast_msg(u32 dst_groups, u32 type, void *data, int len)
+int wf_netlink_broadcast_msg(u32 dst_groups, u32 type, void *data, int len)
 {
 	struct sk_buff *skb;
 	struct nlmsghdr *nlh;
@@ -543,7 +591,7 @@ static int __init wf_init(void)
 	wfptkversion();
 	wfptk("wf.ko start \n");
 
-	ret = nf_register_hook(&wfko_prerouting_hook);
+	ret = nf_register_hooks(wf_after_conntrack_in_hookops, ARRAY_SIZE(wf_after_conntrack_in_hookops));
 	if (ret < 0) {
 		wfptk("can't register wfko_prerouting_hook.\n");
 	}
@@ -559,28 +607,36 @@ static int __init wf_init(void)
     		.groups = 32,
     	};
 		for(netlink_id=MAX_LINKS-1; netlink_id>0; netlink_id--){
-			wf_netlink_sock = netlink_kernel_create(&init_net, netlink_id, &sock_cfg);
-			wfptk("create netlink %s id=%d \n", wf_netlink_sock ? "ok" : "failed", netlink_id);
-			if(wf_netlink_sock){
-				wf_netlink_id = netlink_id;
+			if(!wf_netlink_sock){
+				wf_netlink_sock = netlink_kernel_create(&init_net, netlink_id, &sock_cfg);
+				wfptk("create netlink %s id=%d \n", wf_netlink_sock ? "ok" : "failed", netlink_id);
+				if(wf_netlink_sock)
+					wf_netlink_id = netlink_id;
+			}
+
+			if(netlink_id <= 1){
+				wfptk("There is no remaining netlink id anymore \n");
 				break;
 			}
-		}
-		for(netlink_id=MAX_LINKS-1; netlink_id>0; netlink_id--){
-			wf_netlink_grp_sock = netlink_kernel_create(&init_net, netlink_id, &sock_grp_cfg);
-			wfptk("create netlink for grp %s id=%d \n", wf_netlink_grp_sock ? "ok" : "failed", netlink_id);
-			if(wf_netlink_grp_sock){
-				wf_netlink_grp_id = netlink_id;
-				break;
+			--netlink_id;
+			if(!wf_netlink_grp_sock){
+				wf_netlink_grp_sock = netlink_kernel_create(&init_net, netlink_id, &sock_grp_cfg);
+				wfptk("create netlink for grp %s id=%d \n", wf_netlink_grp_sock ? "ok" : "failed", netlink_id);
+				if(wf_netlink_grp_sock)
+					wf_netlink_grp_id = netlink_id;
 			}
+			
+			if(wf_netlink_sock && wf_netlink_grp_sock)
+				break;
 		}
 	}
 	#endif
 
 
-	init_timer(&broadcast_hello_timer);
-	broadcast_hello_timer.function = broadcast_hello_timer_func;
-	broadcast_hello_timer.data = (unsigned long)&broadcast_hello_timer;
+	setup_timer(&broadcast_hello_timer, broadcast_hello_timer_func, (unsigned long)&broadcast_hello_timer);
+//	init_timer(&broadcast_hello_timer);
+//	broadcast_hello_timer.function = broadcast_hello_timer_func;
+//	broadcast_hello_timer.data = (unsigned long)&broadcast_hello_timer;
 
 	return 0;
 }
@@ -597,7 +653,7 @@ static void __exit wf_fini(void)
 		netlink_kernel_release(wf_netlink_grp_sock);
 	if(proc_wf)
 		proc_remove(proc_wf);
-	nf_unregister_hook(&wfko_prerouting_hook);
+	nf_unregister_hooks(wf_after_conntrack_in_hookops, ARRAY_SIZE(wf_after_conntrack_in_hookops));
 }
 
 

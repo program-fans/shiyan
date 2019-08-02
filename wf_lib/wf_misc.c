@@ -807,23 +807,32 @@ char *wf_std_error(int *errcode)
 	return strerror(errno);
 }
 
-void fprint_strn(FILE *fp, char *str, unsigned int max_num)
+void __fprint_strn(FILE *fp, char *str, unsigned int max_num, char *startl, char *endl)
 {
-	//fprintf(fp, "[print_strn]:");
+	if(startl)
+		fprintf(fp, "%s", startl);
 	while(max_num)
 	{
 		fprintf(fp, "%c", *str);
 		++str;
 		--max_num;
 	}
-	fprintf(fp, "\n");
+	if(endl)
+		fprintf(fp, "%s", endl);
 }
 
-void fprint_bytes(FILE *fp, unsigned char *byte, unsigned int max_num)
+
+void fprint_strn(FILE *fp, char *str, unsigned int max_num)
+{
+	__fprint_strn(fp, str, max_num, NULL, "\n");
+}
+
+void __fprint_bytes(FILE *fp, unsigned char *byte, unsigned int max_num, char *startl, char *endl)
 {
 	int j = 0, show_len = 0, i = 0;
 	char show[16];
-	//fprintf(fp, "[print_bytes]:");
+	if(startl)
+		fprintf(fp, "%s", startl);
 	while(max_num && byte)
 	{
 		if(j%16==0){
@@ -852,7 +861,13 @@ void fprint_bytes(FILE *fp, unsigned char *byte, unsigned int max_num)
 		else
 			fprintf(fp, ".");
 	}
-	fprintf(fp, "\n");
+	if(endl)
+		fprintf(fp, "%s", endl);
+}
+
+void fprint_bytes(FILE *fp, unsigned char *byte, unsigned int max_num)
+{
+	__fprint_bytes(fp, byte, max_num, NULL, "\n");
 }
 
 

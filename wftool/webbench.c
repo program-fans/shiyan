@@ -59,9 +59,11 @@ int mypipe[2];
 char host[MAXHOSTNAMELEN];
 #define REQUEST_SIZE 2048
 char request[REQUEST_SIZE];
+char bind_dev[128];
 
 static const struct option long_options[]=
 {
+ {"dev",required_argument,NULL,'d'},
  {"force",no_argument,&force,1},
  {"reload",no_argument,&force_reload,1},
  {"time",required_argument,NULL,'t'},
@@ -93,6 +95,7 @@ void webbench_usage(void)
 {
    fprintf(stderr,
 	"webbench [option]... URL\n"
+	"  -d|--dev                 Set network device.\n"
 	"  -f|--force               Don't wait for reply from server.\n"
 	"  -r|--reload              Send reload request - Pragma: no-cache.\n"
 	"  -t|--time <sec>          Run benchmark for <sec> seconds. Default 30.\n"
@@ -122,10 +125,11 @@ int webbench_main(int argc, char **argv)
           return 2;
  } 
 
- while((opt=getopt_long(argc,argv,"912Vfrt:p:c:?h",long_options,&options_index))!=EOF )
+ while((opt=getopt_long(argc,argv,"d:912Vfrt:p:c:?h",long_options,&options_index))!=EOF )
  {
   switch(opt)
   {
+   case 'd': strncpy(bind_dev, optarg, sizeof(bind_dev)-1);break;
    case  0 : break;
    case 'f': force=1;break;
    case 'r': force_reload=1;break; 
@@ -326,6 +330,13 @@ static int Socket(const char *host, int clientPort)
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0)
         return sock;
+
+	if(bind_dev[0] != '\0' && setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, bind_dev, strlen(bind_dev) + 1) < 0){
+		close(sock);
+		fprintf(stderr,"\nBind to device(%s) failed. Aborting benchmark.\n", bind_dev);
+		return -2;
+	}
+	
     if (connect(sock, (struct sockaddr *)&ad, sizeof(ad)) < 0)
         return -1;
     return sock;

@@ -427,10 +427,10 @@ unsigned int base64_encode_finish(struct base64_context *cxt, char *out, unsigne
 		
 		cxt->total_len += 4;
 		cxt->a = 0; cxt->b = 0; cxt->num = 0;
-		return cxt->total_len;
+		return 4;
 	}
 
-	return cxt->total_len;
+	return 0;
 }
 
 #if 0

@@ -82,25 +82,25 @@ static void tp_freeJob_list(struct job_list *list)
 }
 
 //================================================================================================
-//º¯ÊıÃû£º                    threadpool_function
-//º¯ÊıÃèÊö£º                  Ïß³Ì³ØÖĞÏß³Ìº¯Êı
-//ÊäÈë£º                     [in] arg                  Ïß³Ì³ØµØÖ·
-//Êä³ö£º                     ÎŞ  
-//·µ»Ø£º                     ÎŞ
+//å‡½æ•°åï¼š                    threadpool_function
+//å‡½æ•°æè¿°ï¼š                  çº¿ç¨‹æ± ä¸­çº¿ç¨‹å‡½æ•°
+//è¾“å…¥ï¼š                     [in] arg                  çº¿ç¨‹æ± åœ°å€
+//è¾“å‡ºï¼š                     æ—   
+//è¿”å›ï¼š                     æ— 
 //================================================================================================
 static void* threadpool_function(void* arg)
 {
     struct threadpool *pool = (struct threadpool*)arg;
     struct job *pjob = NULL;
 	int rc=0;
-    while (1)  //ËÀÑ­»·
+    while (1)  //æ­»å¾ªç¯
     {
         pthread_mutex_lock(&(pool->mutex));
-        while ((pool->wait_list.num == 0) && !pool->pool_close)   //¶ÓÁĞÎª¿ÕÊ±£¬¾ÍµÈ´ı¶ÓÁĞ·Ç¿Õ
+        while ((pool->wait_list.num == 0) && !pool->pool_close)   //é˜Ÿåˆ—ä¸ºç©ºæ—¶ï¼Œå°±ç­‰å¾…é˜Ÿåˆ—éç©º
         {
             pthread_cond_wait(&(pool->queue_not_empty), &(pool->mutex));
         }
-        if (pool->pool_close)   //Ïß³Ì³Ø¹Ø±Õ£¬Ïß³Ì¾ÍÍË³ö
+        if (pool->pool_close)   //çº¿ç¨‹æ± å…³é—­ï¼Œçº¿ç¨‹å°±é€€å‡º
         {
             pthread_mutex_unlock(&(pool->mutex));
             pthread_exit(NULL);
@@ -111,15 +111,15 @@ static void* threadpool_function(void* arg)
 		tp_insertEnd_job(&(pool->excu_list), pjob);
         if (pool->wait_list.num == 0)
         {
-            pthread_cond_signal(&(pool->queue_empty));        //¶ÓÁĞÎª¿Õ£¬¾Í¿ÉÒÔÍ¨Öªthreadpool_destroyº¯Êı£¬Ïú»ÙÏß³Ìº¯Êı
+            pthread_cond_signal(&(pool->queue_empty));        //é˜Ÿåˆ—ä¸ºç©ºï¼Œå°±å¯ä»¥é€šçŸ¥threadpool_destroyå‡½æ•°ï¼Œé”€æ¯çº¿ç¨‹å‡½æ•°
         }
         if (pool->wait_list.num == pool->queue_max_num - 1)
         {
-            pthread_cond_broadcast(&(pool->queue_not_full));  //¶ÓÁĞ·ÇÂú£¬¾Í¿ÉÒÔÍ¨Öªthreadpool_add_jobº¯Êı£¬Ìí¼ÓĞÂÈÎÎñ
+            pthread_cond_broadcast(&(pool->queue_not_full));  //é˜Ÿåˆ—éæ»¡ï¼Œå°±å¯ä»¥é€šçŸ¥threadpool_add_jobå‡½æ•°ï¼Œæ·»åŠ æ–°ä»»åŠ¡
         }
         pthread_mutex_unlock(&(pool->mutex));
         
-        rc = (*(pjob->callback_function))(pjob->arg);   //Ïß³ÌÕæÕıÒª×öµÄ¹¤×÷£¬»Øµ÷º¯ÊıµÄµ÷ÓÃ
+        rc = (*(pjob->callback_function))(pjob->arg);   //çº¿ç¨‹çœŸæ­£è¦åšçš„å·¥ä½œï¼Œå›è°ƒå‡½æ•°çš„è°ƒç”¨
 	if(rc == 1)
 	{
 		pthread_mutex_lock(&(pool->mutex));
@@ -207,9 +207,19 @@ struct job *threadpool_findJob_byID(struct threadpool* pool, char *jobID)
 	pthread_mutex_unlock(&(pool->mutex));
 	return pjob;
 }
+
+void *threadpool_getJobArg_byID(struct threadpool* pool, char *jobID)
+{
+	struct job *pjob = threadpool_findJob_byID(pool, jobID);
+	if(pjob)
+		return pjob->arg;
+	else
+		return NULL;
+}
+
 int threadpool_add_job(struct threadpool* pool, int (*callback_function)(void *arg), void *arg, char *jobID)
 {
-    //assert(pool != NULL);		// ¶ÏÑÔ
+    //assert(pool != NULL);		// æ–­è¨€
     //assert(callback_function != NULL);
     //assert(arg != NULL);
     struct timeval now;
@@ -218,9 +228,9 @@ int threadpool_add_job(struct threadpool* pool, int (*callback_function)(void *a
     pthread_mutex_lock(&(pool->mutex));
     while ((pool->wait_list.num == pool->queue_max_num) && !(pool->queue_close || pool->pool_close))
     {
-        pthread_cond_wait(&(pool->queue_not_full), &(pool->mutex));   //¶ÓÁĞÂúµÄÊ±ºò¾ÍµÈ´ı
+        pthread_cond_wait(&(pool->queue_not_full), &(pool->mutex));   //é˜Ÿåˆ—æ»¡çš„æ—¶å€™å°±ç­‰å¾…
     }
-    if (pool->queue_close || pool->pool_close)    //¶ÓÁĞ¹Ø±Õ»òÕßÏß³Ì³Ø¹Ø±Õ¾ÍÍË³ö
+    if (pool->queue_close || pool->pool_close)    //é˜Ÿåˆ—å…³é—­æˆ–è€…çº¿ç¨‹æ± å…³é—­å°±é€€å‡º
     {
         pthread_mutex_unlock(&(pool->mutex));
         return -1;
@@ -240,7 +250,7 @@ int threadpool_add_job(struct threadpool* pool, int (*callback_function)(void *a
 	if( pool->wait_list.head == NULL)
 	{
 		tp_insertEnd_job(&(pool->wait_list), pjob);
-		pthread_cond_broadcast(&(pool->queue_not_empty));  //¶ÓÁĞ¿ÕµÄÊ±ºò£¬ÓĞÈÎÎñÀ´Ê±¾ÍÍ¨ÖªÏß³Ì³ØÖĞµÄÏß³Ì£º¶ÓÁĞ·Ç¿Õ
+		pthread_cond_broadcast(&(pool->queue_not_empty));  //é˜Ÿåˆ—ç©ºçš„æ—¶å€™ï¼Œæœ‰ä»»åŠ¡æ¥æ—¶å°±é€šçŸ¥çº¿ç¨‹æ± ä¸­çš„çº¿ç¨‹ï¼šé˜Ÿåˆ—éç©º
 	}
 	else
 	{
@@ -259,7 +269,7 @@ void threadpool_resumeJob(struct threadpool* pool, struct job *pjob)
 	if( pool->wait_list.head == NULL)
 	{
 		tp_insertEnd_job(&(pool->wait_list), pjob);
-		pthread_cond_broadcast(&(pool->queue_not_empty));  //¶ÓÁĞ¿ÕµÄÊ±ºò£¬ÓĞÈÎÎñÀ´Ê±¾ÍÍ¨ÖªÏß³Ì³ØÖĞµÄÏß³Ì£º¶ÓÁĞ·Ç¿Õ
+		pthread_cond_broadcast(&(pool->queue_not_empty));  //é˜Ÿåˆ—ç©ºçš„æ—¶å€™ï¼Œæœ‰ä»»åŠ¡æ¥æ—¶å°±é€šçŸ¥çº¿ç¨‹æ± ä¸­çš„çº¿ç¨‹ï¼šé˜Ÿåˆ—éç©º
 	}
 	else
 	{
@@ -280,7 +290,7 @@ int threadpool_resumeJob_byID(struct threadpool* pool, char *jobID)
 		if( pool->wait_list.head == NULL)
 		{
 			tp_insertEnd_job(&(pool->wait_list), pjob);
-			pthread_cond_broadcast(&(pool->queue_not_empty));  //¶ÓÁĞ¿ÕµÄÊ±ºò£¬ÓĞÈÎÎñÀ´Ê±¾ÍÍ¨ÖªÏß³Ì³ØÖĞµÄÏß³Ì£º¶ÓÁĞ·Ç¿Õ
+			pthread_cond_broadcast(&(pool->queue_not_empty));  //é˜Ÿåˆ—ç©ºçš„æ—¶å€™ï¼Œæœ‰ä»»åŠ¡æ¥æ—¶å°±é€šçŸ¥çº¿ç¨‹æ± ä¸­çš„çº¿ç¨‹ï¼šé˜Ÿåˆ—éç©º
 		}
 		else
 		{
@@ -295,33 +305,33 @@ int threadpool_resumeJob_byID(struct threadpool* pool, char *jobID)
 int threadpool_destroy(struct threadpool *pool)
 {
 	int i;
-	//assert(pool != NULL);		// ¶ÏÑÔ
+	//assert(pool != NULL);		// æ–­è¨€
 	if(pool==NULL)	return -1;
 	
 	pthread_mutex_lock(&(pool->mutex));
-	if (pool->queue_close || pool->pool_close)   //Ïß³Ì³ØÒÑ¾­ÍË³öÁË£¬¾ÍÖ±½Ó·µ»Ø
+	if (pool->queue_close || pool->pool_close)   //çº¿ç¨‹æ± å·²ç»é€€å‡ºäº†ï¼Œå°±ç›´æ¥è¿”å›
 	{
 		pthread_mutex_unlock(&(pool->mutex));
 		return -1;
 	}
 
-	pool->queue_close = 1;        //ÖÃ¶ÓÁĞ¹Ø±Õ±êÖ¾
+	pool->queue_close = 1;        //ç½®é˜Ÿåˆ—å…³é—­æ ‡å¿—
 	while (pool->wait_list.num != 0)
 	{
-		pthread_cond_wait(&(pool->queue_empty), &(pool->mutex));  //µÈ´ı¶ÓÁĞÎª¿Õ
+		pthread_cond_wait(&(pool->queue_empty), &(pool->mutex));  //ç­‰å¾…é˜Ÿåˆ—ä¸ºç©º
 	}    
 
-	pool->pool_close = 1;      //ÖÃÏß³Ì³Ø¹Ø±Õ±êÖ¾
+	pool->pool_close = 1;      //ç½®çº¿ç¨‹æ± å…³é—­æ ‡å¿—
 	pthread_mutex_unlock(&(pool->mutex));
-	pthread_cond_broadcast(&(pool->queue_not_empty));  //»½ĞÑÏß³Ì³ØÖĞÕıÔÚ×èÈûµÄÏß³Ì
-	pthread_cond_broadcast(&(pool->queue_not_full));   //»½ĞÑÌí¼ÓÈÎÎñµÄthreadpool_add_jobº¯Êı
+	pthread_cond_broadcast(&(pool->queue_not_empty));  //å”¤é†’çº¿ç¨‹æ± ä¸­æ­£åœ¨é˜»å¡çš„çº¿ç¨‹
+	pthread_cond_broadcast(&(pool->queue_not_full));   //å”¤é†’æ·»åŠ ä»»åŠ¡çš„threadpool_add_jobå‡½æ•°
 
 	for (i = 0; i < pool->thread_num; ++i)
 	{
-		pthread_join(pool->pthreads[i], NULL);    //µÈ´ıÏß³Ì³ØµÄËùÓĞÏß³ÌÖ´ĞĞÍê±Ï
+		pthread_join(pool->pthreads[i], NULL);    //ç­‰å¾…çº¿ç¨‹æ± çš„æ‰€æœ‰çº¿ç¨‹æ‰§è¡Œå®Œæ¯•
 	}
 
-	pthread_mutex_destroy(&(pool->mutex));          //ÇåÀí×ÊÔ´
+	pthread_mutex_destroy(&(pool->mutex));          //æ¸…ç†èµ„æº
 	pthread_cond_destroy(&(pool->queue_empty));
 	pthread_cond_destroy(&(pool->queue_not_empty));   
 	pthread_cond_destroy(&(pool->queue_not_full));    
@@ -366,15 +376,15 @@ int threadpool_get_pendlist_num(struct threadpool *pool)
 #if 0
 struct LoadFileInfo
 {
-	char loadID[18];		// ÎÄ¼şÏÂÔØ±àºÅ
-	char filePath[256];		// ÎÄ¼ş±¾µØ´æ´¢Â·¾¶
-	unsigned int fileSize;	// ÎÄ¼ş´óĞ¡
-	int loadState;		/* ÎÄ¼şÏÂÔØ×´Ì¬£¬1£ºµÈ´ıÏÂÔØ£»2£ºÕıÔÚÏÂÔØ£»3:ÔİÍ£ÏÂÔØ£»4£ºÏÂÔØÍê³É£»
-				5£ºÏÂÔØÊ§°Ü£¬ÍøÂçÃ¦£»6£ºÏÂÔØÊ§°Ü£¬¶Ô·½¾Ü¾ø£»*/
-	int loadRate;		// ÎÄ¼şÏÂÔØ½ø¶È£¬ÏÂÔØ°Ù·Ö±ÈµÄ·Ö×Ó
-	char loadDate[12];		// ÏÂÔØÈÕÆÚ£¬"yyyy-mm-dd"
-	char loadTime[12];		// ÏÂÔØÊ±¼ä£¬"hh:mm:ss"
-	unsigned int totalTime;	// ÏÂÔØ×ÜÊ±³¤£¬µ¥Î»:Ãë
+	char loadID[18];		// æ–‡ä»¶ä¸‹è½½ç¼–å·
+	char filePath[256];		// æ–‡ä»¶æœ¬åœ°å­˜å‚¨è·¯å¾„
+	unsigned int fileSize;	// æ–‡ä»¶å¤§å°
+	int loadState;		/* æ–‡ä»¶ä¸‹è½½çŠ¶æ€ï¼Œ1ï¼šç­‰å¾…ä¸‹è½½ï¼›2ï¼šæ­£åœ¨ä¸‹è½½ï¼›3:æš‚åœä¸‹è½½ï¼›4ï¼šä¸‹è½½å®Œæˆï¼›
+				5ï¼šä¸‹è½½å¤±è´¥ï¼Œç½‘ç»œå¿™ï¼›6ï¼šä¸‹è½½å¤±è´¥ï¼Œå¯¹æ–¹æ‹’ç»ï¼›*/
+	int loadRate;		// æ–‡ä»¶ä¸‹è½½è¿›åº¦ï¼Œä¸‹è½½ç™¾åˆ†æ¯”çš„åˆ†å­
+	char loadDate[12];		// ä¸‹è½½æ—¥æœŸï¼Œ"yyyy-mm-dd"
+	char loadTime[12];		// ä¸‹è½½æ—¶é—´ï¼Œ"hh:mm:ss"
+	unsigned int totalTime;	// ä¸‹è½½æ€»æ—¶é•¿ï¼Œå•ä½:ç§’
 	int (*callback)(int type,void *data,int dataLen);
 };
 struct prt_file_t
@@ -546,11 +556,49 @@ void test_three()
 		printf("resume job failed %s\n",pause_jobID);
 	}
 }
+int job_work(void* arg)
+{
+	int cnt = 3;
+
+	while(cnt){
+		sleep(1);
+		printf("job_work **%d** \n", cnt);
+		--cnt;
+	}
+	return 0;
+}
+int add_job_work(void* arg)
+{
+	struct threadpool *pool = (struct threadpool *)arg;
+	sleep(2);
+
+	printf("add job_work ... \n");
+	threadpool_add_job(pool, job_work, pool, NULL);
+	printf("add job_work end \n");
+
+	sleep(3);
+
+	printf("add job_work ... \n");
+	threadpool_add_job(pool, job_work, pool, NULL);
+	printf("add job_work end \n");
+
+	return 0;
+}
+void test_add_job_at_jobFunc()
+{
+	pool = threadpool_init(2, 20);
+
+	threadpool_add_job(pool, add_job_work, pool, NULL);
+
+	sleep(10);
+}
 int main(void)
 {
 	//test_one();
 	//test_two();
-	test_three();
+	//test_three();
+
+	test_add_job_at_jobFunc();
 
     sleep(10);
     threadpool_destroy(pool);

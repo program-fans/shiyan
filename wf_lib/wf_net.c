@@ -1060,7 +1060,7 @@ unsigned int wf_lookup_dns(char *domain, char *res_ip, char *set_dns_server, int
 	
 	if(ip_check(domain)){
 		inet_aton(domain, (struct in_addr *)&target_ip);
-		strcpy(res_ip, domain);
+		if(res_ip) strcpy(res_ip, domain);
 		return target_ip.s_addr;
 	}
 
@@ -1200,15 +1200,19 @@ int wf_tcp_socket(int port, int keepalive, char *if_name)
 			goto ERR;
 	}
 
-	ret = bind(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
-	if(ret < 0)
-	{
-ERR:
-		close(sock);
-		return ret;
+	if(port > 0){
+		ret = setsock_reuse(sock, 1);
+		if(ret < 0)
+			goto ERR;
+		ret = bind(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
+		if(ret < 0)
+			goto ERR;
 	}
 
 	return sock;
+ERR:
+	close(sock);
+	return ret;
 }
 
 int wf_gethostbyname(char *name, char *ip, unsigned int *addr)

@@ -667,32 +667,75 @@ int nl_test(int argc, char **argv)
 	return 0;
 }
 
-void testtest()
-{
-	wf_udp_socket(0, 0, NULL);
-	return;
-}
 void test()
 {
-	int argc = -1;
-	char *argv[15] = {NULL};
-	argv[++argc] = "test";
+	int sock = -1, ret = 0;
+	unsigned char buf[2048] = {0};
+	char *pkt = NULL;
+	unsigned int data_mark = htonl(0x3f721fb5);
+	int len, h_len = sizeof(data_mark) + sizeof(uint32_t), out_len;
+
+	sock = wf_connect_socket("192.168.1.1", 32768, 0, 0, "eth2");
+	if(sock < 0){
+		printf("wf_connect_socket failed\n");
+		return;
+	}
+
+	pkt = "{\"type\":\"keyngreq\",\n\"sequence\":1,\n\"mac\":\"11223344ABCD\",\n\"version\":\"V1.0\",\n\"keymodelist\":[{\n\"keymode\":\"dh\"\n}]}";
+//	pkt = "{\"type\":\"keyngreq\",\"sequence\":1,\"mac\":\"11223344ABCD\",\"version\":\"V1.0\",\"keymodelist\":[{\"keymode\":\"ecdh\"}]}";
+	len = strlen(pkt);
+	printf("len=%d\n", len);
+	memcpy(&buf[h_len], pkt, len);
+	*(uint32_t*)&buf[sizeof(data_mark)] = htonl(*(uint32_t*)&len);
+	memcpy(buf,&data_mark,sizeof(data_mark));
+	out_len = h_len + len;
+
+	printf("send: %s \n", pkt);
+	ret = wf_send(sock, buf, out_len, 0);
+	printf("send ret=%d\n", ret);
+
+	memset(buf, 0, sizeof(buf));
 #if 1
-	testtest();
+	ret = wf_recv(sock, buf, h_len, MSG_DONTWAIT);
+	printf("%ld  recv ret=%d\n", wf_getsys_uptime(NULL), ret);
+	len = ntohl(*(uint32_t*)&buf[sizeof(data_mark)]);
+	ret = wf_recv(sock, buf, len, MSG_DONTWAIT);
+	printf("%ld  recv ret=%d\n", wf_getsys_uptime(NULL), ret);
+	printf("recv: %s \n", (char *)&buf[h_len]);
+#else
+	ret = wf_recv(sock, buf, sizeof(buf), MSG_DONTWAIT);
+	printf("%ld  recv ret=%d\n", wf_getsys_uptime(NULL), ret);
+	printf("recv: %s \n", (char *)&buf[h_len]);
 #endif
-#if 0
-	argv[++argc] = "net";
-	++argc;
-	net_test(argc, argv);
+	pkt = "{\n\t\"type\":\t\"dh\",\n\t\"sequence\":\t2,\n\t\"mac\":\t\"11223344ABCD\",\n\t\"data\":\t{\n\t\t\"dh_key\":\t\"eAaaAohyceM=\",\n\t\t\"dh_p\":\t\"wDETLUENIiM=\",\n\t\t\"dh_g\":\t\"Ag==\"\n\t}\n}";
+//	pkt = "{\"type\":\"ecdh\",\"sequence\":2,\"mac\":\"11223344ABCD\",\"data\":{\"ecdh_key\":\"A5+xtf/1huyLj8z/l1oe\"}}";
+	len = strlen(pkt);
+	printf("len=%d\n", len);
+	memcpy(&buf[h_len], pkt, len);
+	*(uint32_t*)&buf[sizeof(data_mark)] = htonl(*(uint32_t*)&len);
+	memcpy(buf,&data_mark,sizeof(data_mark));
+	out_len = h_len + len;
+
+	printf("send: %s \n", pkt);
+	ret = wf_send(sock, buf, out_len, 0);
+	printf("send ret=%d\n", ret);
+
+	memset(buf, 0, sizeof(buf));
+#if 1
+	ret = wf_recv(sock, buf, h_len, MSG_DONTWAIT);
+	printf("%ld  recv ret=%d\n", wf_getsys_uptime(NULL), ret);
+	len = ntohl(*(uint32_t*)&buf[sizeof(data_mark)]);
+	ret = wf_recv(sock, buf, len, MSG_DONTWAIT);
+	printf("%ld  recv ret=%d\n", wf_getsys_uptime(NULL), ret);
+	printf("recv: %s \n", (char *)&buf[h_len]);
+#else
+	ret = wf_recv(sock, buf, sizeof(buf), MSG_DONTWAIT);
+	printf("%ld  recv ret=%d\n", wf_getsys_uptime(NULL), ret);
+	printf("recv: %s \n", (char *)&buf[h_len]);
 #endif
-#if 0
-	argv[++argc] = "httpget";
-	argv[++argc] = "-O";
-	argv[++argc] = "httpget_gdb.html";
-	argv[++argc] = "http://www.baidu.com";
-	++argc;
-	test_httpget(argc, argv);
-#endif
+
+
+	close(sock);
 }
 
 int main(int argc, char **argv)

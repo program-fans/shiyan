@@ -9,6 +9,7 @@ struct wf_buffer
 };
 
 extern void wf_buffer_free(struct wf_buffer *buffer, int free_self);
+extern void wf_buffer_clean(struct wf_buffer *buffer);
 extern struct wf_buffer *wf_buffer_malloc(struct wf_buffer *buffer, unsigned int size);
 extern struct wf_buffer *wf_buffer_remalloc(struct wf_buffer *buffer, unsigned int size);
 extern struct wf_buffer *wf_buffer_set(struct wf_buffer *buffer, char *data, int size);

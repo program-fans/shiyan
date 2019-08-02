@@ -6,6 +6,7 @@ struct wf_buffer
 	char *data;
 	int size;
 	int len;
+	int offset;
 };
 
 extern void wf_buffer_free(struct wf_buffer *buffer, int free_self);
